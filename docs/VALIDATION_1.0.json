@@ -1,0 +1,19 @@
+{
+  "project": "PS3 Game Orbit",
+  "version": "1.0.0",
+  "validated_at_utc": "2026-10-03T16:48:38Z",
+  "approved_pkg_unchanged": true,
+  "native_runtime_sources_match_fix30": true,
+  "model_generated_from_original_with_exact_hash": true,
+  "model_import_and_full_triangle_uv_verification": "passed",
+  "full_host_test_wrapper": "passed",
+  "native_build_release_wrapper": "passed",
+  "package_architecture_identity_staging_checks": "passed",
+  "host_draw_presentation_main_loop_fifo_checks": "passed",
+  "shell_python_syntax_checks": "passed",
+  "missing_and_invalid_model_checks": "passed",
+  "github_actions_executed_remotely": false,
+  "raw_console_logs_included": false,
+  "editable_or_source_form_third_party_mesh_included": false,
+  "pkg_sha256": "2f75732f4b28305a4b9481ca2f53943f72b9ef901570a3ba3a8eff5a7009f013"
+}

@@ -1,0 +1,20 @@
+{
+  "project": "PS3 Game Orbit",
+  "release_version": "1.0.0",
+  "tag": "v1.0.0",
+  "release_date": "2026-10-03",
+  "internal_build": "FIX30",
+  "title_id": "PGORBT301",
+  "app_ver": "01.00",
+  "content_id": "UP0001-PGORBT301_00-0000000000000000",
+  "package_file": "PS3_GAME_ORBIT_v1.0.gnpdrm.pkg",
+  "package_bytes": 1989520,
+  "package_sha256": "2f75732f4b28305a4b9481ca2f53943f72b9ef901570a3ba3a8eff5a7009f013",
+  "package_matches_approved_fix30": true,
+  "runtime_source_changed_for_release": false,
+  "user_approved_interface_on_cfw": true,
+  "hen_validated": false,
+  "package_app_ver_already_1_0": true,
+  "editable_jfx_model_distributed": false,
+  "generated_jfx_geometry_distributed_as_source": false
+}

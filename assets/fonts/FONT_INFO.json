@@ -1,0 +1,16 @@
+{
+  "font": "Noto Sans",
+  "weight": 300,
+  "sizes": [
+    18,
+    20,
+    28
+  ],
+  "source": "https://github.com/google/fonts/tree/main/ofl/notosans",
+  "source_sha256": "bfb7bb691513f12e734dc346c03a03f784912432d7e3fa8e56efcf906fe86b3d",
+  "glyphs": 1797,
+  "mask_bytes": 386104,
+  "generated_sha256": "5f5fb9d85da89bdfd7516ce225a4b3cf648d64952c8dcf73c3aeb05618465353",
+  "license": "OFL.txt",
+  "runtime": "baked grayscale coverage; no TrueType dependency"
+}
