@@ -1,0 +1,16 @@
+// V13 build / approved V14 case vertex shader (Cg -> RSX VPO)
+uniform float4x4 modelViewProj;
+uniform float4x4 model;
+uniform float4 uvTransform; // scaleU, scaleV, biasU, biasV
+
+void main(float4 position : POSITION,
+          float3 normal   : NORMAL,
+          float2 texcoord : TEXCOORD0,
+          out float4 outPosition : POSITION,
+          out float2 outUv       : TEXCOORD0,
+          out float3 outNormal   : TEXCOORD1)
+{
+    outPosition = mul(modelViewProj, position);
+    outNormal = mul((float3x3)model, normal);
+    outUv = texcoord * uvTransform.xy + uvTransform.zw;
+}
