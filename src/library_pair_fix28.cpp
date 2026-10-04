@@ -2,6 +2,9 @@
 #include <algorithm>
 namespace LibraryPairFix28 {
 std::vector<CasePose> poses(const CoverflowState& state,int radius){
+#ifdef PS3_GAME_ORBIT_FIX31
+    return OrbitFlowFix31::poses(state,radius);
+#else
     auto selected=build_coverflow_render_plan(state,0);
     if(radius<=0 || selected.empty() || state.visible.size()<2) return selected;
     const auto neighborhood=build_coverflow_render_plan(state,1);
@@ -21,5 +24,6 @@ std::vector<CasePose> poses(const CoverflowState& state,int radius){
     if(selected.size()>1) selected[1].x+=65*remaining;
 #endif
     return selected;
+#endif
 }
 }

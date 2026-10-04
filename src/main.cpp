@@ -17,6 +17,10 @@
 #include "cover_orientation_fix28.h"
 #include "jfx_case_fix29.h"
 #include "preferences_fix29.h"
+#ifdef PS3_GAME_ORBIT_FIX31
+#include "layout_settings_fix31.h"
+#include "cover_limits_fix31.h"
+#endif
 #include "mount_operation_fix29.h"
 #include "metadata_utils.h"
 #include <unordered_set>
@@ -67,7 +71,7 @@ int main(){
     const bool lifecycle_ready=lifecycle.init(),controller_ready=controller.init();
     RuntimeDiag::log("BOOT 01: lifecycle=%s",lifecycle_ready ? "OK" : "FAILED");
     RuntimeDiag::log("BOOT 02: controller=%s",controller_ready ? "OK" : "FAILED");
-    RuntimeDiag::log("BOOT 03: PS3 Game Orbit FIX30; approved JFX model, compact UI, startup image and offscreen calibration");
+    RuntimeDiag::log("BOOT 03: PS3 Game Orbit %s; approved JFX model, compact UI, startup image and offscreen calibration",ProjectIdentity::Version);
     const bool rsx_ready=rsx.init();
     RuntimeDiag::log("BOOT 04: rsx_stage1=%s error=%s",rsx_ready ? "OK" : "FAILED",rsx.last_error().c_str());
 #ifdef PS3_SP_LOADER_FIX29
@@ -81,7 +85,11 @@ int main(){
     RsxRendererV10 renderer;
     const bool renderer_ready=rsx_ready && renderer.init(rsx,mesh,false);
     RuntimeDiag::log("BOOT 06: renderer=%s error=%s",renderer_ready ? "OK" : "FAILED",renderer.last_error().c_str());
+#ifdef PS3_GAME_ORBIT_FIX31
+    CoverCache cache(LibraryPairFix28::MaxCases+1,CoverLimitsFix31::EncodedCacheBytes);
+#else
     CoverCache cache(3);
+#endif
     LibraryBrowserFix28 browser(ProjectIdentity::SafeBootCoverPath,ProjectIdentity::SecondDemoCoverPath);
 #ifdef __PSL1GHT__
     int result=(!lifecycle_ready || !controller_ready) ? 21 : renderer_ready ? 0 : 22;
@@ -135,6 +143,17 @@ int main(){
         auto restored=browser.state().games;preferences.apply(restored);browser.replace_catalog(std::move(restored));
         if(preferences_loaded) browser.restore_selection(preferences.filter(),preferences.selected_path());
         RuntimeDiag::log("PREFERENCES: loaded=%u path=%s",unsigned(preferences_loaded),preferences_path.c_str());
+#ifdef PS3_GAME_ORBIT_FIX31
+        LayoutSettingsFix31 layout_settings;std::string layout_path=ProjectIdentity::LayoutPath;
+        bool layout_loaded=layout_settings.load(layout_path);
+        if(!layout_loaded) {
+            layout_loaded=layout_settings.load(ProjectIdentity::FallbackLayoutPath);
+            if(layout_loaded) layout_path=ProjectIdentity::FallbackLayoutPath;
+        }
+        browser.restore_layout(layout_settings.layout());
+        RuntimeDiag::log("LAYOUT: loaded=%u layout=%s max_cases=%u command_budget=%u",unsigned(layout_loaded),
+            OrbitFlowFix31::layout_name(browser.state().layout),unsigned(LibraryPairFix28::MaxCases),unsigned(LibraryPairFix28::FrameCommandBudgetBytes));
+#endif
         MountOperationFix29 mounting;
         bool preferences_dirty=false,mounted_exit=false;
         s64 save_at=0,next_disc_check=0;
@@ -146,6 +165,15 @@ int main(){
                 if(saved) preferences_path=ProjectIdentity::FallbackPreferencesPath;
             }
             RuntimeDiag::log("PREFERENCES: saved=%u path=%s",unsigned(saved),preferences_path.c_str());
+#ifdef PS3_GAME_ORBIT_FIX31
+            layout_settings.capture(browser.state().layout);bool layout_saved=layout_settings.save(layout_path);
+            if(!layout_saved && layout_path!=ProjectIdentity::FallbackLayoutPath) {
+                layout_saved=layout_settings.save(ProjectIdentity::FallbackLayoutPath);
+                if(layout_saved) layout_path=ProjectIdentity::FallbackLayoutPath;
+            }
+            RuntimeDiag::log("LAYOUT: saved=%u layout=%s",unsigned(layout_saved),OrbitFlowFix31::layout_name(browser.state().layout));
+            saved=saved && layout_saved;
+#endif
             preferences_dirty=!saved;
         };
 #endif
@@ -153,6 +181,9 @@ int main(){
         std::unordered_set<std::string> failed_covers;
         const s64 start=sysGetSystemTime();s64 previous=start,last_report=start;
         RuntimeDiag::log("CONTROLS: left/right browse; right stick rotate; L1/R1 filters; triangle favorite; X mount; UP rotation; L2/R2 zoom; R3 reset; SELECT help; START rescan; circle exit; artwork=normal full wrap; no manual orientation");
+#ifdef PS3_GAME_ORBIT_FIX31
+        RuntimeDiag::log("CONTROLS 1.1: Square changes Classic/Spine; default/reset zoom=.55; old covers survive their exit animation");
+#endif
         while(result==0){
             lifecycle.pump();
             if(lifecycle.exit_requested()){user_exit=true;break;}
@@ -251,6 +282,10 @@ int main(){
                                  stream.completed_frames(),stream.switches(),browser.state().selected,unsigned(browser.state().visible.size()),
                                  double(yaw),double(draw.center_pitch_deg),double(browser.scale()),unsigned(browser.automatic()),
                                  unsigned(stats.draw_calls),unsigned(stats.hud_draw_calls),unsigned(stats.background_draw_calls),unsigned(renderer.gpu_cover_count()));
+#ifdef PS3_GAME_ORBIT_FIX31
+                RuntimeDiag::log("LAYOUT FRAME: layout=%s animated_cases=%u encoded_cache=%u",OrbitFlowFix31::layout_name(draw.layout),
+                    unsigned(poses.size()),unsigned(cache.encoded_bytes()));
+#endif
                 last_report=now;
             }
         }

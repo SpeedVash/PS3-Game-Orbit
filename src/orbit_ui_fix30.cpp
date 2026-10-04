@@ -77,6 +77,7 @@ void button(DecodedImageRGBA& p,const std::string& symbol,int x,int y,const std:
     if(symbol=="X"){line(p,x-7,y-7,x+7,y+7,c,2);line(p,x+7,y-7,x-7,y+7,c,2);}
     else if(symbol=="O") circle(p,float(x),float(y),9,c);
     else if(symbol=="TRIANGLE"){line(p,x,y-10,x+10,y+8,c,2);line(p,x+10,y+8,x-10,y+8,c,2);line(p,x-10,y+8,x,y-10,c,2);}
+    else if(symbol=="SQUARE"){line(p,x-8,y-8,x+8,y-8,c,2);line(p,x+8,y-8,x+8,y+8,c,2);line(p,x+8,y+8,x-8,y+8,c,2);line(p,x-8,y+8,x-8,y-8,c,2);}
     else if(symbol=="SELECT") text(p,"SELECT",x-28,y-7,18,Muted,84);
     else if(symbol=="ARROWS"){line(p,x-12,y,x-4,y-5,c);line(p,x-12,y,x-4,y+5,c);line(p,x+12,y,x+4,y-5,c);line(p,x+12,y,x+4,y+5,c);}
     else if(symbol=="UP"){line(p,x-7,y+4,x,y-5,c);line(p,x,y-5,x+7,y+4,c);}
@@ -111,6 +112,10 @@ DecodedImageRGBA background(){
 DecodedImageRGBA hud(const std::array<std::string,6>& s){
     auto p=bitmap(Width,HudHeight);
     text(p,s[0],64,13,28,White,760);
+#ifdef PS3_GAME_ORBIT_FIX31
+    text(p,"1.1",390,20,18,Muted,100);
+    text(p,s[4].find("SPINE")!=std::string::npos ? "Spine" : "Clássico",850,19,20,Muted,180);
+#endif
     const int filter_width=measure(s[5],20);
     text(p,"L1 / R1",1136-filter_width,20,18,Muted,120);
     text(p,s[5],1216-filter_width,19,20,White,220);
@@ -118,18 +123,33 @@ DecodedImageRGBA hud(const std::array<std::string,6>& s){
     text(p,s[1],64,98,28,White,1152);
     text(p,s[3].empty() ? s[2] : s[3],64,128,18,Muted,1152);
     button(p,"X",73,157,"Montar",Blue);
+#ifdef PS3_GAME_ORBIT_FIX31
+    button(p,"ARROWS",230,157,"Jogos");
+    button(p,"TRIANGLE",365,157,"Favorito",Green);
+    button(p,"UP",547,157,"Autogiro");
+    button(p,"SQUARE",725,157,"Layout",{{211,169,203,255}});
+    button(p,"SELECT",922,157,"Ajuda");
+    button(p,"O",1123,157,"Sair",Red);
+    const bool help=s[4].rfind("HELP",0)==0;
+#else
     button(p,"ARROWS",230,157,"Jogos");
     button(p,"TRIANGLE",387,157,"Favorito",Green);
     button(p,"UP",596,157,"Autogiro");
     button(p,"SELECT",814,157,"Ajuda");
     button(p,"O",1072,157,"Sair",Red);
-    if(s[4]=="HELP"){
+    const bool help=s[4]=="HELP";
+#endif
+    if(help){
         rect(p,54,178,400,206,{{18,20,23,240}});
         text(p,"Controles",74,188,28,White,350);
         text(p,"Analógico direito   Girar a caixa",74,229,18,White,356);
         text(p,"L2 / R2   Aproximar / afastar",74,257,18,White,356);
         text(p,"R3   Restaurar posição e zoom",74,285,18,White,356);
+#ifdef PS3_GAME_ORBIT_FIX31
+        text(p,"Quadrado   Clássico / Spine",74,313,18,White,356);
+#else
         text(p,"L1 / R1   Alterar filtro",74,313,18,White,356);
+#endif
         text(p,"START   Atualizar biblioteca",74,341,18,White,356);
         text(p,"SELECT   Fechar ajuda",74,366,18,Muted,356);
     }

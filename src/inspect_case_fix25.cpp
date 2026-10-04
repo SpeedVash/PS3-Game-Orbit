@@ -29,7 +29,11 @@ bool InspectCaseFix25::update(CoverflowState& state,const InputFrame& in,float d
             state.center_yaw_deg=in.triangle.pressed ? 152.0f : 28.0f;
             state.center_pitch_deg=-5.0f;
             automatic_=false;
+#ifdef PS3_GAME_ORBIT_FIX31
+            if(in.r3.pressed) scale_=0.55f;
+#else
             if(in.r3.pressed) scale_=0.72f;
+#endif
         }
         scale_=std::clamp(scale_+(float(in.r2.held)-float(in.l2.held))*0.20f*dt,0.55f,0.80f);
     }

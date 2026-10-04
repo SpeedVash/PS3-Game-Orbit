@@ -57,6 +57,7 @@ V10FramePlan build_v10_frame_plan(const std::vector<CasePose>& poses,
             p.model=model;
             p.mvp=mvp;
             p.alpha=pose.alpha;
+            p.visibility=pose.visibility;
             p.mesh_textured=part.textured;
             p.selected=pose.selected;
             p.mesh_part=part_i;
@@ -91,12 +92,23 @@ std::vector<std::size_t> native_submission_order(const V10FramePlan& plan,const 
     for(std::size_t i=0;i<plan.packets.size();++i) order.push_back(i);
     std::stable_sort(order.begin(),order.end(),[&](std::size_t a,std::size_t b){
         const auto& pa=plan.packets[a];const auto& pb=plan.packets[b];
+#ifdef PS3_GAME_ORBIT_FIX31
+        const bool fade_a=pa.visibility<.99999f,fade_b=pb.visibility<.99999f;
+        const bool transparent_a=pa.plastic_pass!=0 || fade_a;
+        const bool transparent_b=pb.plastic_pass!=0 || fade_b;
+        if(transparent_a!=transparent_b) return !transparent_a;
+        if(!transparent_a) return false;
+        const float da=pa.mvp.m[14]/pa.mvp.m[15],db=pb.mvp.m[14]/pb.mvp.m[15];
+        if(std::fabs(da-db)>.000001f) return da>db;
+        return pa.plastic_pass<pb.plastic_pass;
+#else
         const bool ta=pa.plastic_pass!=0,tb=pb.plastic_pass!=0;
         if(ta!=tb) return !ta; // Paper AND the solid 3D logo first.
         if(!ta) return false;
         if(pa.game_index==pb.game_index) return pa.plastic_pass<pb.plastic_pass;
         const auto depth=[](const V10DrawPacket& p){return p.mvp.m[14]/p.mvp.m[15];};
         return depth(pa)>depth(pb);
+#endif
     });
     return order;
 }
@@ -321,7 +333,11 @@ bool RsxRendererV10::render(const CoverflowState& state,const V14CaseMesh& mesh,
 #else
     auto poses=build_coverflow_render_plan(state,radius);
 #endif
+#ifdef PS3_GAME_ORBIT_FIX31
+    (void)selected_scale; // Animated poses already include the current zoom.
+#else
     for(auto& pose:poses) if(pose.selected) pose.scale=selected_scale;
+#endif
 #ifdef __PSL1GHT__
     last_plan_=build_v10_frame_plan(poses,mesh,width_,height_);
 #else
@@ -1155,7 +1171,7 @@ bool RsxRendererV10::draw_frame_ps3(const V10FramePlan& plan,const V14CaseMesh& 
 #ifdef PS3_SP_LOADER_FIX28
     if(plan.packets.empty() || plan.packets.size()%6 || plan.packets.size()>LibraryPairFix28::MaxCases*6 ||
        gpu_mesh_.size()!=(mesh.jfx ? 5u : 6u) || !color_buffer_[current_buffer_] || !depth_buffer_){
-        last_error_="FIX28 requires one or two complete V14 cases and valid buffers"; return false;
+        last_error_="Library requires complete case ranges within its limit and valid buffers"; return false;
     }
     for(std::size_t i=0;i<plan.packets.size();++i){
         const auto part_i=native_packet_part(plan.packets[i],i,mesh);
@@ -1177,7 +1193,13 @@ bool RsxRendererV10::draw_frame_ps3(const V10FramePlan& plan,const V14CaseMesh& 
     const auto command_begin=reinterpret_cast<std::uintptr_t>(static_cast<void*>(ctx->begin));
     const auto command_end=reinterpret_cast<std::uintptr_t>(static_cast<void*>(ctx->end));
     if(command_start<command_begin || command_start>command_end ||
-       command_end-command_start<CaseRenderFix25::InitialFrameGuardBytes){
+       command_end-command_start<
+#ifdef PS3_GAME_ORBIT_FIX31
+           OrbitFlowFix31::InitialFrameGuardBytes
+#else
+           CaseRenderFix25::InitialFrameGuardBytes
+#endif
+       ){
         last_error_="FIX28 frame has insufficient command space"; return false;
     }
     const char* tag=diagnostic_view_label_.empty()
@@ -1290,12 +1312,23 @@ bool RsxRendererV10::draw_frame_ps3(const V10FramePlan& plan,const V14CaseMesh& 
         rsxSetVertexProgramParameter(ctx,vp,(const rsxProgramConst*)vp_uv_transform_,uv_transform);
         // Covers are opaque; the shell keeps its approved alpha and does not
         // overwrite depth. Hidden reverse faces are culled using repaired indices.
-        const bool translucent=mesh.jfx ? part.material==V14MeshPart::Material::ClearPlastic : !packet.mesh_textured;
+        const bool shell=mesh.jfx ? part.material==V14MeshPart::Material::ClearPlastic : !packet.mesh_textured;
+#ifdef PS3_GAME_ORBIT_FIX31
+        const bool translucent=shell || packet.visibility<.99999f;
+#else
+        const bool translucent=shell;
+#endif
         rsxSetCullFace(ctx,packet.plastic_pass==1 ? GCM_CULL_FRONT : GCM_CULL_BACK);
         rsxSetBlendEnable(ctx,translucent ? GCM_TRUE : GCM_FALSE);
         rsxSetDepthWriteEnable(ctx,translucent ? GCM_FALSE : GCM_TRUE);
         const float use_texture[4]={use_tex?1.0f:0.0f,0,0,0};
-        const float alpha[4]={packet.alpha,0,0,0};
+        const float alpha[4]={
+#ifdef PS3_GAME_ORBIT_FIX31
+            (shell ? packet.alpha : 1.0f)*packet.visibility,
+#else
+            packet.alpha,
+#endif
+            0,0,0};
         rsxSetFragmentProgramParameter(ctx,fp,(const rsxProgramConst*)fp_base_color_,mesh.jfx ? part.color.data() : shell_color,fragment_offset_,GCM_LOCATION_RSX);
         rsxSetFragmentProgramParameter(ctx,fp,(const rsxProgramConst*)fp_use_texture_,use_texture,fragment_offset_,GCM_LOCATION_RSX);
         rsxSetFragmentProgramParameter(ctx,fp,(const rsxProgramConst*)fp_alpha_,alpha,fragment_offset_,GCM_LOCATION_RSX);

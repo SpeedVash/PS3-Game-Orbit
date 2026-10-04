@@ -1,4 +1,7 @@
 #include "rsx_stage1.h"
+#ifdef PS3_GAME_ORBIT_FIX31
+#include "cover_limits_fix31.h"
+#endif
 #include "image_decode.h"
 #include "cover_orientation_fix28.h"
 #include <cstring>
@@ -56,6 +59,12 @@ bool RsxStage1::prepare_cover(const CoverImage& image, GpuTextureStage1& out,uns
     last_error_.clear();
     if (!initialized_) { last_error_ = "RSX stage not initialized"; return false; }
     if (!image.valid()) { last_error_ = "Invalid cover image"; return false; }
+#ifdef PS3_GAME_ORBIT_FIX31
+    if(image.width>8192 || image.height>8192 ||
+       std::size_t(image.width)*std::size_t(image.height)>CoverLimitsFix31::MaximumDecodePixels) {
+        last_error_="Cover exceeds the bounded decode size";return false;
+    }
+#endif
 
     DecodedImageRGBA decoded;
 #if defined(__PSL1GHT__) && defined(PS3_SP_LOADER_FIX28)
@@ -64,6 +73,9 @@ bool RsxStage1::prepare_cover(const CoverImage& image, GpuTextureStage1& out,uns
     if (!decode_cover_rgba(image, decoded, last_error_)) return false;
     if(!orient_cover_rgba_fix28(decoded,read_cover_orientation_fix28(image),last_error_) ||
        !orient_cover_rgba_fix28(decoded,manual_orientation,last_error_)) return false;
+#ifdef PS3_GAME_ORBIT_FIX31
+    if(!CoverLimitsFix31::fit_texture(decoded)) {last_error_="Could not bound cover texture";return false;}
+#endif
 #if defined(__PSL1GHT__) && defined(PS3_SP_LOADER_FIX28)
     RuntimeDiag::log("UPLOAD 01: decode returned; dimensions=%dx%d pitch=%d bytes=%u",decoded.width,decoded.height,decoded.pitch,unsigned(decoded.rgba.size()));
 #endif
