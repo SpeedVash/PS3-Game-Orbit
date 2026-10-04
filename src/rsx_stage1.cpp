@@ -3,6 +3,7 @@
 #include "cover_limits_fix31.h"
 #endif
 #include "image_decode.h"
+#include "performance_fix35.h"
 #include "cover_orientation_fix28.h"
 #include <cstring>
 #include <cstdlib>
@@ -38,6 +39,9 @@ bool RsxStage1::init() {
     }
     context_ = ctx;
 #endif
+#ifdef PS3_GAME_ORBIT_FIX35
+    init_image_decoders_fix35();
+#endif
     initialized_ = true;
     return true;
 }
@@ -67,21 +71,31 @@ bool RsxStage1::prepare_cover(const CoverImage& image, GpuTextureStage1& out,uns
 #endif
 
     DecodedImageRGBA decoded;
-#if defined(__PSL1GHT__) && defined(PS3_SP_LOADER_FIX28)
-    RuntimeDiag::log("UPLOAD 00: decode begin; path=%s encoded=%u",image.path.c_str(),unsigned(image.encoded.size()));
+#ifdef PS3_GAME_ORBIT_FIX35
+    DecodedImageARGB argb;
+    const bool direct_argb=read_cover_orientation_fix28(image)==1 && manual_orientation==1 && image.width<=1024 && image.height<=1024;
+    if(direct_argb){if(!decode_cover_argb_fix35(image,argb,last_error_))return false;}
+    else
 #endif
     if (!decode_cover_rgba(image, decoded, last_error_)) return false;
+#ifdef PS3_GAME_ORBIT_FIX35
+    OrbitPerformanceFix35::Scope timer(OrbitPerformanceFix35::Kind::Upload);
+    if(!direct_argb){
+#endif
     if(!orient_cover_rgba_fix28(decoded,read_cover_orientation_fix28(image),last_error_) ||
        !orient_cover_rgba_fix28(decoded,manual_orientation,last_error_)) return false;
 #ifdef PS3_GAME_ORBIT_FIX31
     if(!CoverLimitsFix31::fit_texture(decoded)) {last_error_="Could not bound cover texture";return false;}
 #endif
-#if defined(__PSL1GHT__) && defined(PS3_SP_LOADER_FIX28)
-    RuntimeDiag::log("UPLOAD 01: decode returned; dimensions=%dx%d pitch=%d bytes=%u",decoded.width,decoded.height,decoded.pitch,unsigned(decoded.rgba.size()));
+#ifdef PS3_GAME_ORBIT_FIX35
+    }
+    const int width=direct_argb ? argb.width : decoded.width;
+    const int height=direct_argb ? argb.height : decoded.height;
+#else
+    const int width=decoded.width,height=decoded.height;
 #endif
-
-    const std::size_t pitch = align_up(static_cast<std::size_t>(decoded.width) * 4u, 64u);
-    const std::size_t bytes = pitch * static_cast<std::size_t>(decoded.height);
+    const std::size_t pitch = align_up(static_cast<std::size_t>(width) * 4u, 64u);
+    const std::size_t bytes = pitch * static_cast<std::size_t>(height);
     void* mem = nullptr;
 #ifdef __PSL1GHT__
     mem = rsxMemalign(128, static_cast<u32>(bytes));
@@ -94,10 +108,13 @@ bool RsxStage1::prepare_cover(const CoverImage& image, GpuTextureStage1& out,uns
     // GCM_TEXTURE_FORMAT_A8R8G8B8 is fed in ARGB byte order on the big-endian PPU.
     // Convert canonical RGBA to ARGB during upload so the decoder stays renderer-agnostic.
     auto* dst = static_cast<std::uint8_t*>(mem);
-    for (int y=0; y<decoded.height; ++y) {
+    for (int y=0; y<height; ++y) {
+#ifdef PS3_GAME_ORBIT_FIX35
+        if(direct_argb){std::memcpy(dst+std::size_t(y)*pitch,argb.argb.data()+std::size_t(y)*argb.pitch,std::size_t(width)*4);continue;}
+#endif
         const auto* s = decoded.rgba.data() + static_cast<std::size_t>(y) * decoded.pitch;
         auto* d = dst + static_cast<std::size_t>(y) * pitch;
-        for (int x=0; x<decoded.width; ++x) {
+        for (int x=0; x<width; ++x) {
             d[x*4+0] = s[x*4+3];
             d[x*4+1] = s[x*4+0];
             d[x*4+2] = s[x*4+1];
@@ -106,8 +123,8 @@ bool RsxStage1::prepare_cover(const CoverImage& image, GpuTextureStage1& out,uns
     }
 
     out.gpu_ptr = mem;
-    out.width = decoded.width;
-    out.height = decoded.height;
+    out.width = width;
+    out.height = height;
     out.pitch = static_cast<int>(pitch);
 #ifdef __PSL1GHT__
     if (rsxAddressToOffset(mem, &out.gpu_offset) != 0) {
@@ -118,7 +135,7 @@ bool RsxStage1::prepare_cover(const CoverImage& image, GpuTextureStage1& out,uns
     const auto* samples=static_cast<volatile u32*>(mem);
     RuntimeDiag::log("UPLOAD 02: ARGB upload ordered; offset=0x%08x pitch=%u bytes=%u first=0x%08x center=0x%08x",
                      out.gpu_offset,unsigned(pitch),unsigned(bytes),samples[0],
-                     samples[std::size_t(decoded.height/2)*(pitch/sizeof(u32))+decoded.width/2]);
+                     samples[std::size_t(height/2)*(pitch/sizeof(u32))+width/2]);
 #endif
 #endif
     out.uploaded = true;
@@ -168,6 +185,30 @@ bool RsxStage1::prepare_overlay(const DecodedImageRGBA& image,GpuTextureStage1& 
     return true;
 }
 
+#ifdef PS3_GAME_ORBIT_FIX32
+bool RsxStage1::update_overlay(const DecodedImageRGBA& image,GpuTextureStage1& out) {
+    if(!out.uploaded || !out.gpu_ptr || out.width!=image.width || out.height!=image.height) {
+        GpuTextureStage1 fresh;
+        if(!prepare_overlay(image,fresh)) return false;
+        release_cover(out);out=fresh;return true;
+    }
+    if(!initialized_ || !image.valid()) {last_error_="Invalid HUD update";return false;}
+    auto* dst=static_cast<std::uint8_t*>(out.gpu_ptr);
+    for(int y=0;y<image.height;++y) {
+        const auto* src=image.rgba.data()+std::size_t(y)*image.pitch;
+        auto* row=dst+std::size_t(y)*out.pitch;
+        for(int x=0;x<image.width;++x) {
+            row[x*4]=src[x*4+3];row[x*4+1]=src[x*4];
+            row[x*4+2]=src[x*4+1];row[x*4+3]=src[x*4+2];
+        }
+    }
+#ifdef __PSL1GHT__
+    __asm__ volatile("sync" ::: "memory");
+#endif
+    return true;
+}
+#endif
+
 void RsxStage1::release_cover(GpuTextureStage1& tex) {
     if (tex.gpu_ptr) {
 #ifdef __PSL1GHT__
@@ -178,3 +219,21 @@ void RsxStage1::release_cover(GpuTextureStage1& tex) {
     }
     tex = {};
 }
+
+#ifdef PS3_GAME_ORBIT_FIX35
+bool RsxStage1::update_overlay_regions(const DecodedImageRGBA& image,GpuTextureStage1& out,const std::vector<HudRectFix35>& regions){
+    if(!out.uploaded || !out.gpu_ptr || out.width!=image.width || out.height!=image.height)return update_overlay(image,out);
+    if(!initialized_ || !image.valid()){last_error_="Invalid HUD update";return false;}
+    for(const auto& r:regions)if(r.x<0 || r.y<0 || r.width<=0 || r.height<=0 || r.x+r.width>image.width || r.y+r.height>image.height){last_error_="Invalid HUD dirty rectangle";return false;}
+    auto* dst=static_cast<std::uint8_t*>(out.gpu_ptr);
+    for(const auto& r:regions)for(int y=r.y;y<r.y+r.height;++y){
+        const auto* src=image.rgba.data()+std::size_t(y)*image.pitch;
+        auto* row=dst+std::size_t(y)*out.pitch;
+        for(int x=r.x;x<r.x+r.width;++x){row[x*4]=src[x*4+3];row[x*4+1]=src[x*4];row[x*4+2]=src[x*4+1];row[x*4+3]=src[x*4+2];}
+    }
+#ifdef __PSL1GHT__
+    __asm__ volatile("sync" ::: "memory");
+#endif
+    return true;
+}
+#endif

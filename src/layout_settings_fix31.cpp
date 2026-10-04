@@ -11,11 +11,17 @@ bool LayoutSettingsFix31::load(const std::string& path) {
     const std::string data(bytes,count);
     if(data=="PS3_GAME_ORBIT_LAYOUT_V1\nclassic\n") layout_=OrbitLayout::Classic;
     else if(data=="PS3_GAME_ORBIT_LAYOUT_V1\nspine\n") layout_=OrbitLayout::Spine;
+#ifdef PS3_GAME_ORBIT_FIX32
+    else if(data=="PS3_GAME_ORBIT_LAYOUT_V1\nlist\n") layout_=OrbitLayout::List;
+#endif
     else return false;
     return true;
 }
 bool LayoutSettingsFix31::save(const std::string& path) const {
     const char* value=layout_==OrbitLayout::Spine ? "PS3_GAME_ORBIT_LAYOUT_V1\nspine\n" : "PS3_GAME_ORBIT_LAYOUT_V1\nclassic\n";
+#ifdef PS3_GAME_ORBIT_FIX32
+    if(layout_==OrbitLayout::List) value="PS3_GAME_ORBIT_LAYOUT_V1\nlist\n";
+#endif
     const auto temp=path+".tmp";
     auto* f=std::fopen(temp.c_str(),"wb");if(!f) return false;
     bool ok=std::fwrite(value,1,std::strlen(value),f)==std::strlen(value);

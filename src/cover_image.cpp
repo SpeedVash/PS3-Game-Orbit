@@ -1,6 +1,7 @@
 #include "cover_image.h"
 #include <cstdio>
 #include <cmath>
+#include "performance_fix35.h"
 
 static std::uint32_t be32(const std::uint8_t* p) {
     return ((std::uint32_t)p[0] << 24) | ((std::uint32_t)p[1] << 16) |
@@ -57,6 +58,9 @@ CoverImage load_cover_file(const std::string& path, GameCoverKind kind) {
     img.kind = kind;
     if (path.empty()) return img;
 
+#ifdef PS3_GAME_ORBIT_FIX35
+    OrbitPerformanceFix35::Scope timer(OrbitPerformanceFix35::Kind::Read);
+#endif
     FILE* f = std::fopen(path.c_str(), "rb");
     if (!f) return img;
     std::fseek(f, 0, SEEK_END);

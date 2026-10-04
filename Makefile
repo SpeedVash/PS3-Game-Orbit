@@ -4,14 +4,14 @@ ifeq ($(strip $(PSL1GHT)),)
 $(error "Please set PSL1GHT. Example: export PSL1GHT=$$PS3DEV")
 endif
 
-# Isolated diagnostic entry; the regular loader and FIX19 remain available.
-TARGET := ps3_game_orbit_fix31
+# Version 1.3.2 uses the renderer and presentation sequence approved in 1.2.
+TARGET := ps3_game_orbit_fix35
 TITLE := PS3 Game Orbit
 APPID := PGORBT301
 CONTENTID := UP0001-$(APPID)_00-0000000000000000
 ICON0 := pkgfiles/ICON0.PNG
 PKGFILES := pkgfiles
-SFOXML := assets/PARAM_1_1.xml
+SFOXML := assets/PARAM_1_3_2.xml
 
 include $(PSL1GHT)/ppu_rules
 
@@ -30,7 +30,7 @@ SELF_TARGET := $(TARGET).self
 PKG_TARGET := $(TARGET).pkg
 
 CXXFLAGS += -std=gnu++17 -O2 -Wall -Wextra -Werror -MMD -MP -mcpu=cell -D__CELLOS_LV2__ -D__PSL1GHT__ -DPS3_SP_LOADER_FIX28=1 -DPS3_SP_LOADER_FIX29=1 -DPS3_GAME_ORBIT_FIX30=1 \
-            -DPS3_GAME_ORBIT_FIX31=1 $(LIBPSL1GHT_INC) -I$(INCLUDES)
+            -DPS3_GAME_ORBIT_FIX31=1 -DPS3_GAME_ORBIT_FIX32=1 -DPS3_GAME_ORBIT_FIX33=1 -DPS3_GAME_ORBIT_FIX34=1 -DPS3_GAME_ORBIT_FIX35=1 $(LIBPSL1GHT_INC) -I$(INCLUDES)
 LDFLAGS += $(MACHDEP) -Wl,-Map,$(TARGET).map
 LIBPATHS += $(LIBPSL1GHT_LIB)
 LIBS += -lrsx -lgcm_sys -lrt -lnet -lio -lsysutil -lsysmodule -lm -ljpgdec -lpngdec -llv2

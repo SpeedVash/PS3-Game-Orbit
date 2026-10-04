@@ -43,3 +43,9 @@ void CoverCache::evict_if_needed() {
         encoded_bytes_-=victim->second.image.encoded.size();entries_.erase(victim);
     }
 }
+
+#ifdef PS3_GAME_ORBIT_FIX35
+void CoverCache::invalidate(const std::string& path){
+    for(auto it=entries_.begin();it!=entries_.end();){if(it->second.image.path==path){encoded_bytes_-=it->second.image.encoded.size();it=entries_.erase(it);}else ++it;}
+}
+#endif

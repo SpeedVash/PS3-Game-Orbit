@@ -58,3 +58,29 @@ CoverResult CoverResolver::resolve(const GameEntry& game) const {
 
     return {};
 }
+
+#ifdef PS3_GAME_ORBIT_FIX33
+void CoverResolver::resolve_inspection_art(GameEntry& game) const {
+    const auto find=[&](const std::string& suffix) {
+        const auto try_base=[&](const std::string& base) {
+            for(const char* ext:{".png",".jpg",".jpeg",".PNG",".JPG",".JPEG"}) {
+                const auto path=base+ext;if(file_exists(path)) return path;
+            }
+            return std::string{};
+        };
+        if(!game.title_id.empty()) {
+            auto p=try_base(global_dir_+"/"+game.title_id+suffix);if(!p.empty()) return p;
+        }
+        const auto stem=iso_stem(game.path);
+        if(!stem.empty()) {
+            auto p=try_base(global_dir_+"/"+stem+suffix);if(!p.empty()) return p;
+            const auto slash=game.path.find_last_of('/');
+            const auto directory=game.format==GameFormat::Folder ? game.path :
+                slash==std::string::npos ? "" : game.path.substr(0,slash);
+            p=try_base((directory.empty() ? "" : directory+"/")+stem+suffix);if(!p.empty()) return p;
+        }
+        return std::string{};
+    };
+    game.inside_cover_path=find("_INSIDE");game.disc_art_path=find("_DISC");
+}
+#endif

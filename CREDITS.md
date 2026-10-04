@@ -1,5 +1,7 @@
 # Créditos e componentes
 
+Criador do homebrew **PS3 Game Orbit: SpeedVash**.
+
 ## Modelo 3D
 
 **JFX_DVDBlu**, de **JooseFX Digital / jayokay951**, publicado no TurboSquid:
@@ -40,3 +42,7 @@ PS3, PlayStation, XMB e Blu-ray são nomes e marcas de seus respectivos titulare
 ## Licença do código do projeto
 
 Nenhuma licença geral de reutilização do código foi definida nesta preparação. Publicar os fontes no GitHub não altera as licenças dos componentes acima. Uma licença escolhida pelo mantenedor poderá ser acrescentada em uma atualização.
+
+## Disco 3D da 1.2
+
+Geometria original criada para PS3 Game Orbit, aprovada pelo usuário; variante leve de 48 segmentos/1.056 triângulos. O JSON das malhas e a representação nativa acompanham os fontes. Texturas de demonstração próprias; nenhuma arte de disco de jogos foi baixada. A licença geral do projeto continua pendente de escolha do mantenedor.

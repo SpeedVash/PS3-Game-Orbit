@@ -1,4 +1,5 @@
 #include "rsx_renderer_v10.h"
+#include "performance_fix35.h"
 #include <algorithm>
 #include <cmath>
 #include <cstring>
@@ -13,6 +14,9 @@
 #include "project_identity.h"
 #endif
 #include "jfx_case_fix29.h"
+#ifdef PS3_GAME_ORBIT_FIX32
+#include "case_animation_fix32.h"
+#endif
 
 #ifdef __PSL1GHT__
 #include <cstddef>
@@ -47,21 +51,36 @@ V10FramePlan build_v10_frame_plan(const std::vector<CasePose>& poses,
         model=mat4_mul(model,mat4_rotate_x_deg(pose.pitch_deg));
         model=mat4_mul(model,mat4_rotate_y_deg(pose.yaw_deg));
         model=mat4_mul(model,mat4_scale(pose.scale));
+#ifndef PS3_GAME_ORBIT_FIX32
         const Mat4 mvp=mat4_mul(vp,model);
+#endif
         for(std::size_t part_i=0;part_i<mesh.parts.size();++part_i){
             const auto& part=mesh.parts[part_i];
+#ifdef PS3_GAME_ORBIT_FIX32
+            const bool opened=pose.selected && pose.inspection_phase>.20f;
+            if((part.joint==V14MeshPart::Joint::Closed)==opened) continue;
+            const auto joint=opened ? CaseAnimationFix32::joint_transform(part.joint,pose.inspection_phase) : mat4_identity();
+            const auto part_model=mat4_mul(model,joint);
+#endif
             V10DrawPacket p{};
             p.game_index=pose.game_index;
             p.relative_slot=pose.relative_slot;
             p.surface=part.surface;
-            p.model=model;
-            p.mvp=mvp;
+#ifdef PS3_GAME_ORBIT_FIX32
+            p.model=part_model;p.mvp=mat4_mul(vp,part_model);
+#else
+            p.model=model;p.mvp=mvp;
+#endif
             p.alpha=pose.alpha;
             p.visibility=pose.visibility;
             p.mesh_textured=part.textured;
             p.selected=pose.selected;
             p.mesh_part=part_i;
-            if(mesh.jfx && part.material==V14MeshPart::Material::ClearPlastic){
+            if(mesh.jfx && (part.material==V14MeshPart::Material::ClearPlastic
+#ifdef PS3_GAME_ORBIT_FIX32
+                || part.material==V14MeshPart::Material::DiscGlass
+#endif
+            )){
                 p.plastic_pass=1;out.packets.push_back(p);p.plastic_pass=2;
             }
             out.packets.push_back(p);
@@ -211,6 +230,9 @@ bool RsxRendererV10::init(RsxStage1& stage1,const V14CaseMesh& mesh,bool present
 #else
     (void)mesh;
 #endif
+#ifdef PS3_GAME_ORBIT_FIX32
+    if(!prepare_disc_textures()) return false;
+#endif
     ready_=true;
     boot_visual_stage_=BootVisualStage::Ready;
 #ifdef __PSL1GHT__
@@ -222,6 +244,10 @@ bool RsxRendererV10::init(RsxStage1& stage1,const V14CaseMesh& mesh,bool present
 }
 
 void RsxRendererV10::release_cover_record(GpuCoverRecord& rec){
+#ifdef PS3_GAME_ORBIT_FIX32
+    const auto bytes=std::size_t(rec.texture.pitch)*std::size_t(rec.texture.height);
+    gpu_cache_bytes_-=std::min(gpu_cache_bytes_,bytes);
+#endif
     if(stage1_ && rec.texture.gpu_ptr) stage1_->release_cover(rec.texture);
     rec={};
 }
@@ -229,12 +255,27 @@ void RsxRendererV10::release_cover_record(GpuCoverRecord& rec){
 void RsxRendererV10::clear_cover_textures(){
     for(auto& kv:covers_) release_cover_record(kv.second);
     covers_.clear();
+#ifdef PS3_GAME_ORBIT_FIX32
+    failed_gpu_covers_.clear();gpu_cache_bytes_=0;gpu_cache_clock_=0;
+#ifdef PS3_GAME_ORBIT_FIX34
+    clear_inspection_cache(inside_cache_);clear_inspection_cache(disc_cache_);
+#elif defined(PS3_GAME_ORBIT_FIX33)
+    release_inspection_art(inside_art_);release_inspection_art(disc_art_);
+#endif
+#endif
 }
 void RsxRendererV10::shutdown(){
     clear_cover_textures();
     if(stage1_) stage1_->release_cover(hud_texture_);
     if(stage1_) stage1_->release_cover(background_texture_);
     hud_lines_={};
+#ifdef PS3_GAME_ORBIT_FIX35
+    hud_cache_.clear();hud_menu_={};
+#endif
+#ifdef PS3_GAME_ORBIT_FIX32
+    if(stage1_){stage1_->release_cover(disc_label_texture_);stage1_->release_cover(disc_back_texture_);}
+    hud_rows_.clear();hud_active_row_=-1;
+#endif
 #ifdef __PSL1GHT__
     if(hud_mesh_.vertices) rsxFree(hud_mesh_.vertices);
     if(hud_mesh_.indices) rsxFree(hud_mesh_.indices);
@@ -271,6 +312,15 @@ bool RsxRendererV10::sync_visible_covers(const CoverflowState& state,CoverCache&
     const auto poses=build_coverflow_render_plan(state,radius);
 #endif
     std::unordered_set<int> wanted;
+#ifdef PS3_GAME_ORBIT_FIX32
+    for(const auto& pose:poses) wanted.insert(pose.game_index);
+#ifdef PS3_GAME_ORBIT_FIX33
+    trim_cover_cache(wanted);
+#endif
+    for(const auto& pose:poses) if(pose.game_index>=0 && pose.game_index<int(state.games.size()))
+        load_gpu_cover(pose.game_index,state.games[std::size_t(pose.game_index)],cache,wanted);
+    return true;
+#else
     for(const auto& pose:poses){
         const int gi=pose.game_index;
         if(gi<0 || gi>=(int)state.games.size()) continue;
@@ -316,6 +366,7 @@ bool RsxRendererV10::sync_visible_covers(const CoverflowState& state,CoverCache&
         }else ++it;
     }
     return true;
+#endif
 }
 
 void RsxRendererV10::show_runtime_failure(){
@@ -353,9 +404,32 @@ bool RsxRendererV10::render(const CoverflowState& state,const V14CaseMesh& mesh,
 #endif
 }
 
-bool RsxRendererV10::set_library_hud(const LibraryHudLinesFix28& lines){
+bool RsxRendererV10::set_library_hud(const LibraryHudLinesFix28& lines
+#ifdef PS3_GAME_ORBIT_FIX32
+    ,const CoverflowState* state
+#endif
+){
     if(!ready_ || !stage1_){last_error_="Renderer not ready for HUD";return false;}
+#ifdef PS3_GAME_ORBIT_FIX32
+    std::vector<std::string> rows;int active=-1;
+    if(state && state->layout==OrbitLayout::List && !state->inspection_target && state->inspection_phase==0) {
+        const int n=int(state->visible.size());const int begin=std::max(0,std::min(state->selected-4,n-9));
+        for(int vi=begin;vi<std::min(n,begin+9);++vi) {
+            const auto& g=state->games[std::size_t(state->visible[std::size_t(vi)])];
+            rows.push_back(std::to_string(vi+1)+"   "+g.title+(g.favorite ? "  *" : ""));
+        }
+        if(n) active=state->selected-begin;
+    }
+#ifdef PS3_GAME_ORBIT_FIX35
+    const auto menu=state ? state->menu : GameMenuStateFix35{};
+    if(hud_texture_.uploaded && hud_lines_==lines && hud_rows_==rows && hud_active_row_==active && hud_menu_==menu)return true;
+    OrbitPerformanceFix35::Scope timer(OrbitPerformanceFix35::Kind::Interface);
+#else
+    if(hud_texture_.uploaded && hud_lines_==lines && hud_rows_==rows && hud_active_row_==active) return true;
+#endif
+#else
     if(hud_texture_.uploaded && hud_lines_==lines) return true;
+#endif
 #ifdef __PSL1GHT__
     if(!hud_mesh_.vertices){
         const auto vertices=library_hud_vertices_fix28();
@@ -374,11 +448,26 @@ bool RsxRendererV10::set_library_hud(const LibraryHudLinesFix28& lines){
         __asm__ volatile("sync" ::: "memory");
     }
 #endif
+#ifdef PS3_GAME_ORBIT_FIX32
+#ifdef PS3_GAME_ORBIT_FIX35
+    const auto regions=hud_cache_.update(lines,rows,active,menu);
+    if(!stage1_->update_overlay_regions(hud_cache_.image(),hud_texture_,regions)) {
+#else
+    if(!stage1_->update_overlay(OrbitUiFix30::hud(lines,rows,active),hud_texture_)) {
+#endif
+        last_error_=stage1_->last_error();return false;
+    }
+    hud_lines_=lines;hud_rows_=std::move(rows);hud_active_row_=active;
+#ifdef PS3_GAME_ORBIT_FIX35
+    hud_menu_=menu;
+#endif
+#else
     GpuTextureStage1 fresh;
     if(!stage1_->prepare_overlay(rasterize_library_hud_fix28(lines),fresh)){
         last_error_=stage1_->last_error();return false;
     }
     stage1_->release_cover(hud_texture_);hud_texture_=fresh;hud_lines_=lines;
+#endif
     return true;
 }
 
@@ -1169,26 +1258,37 @@ bool RsxRendererV10::draw_frame_ps3(const V10FramePlan& plan,const V14CaseMesh& 
     if(!ctx){ last_error_="Missing GCM context"; return false; }
     if(gpu_mesh_.size()!=mesh.parts.size()){ last_error_="GPU V14 mesh is not uploaded"; return false; }
 #ifdef PS3_SP_LOADER_FIX28
+#ifdef PS3_GAME_ORBIT_FIX32
+    if(!validate_native_plan_fix32(plan,mesh) ||
+#else
     if(plan.packets.empty() || plan.packets.size()%6 || plan.packets.size()>LibraryPairFix28::MaxCases*6 ||
-       gpu_mesh_.size()!=(mesh.jfx ? 5u : 6u) || !color_buffer_[current_buffer_] || !depth_buffer_){
+       gpu_mesh_.size()!=(mesh.jfx ? 5u : 6u) ||
+#endif
+       !color_buffer_[current_buffer_] || !depth_buffer_){
         last_error_="Library requires complete case ranges within its limit and valid buffers"; return false;
     }
     for(std::size_t i=0;i<plan.packets.size();++i){
         const auto part_i=native_packet_part(plan.packets[i],i,mesh);
         if(part_i>=gpu_mesh_.size()) {last_error_="Native mesh range out of bounds";return false;}
+#ifndef PS3_GAME_ORBIT_FIX32
         if(mesh.jfx){
             const auto slot=i%6;
             if(part_i!=(slot<2 ? 0 : slot-1) || plan.packets[i].plastic_pass!=(slot<2 ? slot+1 : 0)){
                 last_error_="JFX requires the original five ranges and both plastic passes";return false;
             }
         }
+#endif
         const auto& gpu=gpu_mesh_[part_i];
         if(plan.packets[i].surface!=gpu.surface || !gpu.vertices ||
            !gpu.indices || !gpu.index_count){
             last_error_="FIX28 draw packet does not match the frozen GPU mesh"; return false;
         }
     }
+#ifdef PS3_GAME_ORBIT_FIX32
+    const bool verbose=diagnostic_frame_number_<2;
+#else
     const bool verbose=diagnostic_frame_number_<3 || diagnostic_frame_number_%60==0;
+#endif
     const auto command_start=reinterpret_cast<std::uintptr_t>(static_cast<void*>(ctx->current));
     const auto command_begin=reinterpret_cast<std::uintptr_t>(static_cast<void*>(ctx->begin));
     const auto command_end=reinterpret_cast<std::uintptr_t>(static_cast<void*>(ctx->end));
@@ -1295,8 +1395,22 @@ bool RsxRendererV10::draw_frame_ps3(const V10FramePlan& plan,const V14CaseMesh& 
             last_error_="FIX28 draw packet does not match the frozen GPU mesh"; return false;
         }
 #endif
+#ifdef PS3_GAME_ORBIT_FIX33
+        const GpuTextureStage1* tex=texture_for_art_role(part.texture_role,packet.game_index);
+#else
         const GpuTextureStage1* tex=texture_for_game(packet.game_index);
-        const bool use_tex=packet.mesh_textured && surface_uses_texture(packet.surface,tex);
+#ifdef PS3_GAME_ORBIT_FIX32
+        if(part.texture_role==V14MeshPart::TextureRole::DiscLabel) tex=&disc_label_texture_;
+        else if(part.texture_role==V14MeshPart::TextureRole::DiscBack) tex=&disc_back_texture_;
+#endif
+#endif
+        const bool use_tex=packet.mesh_textured &&
+#ifdef PS3_GAME_ORBIT_FIX33
+            (part.texture_role!=V14MeshPart::TextureRole::Cover ? tex && tex->uploaded :
+                surface_uses_texture(packet.surface,tex));
+#else
+            surface_uses_texture(packet.surface,tex);
+#endif
 #ifdef PS3_SP_LOADER_FIX28
         if(verbose) RuntimeDiag::log("FRAME %s packet.%u: surface=%u vertices=%u indices=%u use_texture=%u",
                          tag,unsigned(packet_i),unsigned(packet.surface),unsigned(gp.vertex_count),
@@ -1307,12 +1421,20 @@ bool RsxRendererV10::draw_frame_ps3(const V10FramePlan& plan,const V14CaseMesh& 
         const auto model_rows=mat4_shader_rows(packet.model);
         rsxSetVertexProgramParameter(ctx,vp,(const rsxProgramConst*)vp_mvp_,mvp_rows.data());
         rsxSetVertexProgramParameter(ctx,vp,(const rsxProgramConst*)vp_model_,model_rows.data());
-        const V10UvTransform uvx=compute_native_uv_transform(mesh,packet.surface,tex && tex->full_cover);
+        const V10UvTransform uvx=
+#ifdef PS3_GAME_ORBIT_FIX32
+            part.texture_role!=V14MeshPart::TextureRole::Cover ? V10UvTransform{} :
+#endif
+            compute_native_uv_transform(mesh,packet.surface,tex && tex->full_cover);
         const float uv_transform[4]={uvx.scale_u,uvx.scale_v,uvx.bias_u,uvx.bias_v};
         rsxSetVertexProgramParameter(ctx,vp,(const rsxProgramConst*)vp_uv_transform_,uv_transform);
         // Covers are opaque; the shell keeps its approved alpha and does not
         // overwrite depth. Hidden reverse faces are culled using repaired indices.
-        const bool shell=mesh.jfx ? part.material==V14MeshPart::Material::ClearPlastic : !packet.mesh_textured;
+        const bool shell=mesh.jfx ? (part.material==V14MeshPart::Material::ClearPlastic
+#ifdef PS3_GAME_ORBIT_FIX32
+            || part.material==V14MeshPart::Material::DiscGlass
+#endif
+        ) : !packet.mesh_textured;
 #ifdef PS3_GAME_ORBIT_FIX31
         const bool translucent=shell || packet.visibility<.99999f;
 #else
@@ -1329,7 +1451,12 @@ bool RsxRendererV10::draw_frame_ps3(const V10FramePlan& plan,const V14CaseMesh& 
             packet.alpha,
 #endif
             0,0,0};
-        rsxSetFragmentProgramParameter(ctx,fp,(const rsxProgramConst*)fp_base_color_,mesh.jfx ? part.color.data() : shell_color,fragment_offset_,GCM_LOCATION_RSX);
+        const float* base_color=mesh.jfx ? part.color.data() : shell_color;
+#ifdef PS3_GAME_ORBIT_FIX33
+        const float artwork_color[4]={1,1,1,1};
+        if(use_tex && part.texture_role==V14MeshPart::TextureRole::Inside) base_color=artwork_color;
+#endif
+        rsxSetFragmentProgramParameter(ctx,fp,(const rsxProgramConst*)fp_base_color_,base_color,fragment_offset_,GCM_LOCATION_RSX);
         rsxSetFragmentProgramParameter(ctx,fp,(const rsxProgramConst*)fp_use_texture_,use_texture,fragment_offset_,GCM_LOCATION_RSX);
         rsxSetFragmentProgramParameter(ctx,fp,(const rsxProgramConst*)fp_alpha_,alpha,fragment_offset_,GCM_LOCATION_RSX);
         // Refresh FP_ADDRESS after its embedded constants have been transferred,

@@ -25,6 +25,9 @@ void approach_angle(float& v,float target,float amount) {
 }
 }
 const char* layout_name(OrbitLayout layout) {
+#ifdef PS3_GAME_ORBIT_FIX32
+    if(layout==OrbitLayout::List) return "Lista";
+#endif
     return layout==OrbitLayout::Spine ? "Spine" : "Clássico";
 }
 std::vector<CasePose> targets(const CoverflowState& state,int radius) {
@@ -41,6 +44,14 @@ std::vector<CasePose> targets(const CoverflowState& state,int radius) {
         if(slot==0) {
             p.z=55;p.scale=state.case_scale;
             p.yaw_deg=state.center_yaw_deg;p.pitch_deg=state.center_pitch_deg;
+#ifdef PS3_GAME_ORBIT_FIX32
+            if(state.layout==OrbitLayout::List) p.x=80;
+            p.inspection_phase=state.inspection_phase;
+            const float u=std::clamp(state.inspection_phase/.20f,0.0f,1.0f);
+            const float ease=u*u*(3-2*u);
+            p.x+=(35-p.x)*ease;p.z+=(72-p.z)*ease;
+            p.scale+=(MinimumScale-p.scale)*ease;
+#endif
         } else if(state.layout==OrbitLayout::Classic) {
             p.x=150;p.z=-70;p.yaw_deg=-36;p.pitch_deg=-3;p.alpha=.76f;
         } else {
@@ -55,6 +66,9 @@ std::vector<CasePose> targets(const CoverflowState& state,int radius) {
     };
     add(0);
     if(radius<=0) return out;
+#ifdef PS3_GAME_ORBIT_FIX32
+    if(state.layout==OrbitLayout::List || state.inspection_target || state.inspection_phase>0) return out;
+#endif
     if(state.layout==OrbitLayout::Classic) add(1);
     else for(int distance=1;distance<=SpineRadius;++distance) {
         // Deduplicate short libraries; never repeat one game around the row.
@@ -108,7 +122,7 @@ void advance(CoverflowState& state,float dt) {
         approach(p.x,target.x,amount);approach(p.y,target.y,amount);approach(p.z,target.z,amount);
         approach_angle(p.yaw_deg,target.yaw_deg,amount);approach_angle(p.pitch_deg,target.pitch_deg,amount);
         approach(p.scale,target.scale,amount,.00001f);approach(p.alpha,target.alpha,amount);
-        p.relative_slot=target.relative_slot;p.selected=target.selected;
+        p.relative_slot=target.relative_slot;p.selected=target.selected;p.inspection_phase=target.inspection_phase;
     }
     state.flow.erase(std::remove_if(state.flow.begin(),state.flow.end(),[&](const CasePose& p) {
         if(p.visibility>0) return false;
