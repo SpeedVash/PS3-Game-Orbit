@@ -12,6 +12,14 @@ https://www.turbosquid.com/licensing
 
 O PKG incorpora a geometria compilada ao aplicativo interativo. Os arquivos editáveis OBJ/PSD e a representação da malha em código-fonte não acompanham o repositório nem o ZIP público. Quem compila obtém sua cópia diretamente da página original e usa `scripts/prepare-jfx.py`. O modelo mantém os termos do autor; não recebe uma licença de código aberto por integrar este projeto.
 
+## Referência do layout Spine
+
+**“Spine by Phoenix”**, incluído no Aurora 0.7b.2, equipe Phoenix:
+
+https://phoenix.xboxunity.net/
+
+O modo Normal serviu de referência para a fila de lombadas, ângulos e afastamento da capa selecionada. O projeto contém uma implementação própria adaptada ao PS3; não distribui o Aurora, seu código, o arquivo `.cfljson` ou seus ativos.
+
 ## Fontes
 
 - **Noto Sans**, Google Fonts / autores Noto. Licença SIL Open Font License 1.1 em `assets/fonts/OFL.txt`, também incluída no PKG. Origem: https://github.com/google/fonts/tree/main/ofl/notosans

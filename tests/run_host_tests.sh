@@ -13,7 +13,7 @@ g++ -std=c++17 -O2 -Wall -Wextra -I"$ROOT/include" \
 g++ -std=c++17 -O2 -Wall -Wextra -I"$ROOT/include" \
   "$ROOT/tests/test_v04.cpp" "$ROOT/src/cover_image.cpp" "$ROOT/src/image_decode.cpp" \
   "$ROOT/src/rsx_stage1.cpp" "$ROOT/src/cover_orientation_fix28.cpp" "$ROOT/src/v14_case_mesh.cpp" \
-  -lpng -ljpeg -o "$ROOT/build-host/test_v04"
+  -lpng -ljpeg -lz -o "$ROOT/build-host/test_v04"
 "$ROOT/build-host/test_v04" "$ROOT"
 
 g++ -std=c++17 -O2 -Wall -Wextra -I"$ROOT/include" \
@@ -21,7 +21,7 @@ g++ -std=c++17 -O2 -Wall -Wextra -I"$ROOT/include" \
   "$ROOT/src/v14_case_mesh.cpp" "$ROOT/src/math3d.cpp" "$ROOT/src/rsx_renderer_v10.cpp" "$ROOT/src/jfx_case_fix29.cpp" "$ROOT/src/library_pair_fix28.cpp" "$ROOT/src/library_hud_fix28.cpp" \
   "$ROOT/src/rsx_stage1.cpp" "$ROOT/src/cover_orientation_fix28.cpp" "$ROOT/src/image_decode.cpp" "$ROOT/src/cover_image.cpp" \
   "$ROOT/src/cover_cache.cpp" "$ROOT/src/boot_visual.cpp" "$ROOT/src/runtime_diag.cpp" \
-  -lpng -ljpeg -o "$ROOT/build-host/test_v13"
+  -lpng -ljpeg -lz -o "$ROOT/build-host/test_v13"
 "$ROOT/build-host/test_v13"
 
 g++ -std=c++17 -O2 -Wall -Wextra -I"$ROOT/include" \
@@ -40,7 +40,7 @@ g++ -std=c++17 -O2 -Wall -Wextra -Werror -DPS3_SP_LOADER_FIX28=1 -I"$ROOT/includ
   "$ROOT/src/v14_case_mesh.cpp" "$ROOT/src/full_cover_case_fix26.cpp" "$ROOT/src/math3d.cpp" "$ROOT/src/rsx_renderer_v10.cpp" "$ROOT/src/jfx_case_fix29.cpp" "$ROOT/src/library_pair_fix28.cpp" "$ROOT/src/library_hud_fix28.cpp" \
   "$ROOT/src/rsx_stage1.cpp" "$ROOT/src/cover_orientation_fix28.cpp" "$ROOT/src/image_decode.cpp" "$ROOT/src/cover_image.cpp" \
   "$ROOT/src/cover_cache.cpp" "$ROOT/src/boot_visual.cpp" "$ROOT/src/runtime_diag.cpp" \
-  -lpng -ljpeg -o "$ROOT/build-host/test_fix28_case"
+  -lpng -ljpeg -lz -o "$ROOT/build-host/test_fix28_case"
 "$ROOT/build-host/test_fix28_case" "$ROOT"
 
 g++ -std=c++17 -O2 -Wall -Wextra -Werror -DPS3_SP_LOADER_FIX28=1 -I"$ROOT/include" \
@@ -50,7 +50,7 @@ g++ -std=c++17 -O2 -Wall -Wextra -Werror -DPS3_SP_LOADER_FIX28=1 -I"$ROOT/includ
   "$ROOT/src/v14_case_mesh.cpp" "$ROOT/src/full_cover_case_fix26.cpp" "$ROOT/src/case_render_fix25.cpp" "$ROOT/src/math3d.cpp" \
   "$ROOT/src/rsx_renderer_v10.cpp" "$ROOT/src/jfx_case_fix29.cpp" "$ROOT/src/library_pair_fix28.cpp" "$ROOT/src/rsx_stage1.cpp" "$ROOT/src/cover_orientation_fix28.cpp" "$ROOT/src/image_decode.cpp" "$ROOT/src/cover_image.cpp" \
   "$ROOT/src/cover_cache.cpp" "$ROOT/src/boot_visual.cpp" "$ROOT/src/runtime_diag.cpp" \
-  -lpng -ljpeg -o "$ROOT/build-host/test_library_fix28"
+  -lpng -ljpeg -lz -o "$ROOT/build-host/test_library_fix28"
 "$ROOT/build-host/test_library_fix28" "$ROOT"
 
 g++ -std=c++17 -O2 -Wall -Wextra -Werror -DPS3_SP_LOADER_FIX28=1 -I"$ROOT/include" \
@@ -60,7 +60,7 @@ g++ -std=c++17 -O2 -Wall -Wextra -Werror -DPS3_SP_LOADER_FIX28=1 -I"$ROOT/includ
   "$ROOT/src/v14_case_mesh.cpp" "$ROOT/src/full_cover_case_fix26.cpp" "$ROOT/src/case_render_fix25.cpp" "$ROOT/src/math3d.cpp" \
   "$ROOT/src/rsx_renderer_v10.cpp" "$ROOT/src/jfx_case_fix29.cpp" "$ROOT/src/rsx_stage1.cpp" "$ROOT/src/image_decode.cpp" "$ROOT/src/cover_image.cpp" \
   "$ROOT/src/cover_cache.cpp" "$ROOT/src/boot_visual.cpp" "$ROOT/src/runtime_diag.cpp" \
-  -lpng -ljpeg -o "$ROOT/build-host/test_pair_orientation_fix28"
+  -lpng -ljpeg -lz -o "$ROOT/build-host/test_pair_orientation_fix28"
 "$ROOT/build-host/test_pair_orientation_fix28" "$ROOT"
 
 "$ROOT/scripts/verify_v14_frozen_v13.sh"
