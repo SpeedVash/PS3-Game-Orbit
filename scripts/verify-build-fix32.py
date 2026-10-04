@@ -56,13 +56,16 @@ assert pkg[48:96].rstrip(b'\0') == b'UP0001-PGORBT301_00-0000000000000000'
 assert struct.unpack_from('>H', pkg, 4)[0] == 0x8000, 'Expected finalized retail PKG flag'
 print('PASS: PARAM.SFO PGORBT301/01.02 and finalized PKG identity/length')
 package_tree=root/'build/pkg'
-for path,size in (('ICON0.PNG',(320,176)),('PIC1.PNG',(1920,1080)),('USRDIR/ORBIT_SPLASH.png',(1280,720))):
+for path,size in (('ICON0.PNG',(320,176)),('PIC1.PNG',(1920,1080)),('USRDIR/ORBIT_SPLASH.png',(1280,720)),('USRDIR/ORBIT_DISC_LABEL.png',(512,512)),('USRDIR/ORBIT_DISC_BACK.png',(512,512))):
     data=(package_tree/path).read_bytes()
     assert data[:8]==bytes([137,80,78,71,13,10,26,10])
     assert struct.unpack_from('>II',data,16)==size,path
 assert (package_tree/'USRDIR/NOTO_SANS_OFL.txt').read_bytes()==(root/'assets/fonts/OFL.txt').read_bytes()
 assert (package_tree/'USRDIR/EBOOT.BIN').read_bytes()==(folder/'EBOOT.BIN').read_bytes()
 assert (package_tree/'ICON0.PNG').read_bytes()==(root/'pkgfiles/ICON0.PNG').read_bytes()
+for path in ('USRDIR/ORBIT_DISC_LABEL.png','USRDIR/ORBIT_DISC_BACK.png'):
+    assert (package_tree/path).read_bytes()==(root/'pkgfiles'/path).read_bytes()
+print('PASS: staged disc textures match source; 512x512 each')
 print('PASS: staged icon, wave PIC1, branded startup, font license and final EBOOT match source/delivery')
 symbols = (folder/'NATIVE_OBJECT_SYMBOLS.txt').read_text()
 for forbidden in ('gcmSetWaitFlip', 'rsxFinish', 'rsxSetWaitLabel'):
