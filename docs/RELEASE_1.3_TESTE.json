@@ -1,0 +1,17 @@
+{
+  "version": "1.3.0-rc.1",
+  "build": "FIX33",
+  "title_id": "PGORBT301",
+  "app_ver": "01.03",
+  "package": "PS3_GAME_ORBIT_v1.3_TESTE.gnpdrm.pkg",
+  "size_bytes": 2333712,
+  "sha256": "9a6c617425f4afbbde770a02fe817a72c4acd40b443d0ec14f0958e2e4d894ba",
+  "base_1_2_user_test": "approved",
+  "version_1_3_ps3_hardware_test": "pending",
+  "recent_cover_limit": 10,
+  "visible_cover_exception": "11 Spine; up to 14 during transitions",
+  "encoded_cover_limit": 10,
+  "inside_suffix": "_INSIDE",
+  "disc_suffix": "_DISC",
+  "controls_open": "X mounts via webMAN; L3/Circle close; Circle exits/cancels during mount"
+}

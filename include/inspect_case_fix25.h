@@ -7,6 +7,7 @@ public:
     // One automatic revolution at launch; X can enable continuous rotation.
     bool update(CoverflowState& state,const InputFrame& input,float dt);
     bool automatic() const { return automatic_; }
+    void stop_auto() { automatic_=false; }
     float scale() const { return scale_; }
 private:
     bool automatic_=true;

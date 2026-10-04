@@ -11,6 +11,9 @@ public:
     const CoverImage* get_or_load(const GameEntry& game);
     void warm_visible_neighborhood(const CoverflowState& state, int radius = 2);
     void clear();
+#ifdef PS3_GAME_ORBIT_FIX35
+    void invalidate(const std::string& path);
+#endif
     size_t size() const { return entries_.size(); }
     size_t encoded_bytes() const { return encoded_bytes_; }
 

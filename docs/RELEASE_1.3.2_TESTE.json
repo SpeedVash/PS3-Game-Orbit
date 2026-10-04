@@ -1,0 +1,48 @@
+{
+  "version": "1.3.2-rc.1",
+  "public_version": "1.3.2 TESTE",
+  "build": "FIX35",
+  "creator": "SpeedVash",
+  "title_id": "PGORBT301",
+  "app_ver": "01.05",
+  "package": "PS3_GAME_ORBIT_v1.3.2_TESTE.gnpdrm.pkg",
+  "version_1_3_2_ps3_hardware_test": "pending",
+  "recent_cover_limit": 15,
+  "recent_inside_limit": 15,
+  "recent_disc_limit": 15,
+  "each_texture_cache_budget_bytes": 67108864,
+  "encoded_cover_limit": 15,
+  "encoded_cover_budget_bytes": 16777216,
+  "usb_import_filenames": [
+    "ID.jpg",
+    "ID_INSIDE.jpg",
+    "ID_DISC.png"
+  ],
+  "usb_import_destination": "/dev_hdd0/PS3COVERS",
+  "usb_import_requirement": "Complete validated trio in the same root; recognized TITLE_ID required",
+  "menu_start": [
+    "rename",
+    "reload_selected_art",
+    "import_usb",
+    "rescan_library"
+  ],
+  "rename_storage": "/dev_hdd0/tmp/PS3_GAME_ORBIT_NAMES.dat",
+  "profiling_stages": [
+    "read",
+    "decode",
+    "upload",
+    "interface"
+  ],
+  "profiling_units": "milliseconds; count, total, average, max since startup",
+  "hud": "partial regions with persistent allocation",
+  "decoder_lifetime": "PNG/JPEG modules retained until exit",
+  "disc_center": "Label texture continues radially to physical hole; 1056 triangles and 15 mm hole preserved",
+  "log_policy": "64 KiB pending buffer, idle batches at least 3 seconds apart and shutdown flush",
+  "log_path": "/dev_hdd0/tmp/PS3_GAME_ORBIT_FIX35.log",
+  "first_image_load": "synchronous",
+  "iso_id_resolution": "Four letters and five contiguous digits from ISO filename only; no internal SFO parsing",
+  "host_validation": "Native API and main-loop simulations; cache/UI/menu/import/name/OSK/decoder/log/sanitizer checks",
+  "sanitizer_scope": "ASan and UBSan; LeakSanitizer disabled due to ptrace environment",
+  "size_bytes": 2367760,
+  "sha256": "fb09932398c40cd3b9c88c057d8ec2384bb7e91b1aa90cc2026c2d3ff194dce6"
+}

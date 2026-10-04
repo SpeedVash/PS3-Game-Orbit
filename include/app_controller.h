@@ -4,6 +4,9 @@
 
 struct AppCommands {
     bool mount_selected = false;
+#ifdef PS3_GAME_ORBIT_FIX35
+    GameMenuActionFix35 game_menu_action=GameMenuActionFix35::None;
+#endif
     bool rescan_library = false;
     bool request_exit = false;
 };

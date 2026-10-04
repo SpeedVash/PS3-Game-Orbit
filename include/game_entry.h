@@ -15,6 +15,10 @@ struct GameEntry {
     std::string cover_path;
     GameCoverKind cover_kind = GameCoverKind::None;
     unsigned cover_orientation = 1; // Per-game manual orientation; 1 = source/EXIF.
+#ifdef PS3_GAME_ORBIT_FIX33
+    std::string inside_cover_path;
+    std::string disc_art_path;
+#endif
 
     GameSource source = GameSource::HDD;
     GameFormat format = GameFormat::ISO;

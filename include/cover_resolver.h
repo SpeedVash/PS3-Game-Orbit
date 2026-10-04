@@ -20,6 +20,9 @@ class CoverResolver {
 public:
     explicit CoverResolver(std::string global_dir = "/dev_hdd0/PS3COVERS");
     CoverResult resolve(const GameEntry& game) const;
+#ifdef PS3_GAME_ORBIT_FIX33
+    void resolve_inspection_art(GameEntry& game) const;
+#endif
     const std::string& global_dir() const { return global_dir_; }
 private:
     std::string global_dir_;

@@ -9,4 +9,5 @@ struct CasePose {
     bool selected = false;
     // Animation visibility is independent of the approved plastic opacity.
     float visibility = 1;
+    float inspection_phase = 0;
 };

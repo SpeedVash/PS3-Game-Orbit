@@ -18,6 +18,10 @@ public:
     float scale() const { return inspect_.scale(); }
     bool automatic() const { return inspect_.automatic(); }
     bool help_open() const { return help_open_; }
+#ifdef PS3_GAME_ORBIT_FIX35
+    GameEntry* selected_entry(){return current_game(state_);}
+    void menu_status(std::string status,bool busy=false){state_.menu.status=std::move(status);state_.menu.busy=busy;}
+#endif
     void restore_selection(FilterMode filter,const std::string& path);
 #ifdef PS3_GAME_ORBIT_FIX31
     void restore_layout(OrbitLayout layout);

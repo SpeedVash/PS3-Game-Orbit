@@ -1,27 +1,31 @@
-# Validação — 1.1.0-rc.1 / FIX31
+# Validação — v1.3.2-rc.1 / FIX35
 
-A atualização foi compilada para PowerPC64 big endian com a pilha ps3aqua B, GCC 7.5.0, e empacotada como PKG NPDRM finalizado. TITLE_ID: `PGORBT301`; APP_VER: `01.01`.
+Compilação, testes e previews feitos no computador. **Teste físico da v1.3.2 no PS3 pendente.**
 
-## Verificações concluídas no computador
+## Interface, decodificação e log
 
-- Geometria aprovada: os mesmos 5.597 triângulos, normais, UVs e cinco partes do OBJ JFX original. Shaders VPO/FPO arquivados e FIFO da 1.0 preservados.
-- Clássico em 0,55; R3 no mínimo; Spine com cinco lombadas por lado, capa frontal selecionada e deduplicação de bibliotecas pequenas/vazias.
-- Animação da caixa anterior e da próxima; reversão durante o movimento sem saltos de posição/opacidade dos jogos já visíveis.
-- 1.200 solicitações rápidas de navegação sem exceder o limite de quatorze caixas, com estabilização posterior.
-- Sincronização real das texturas no caminho host: a textura da caixa anterior permanece até o fim do fade e é liberada depois; onze capas do Spine carregam.
-- Persistência atômica do layout, rejeição de dados inválidos e independência do arquivo de favoritos da 1.0.
-- Cache de imagens codificadas limitado a 32 MiB e texturas reduzidas proporcionalmente a 1024 pixels por lado. Capas acima de 16 milhões de pixels são rejeitadas antes da decodificação.
-- Corpo real da função nativa de desenho exercitado com APIs simuladas em sete ângulos e 1/2/3/11/14 caixas: textura e matriz por jogo, UVs de verso, capas frontais/ausentes, fade de papel/logo, plástico transparente neutro em duas passagens, ordem por opacidade/profundidade, fundo e HUD.
-- Regressões deliberadas de plástico, culling, textura, opacidade do papel, visibilidade, restauração da profundidade e recarga do fragment program foram rejeitadas.
-- O fluxo real de main mantém I/O, gravação de estado, montagem, releitura e alterações de texturas entre quadros confirmados. Falha de rede, montagem confirmada e saída pelo Círculo passaram.
-- Inicialização com 61 flips limitados e calibração fora da tela preservadas. Simulação do controlador FIFO completou 10.000 segmentos alternados; GET/REF/backend label ausentes bloqueiam a reutilização.
-- Regressões herdadas de scanner, favoritos, orientação, UVs, montagem HTTP, interface UTF-8 e empacotamento passaram.
-- Prévias dos dois layouts e das transições foram renderizadas com geometria, matrizes e posições exportadas do código nativo.
+- Atualização parcial do rodapé e das linhas da Lista comparada byte a byte à rasterização completa. Cabeçalho sem alteração preservado; mesma alocação da textura HUD mantida. Cópia RGBA→ARGB conferida.
+- Menu START, limpeza ao fechar, seleção de opções e ajuda sem painel Imagens e cache. Tela de início com versão e SpeedVash conferida visualmente.
+- Código nativo real de PNG/JPEG com respostas simuladas do SDK: módulos carregados uma vez, ARGB com pitch/alpha corretos, conversão RGBA de fallback, erro de decode, tentativa após falha de load e unload único.
+- Log real: nenhuma gravação durante atividade, intervalo mínimo do lote em repouso, teto de 64 KiB e gravação final ao encerrar. Contadores das quatro etapas ativos; unidades do relógio nativo convertidas para ms.
 
-Os segmentos FIFO continuam com 64 KiB. Esta build aceita até quatorze caixas por quadro, com orçamento máximo de 57.344 bytes e guarda inicial de 61.440 bytes. Os testes de API verificam estados, ordem e guardas; não reproduzem o custo exato das chamadas RSX do driver.
+## Menu e arquivos
 
-## O que falta
+- START abre opções em vez de reescanear imediatamente; o menu bloqueia montagem/navegação/favoritos/layout e bloqueia ações enquanto ocupado. Círculo fecha sem sair ao XMB.
+- Recarga de um jogo invalida apenas suas três artes; ponteiros das outras entradas permanecem os mesmos.
+- Conversão UTF-8/UTF-16 e persistência de nomes por caminho, com ID e arquivo de jogo preservados; validação de limites/texto.
+- Código nativo real do OSK com SDK simulado: buffers vivos até UNLOADED; confirmação, cancelamento, texto inválido, falhas de container/callback/load, repetição de unload e aborto. Slot 1 independente do lifecycle em slot 0.
+- Importação real de trio completo, busca em mais de uma raiz, rejeição de imagem corrompida sem substituir imagens existentes, remoção de formatos concorrentes, resolução das novas imagens e rejeição de ID com caminho.
+- Corpo real do main em dez cenários: seis de montagem/falha/confirmação/cancelamento e quatro de renomear/recarregar/importar/reescanear. Operações de arquivos, recursos, teclado e log só entre quadros confirmados.
 
-**Teste físico da 1.1 no PS3.** A aprovação anterior em Slim com CFW foi para a 1.0/FIX30. Não há aprovação de hardware, desempenho ou HEN para esta build.
+## Caches, geometria e renderização
 
-As prévias de `docs/images` usam capas demonstrativas e simulação gráfica no computador. Consulte [TESTE_1.1.md](TESTE_1.1.md) para verificar a atualização no console.
+- Caches de 15/15/15 sobre biblioteca de 57 jogos, com limites independentes em bytes, reaproveitamento real de ponteiros e descarte LRU. Cache codificado limitado a 15 entradas/16 MiB.
+- Onze capas de Spine e quatorze em transição protegidas no teto de quinze; prefetch converge sem repetidas decodificações. Ausentes/corrompidas usam fallback sem ocupar textura.
+- Cinco partes fechadas da caixa aprovadas preservadas byte a byte. Juntas conservam área/UVs/pivô. Disco conserva 1.056 triângulos e furo de 15 mm; centro frontal e traseiro recebem arte com as mesmas UVs radiais do restante do disco.
+- Renderer real com APIs simuladas em sete ângulos e cinco fases de abertura: texturas por jogo, normais/matrizes, culling, transparência do plástico, visibilidade, ordenação, fallback, fundo e HUD. Regressões deliberadas são rejeitadas.
+- Shaders arquivados e controlador FIFO preservados. PKG PowerPC64 big endian, GCC 7.5.0/SDK fixado, identidade PGORBT301 e APP_VER 01.05.
+- AddressSanitizer e UndefinedBehaviorSanitizer nos testes de fluxo/cache/menu/arquivos. LeakSanitizer desabilitado pelo limite de ptrace do ambiente.
+- Previews exportam geometria, matrizes, ordem, shader, UVs e HUD do código nativo. Três layouts, caixa aberta/centro do disco, menu e ajuda conferidos visualmente.
+
+Relatórios em `validacao/` no ZIP. APIs simuladas e previews não medem tempo de leitura no PS3, RSX real ou saída de TV. O caminho inicial continua síncrono. Veja [TESTE_1.3.2.md](TESTE_1.3.2.md).

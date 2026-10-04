@@ -1,0 +1,25 @@
+{
+  "project": "PS3 Game Orbit",
+  "version": "1.2.0-rc.1",
+  "build": "FIX32",
+  "title_id": "PGORBT301",
+  "app_ver": "01.02",
+  "pkg_file": "PS3_GAME_ORBIT_v1.2_TESTE.gnpdrm.pkg",
+  "pkg_bytes": 2323792,
+  "pkg_sha256": "a853e129607c131480f412440b0ffa6fd69b44348c4fddbec3e19e1b494fcc5a",
+  "native_compilation": "passed",
+  "host_tests": "passed",
+  "native_api_simulation": "passed",
+  "public_no_JFX_tests": "passed",
+  "hardware_validation": "pending",
+  "layouts": [
+    "Classic",
+    "Spine",
+    "List"
+  ],
+  "gpu_cover_cache_max_bytes": 67108864,
+  "gpu_cover_cache_max_items": 32,
+  "encoded_cache_max_bytes": 16777216,
+  "disc_segments": 48,
+  "disc_triangles": 1056
+}
