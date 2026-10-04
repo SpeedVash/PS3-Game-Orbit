@@ -6,16 +6,18 @@
 
 class CoverCache {
 public:
-    explicit CoverCache(size_t max_items = 7) : max_items_(max_items) {}
+    explicit CoverCache(size_t max_items = 7,size_t max_bytes = 0) : max_items_(max_items ? max_items : 1),max_bytes_(max_bytes) {}
 
     const CoverImage* get_or_load(const GameEntry& game);
     void warm_visible_neighborhood(const CoverflowState& state, int radius = 2);
     void clear();
     size_t size() const { return entries_.size(); }
+    size_t encoded_bytes() const { return encoded_bytes_; }
 
 private:
     struct Entry { CoverImage image; unsigned long long stamp = 0; };
     size_t max_items_;
+    size_t max_bytes_=0,encoded_bytes_=0;
     unsigned long long clock_ = 0;
     std::unordered_map<std::string, Entry> entries_;
     void evict_if_needed();

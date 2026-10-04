@@ -1,0 +1,15 @@
+{
+  "project": "PS3 Game Orbit",
+  "version": "1.1.0-rc.1",
+  "internal_build": "FIX31",
+  "title_id": "PGORBT301",
+  "app_ver": "01.01",
+  "package_name": "PS3_GAME_ORBIT_v1.1_TESTE.gnpdrm.pkg",
+  "package_size": 1999824,
+  "sha256": "0bf8245dbe44d45811c3b126083a3157e24a6740d216067621e6f031bba8f05e",
+  "physical_ps3_test": "pending",
+  "base_1_0": "user approved on Slim CFW",
+  "toolchain_gcc": "7.5.0",
+  "ps3toolchain_commit": "961fddac01337f18da08f4471d558a7a5b0d9af2",
+  "psl1ght_commit": "af9d3d964c8faa69abce4961a269f9582e05a33f"
+}

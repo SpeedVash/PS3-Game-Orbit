@@ -1,8 +1,10 @@
 #pragma once
 #include <vector>
 #include "game_entry.h"
+#include "case_pose.h"
 
 enum class FilterMode { All, HDD, USB, Favorites };
+enum class OrbitLayout { Classic, Spine };
 
 struct CoverflowState {
     std::vector<GameEntry> games;
@@ -14,6 +16,12 @@ struct CoverflowState {
     bool inspect_mode = false;
     float transition = 1.0f;
     int navigation_direction = 1;
+#ifdef PS3_GAME_ORBIT_FIX31
+    OrbitLayout layout = OrbitLayout::Classic;
+    float case_scale = 0.55f;
+    bool flow_initialized = false;
+    std::vector<CasePose> flow;
+#endif
 };
 
 void rebuild_visible(CoverflowState& s);

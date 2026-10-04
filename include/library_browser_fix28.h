@@ -19,6 +19,9 @@ public:
     bool automatic() const { return inspect_.automatic(); }
     bool help_open() const { return help_open_; }
     void restore_selection(FilterMode filter,const std::string& path);
+#ifdef PS3_GAME_ORBIT_FIX31
+    void restore_layout(OrbitLayout layout);
+#endif
     void set_operation_status(std::string status,bool busy){operation_status_=std::move(status);mount_busy_=busy;}
     bool take_preferences_changed(){const bool changed=preferences_changed_;preferences_changed_=false;return changed;}
 private:
@@ -31,6 +34,10 @@ private:
     bool mount_busy_=false;
     bool preferences_changed_=false;
     bool help_open_=false;
+#ifdef PS3_GAME_ORBIT_FIX31
+    std::string pending_path_;
+    int pending_layout_=-1;
+#endif
     void front_pose();
     std::string selected_path() const;
 };

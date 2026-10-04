@@ -1,4 +1,4 @@
-# Compilar PS3 Game Orbit 1.0
+# Compilar PS3 Game Orbit 1.1 de teste
 
 O PKG da release já está pronto para instalação. Este procedimento é para desenvolvedores, em Linux x86_64.
 
@@ -52,9 +52,17 @@ bash scripts/test-release.sh
 bash scripts/build-release.sh
 ```
 
-O pacote com nome público fica em `dist/release/PS3_GAME_ORBIT_v1.0.gnpdrm.pkg`. Os produtos nativos e relatórios ficam em `dist/B`.
+O pacote com nome público fica em `dist/release/PS3_GAME_ORBIT_v1.1_TESTE.gnpdrm.pkg`. Os produtos nativos e relatórios ficam em `dist/B`.
 
-Os fontes de execução são os mesmos da base FIX30 aprovada. A data/hora de compilação e os metadados de empacotamento podem variar entre builds; compare a geometria, fontes e verificações em vez de esperar o mesmo hash de um PKG recompilado. A release original tem o hash publicado em `docs/RELEASE_1.0.json`.
+Os fontes implementam a atualização FIX31. Geometria JFX, shaders arquivados e o controlador FIFO da base permanecem preservados. A data/hora de compilação e os metadados de empacotamento podem variar entre builds; o hash da entrega está em `docs/RELEASE_1.1_TESTE.json`.
+
+Se os arquivos foram enviados ao GitHub pela interface web, os bits de execução podem ter sido perdidos. O script de build restaura a permissão dos scripts necessários; também é possível executar `chmod +x scripts/*.sh tests/*.sh` na cópia local.
+
+Para executar apenas os testes de layout sem obter o modelo licenciado:
+
+```bash
+bash tests/run_flow_fix31_tests.sh
+```
 
 ## Ativos visuais
 
@@ -68,4 +76,4 @@ Nenhuma biblioteca de fontes precisa ser instalada no PS3.
 
 ## GitHub Actions
 
-O workflow `checks.yml` executa os testes da interface FIX30 e as verificações da apresentação/FIFO sem o modelo de terceiros. Ele não compila o PKG nem publica releases automaticamente. Os testes completos e a compilação nativa exigem a preparação local do modelo acima.
+O workflow `checks.yml` executa os testes de layout/fluxo FIX31, da interface herdada FIX30 e as verificações da apresentação/FIFO sem o modelo de terceiros. Ele não compila o PKG nem publica releases automaticamente. Os testes completos e a compilação nativa exigem a preparação local do modelo acima.

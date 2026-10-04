@@ -18,6 +18,7 @@ struct V10DrawPacket {
     Mat4 model{};
     Mat4 mvp{};
     float alpha=1.0f;
+    float visibility=1.0f;
     bool mesh_textured=false;
     bool selected=false;
     // Explicit mesh range permits two passes of one plastic mesh without

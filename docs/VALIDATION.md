@@ -1,21 +1,27 @@
-# Validação da release 1.0
+# Validação — 1.1.0-rc.1 / FIX31
 
-A versão 1.0 preserva o instalador FIX30 que o usuário aprovou após testar a interface no PS3 Slim CFW. Não houve alteração de renderização ou reconstrução do modelo para esta publicação.
+A atualização foi compilada para PowerPC64 big endian com a pilha ps3aqua B, GCC 7.5.0, e empacotada como PKG NPDRM finalizado. TITLE_ID: `PGORBT301`; APP_VER: `01.01`.
 
-Verificações concluídas no computador na preparação do FIX30:
+## Verificações concluídas no computador
 
-- Compilação PowerPC64 big endian com GCC 7.5.0 e SDK ps3aqua fixado.
-- Cabeçalhos ELF/SELF, identidade do PKG finalizado e PARAM.SFO `PGORBT301 / 01.00`.
-- Comparação dos 5.597 triângulos, normais e UVs com o OBJ original.
-- Duas caixas e texturas independentes, plástico transparente e ordem de desenho.
-- Controles, favoritos, preferências, filtros e normalização de capas completas.
-- Montagem HTTP assíncrona com testes TCP locais e verificação da lógica de confirmação de disco.
-- Texto suavizado, UTF-8 limitado, títulos longos, ajuda e composição do HUD.
-- Início com splash, calibração fora da tela e apresentação com esperas limitadas.
-- Limites do FIFO, alternância dos segmentos de comandos e rejeição de regressões.
+- Geometria aprovada: os mesmos 5.597 triângulos, normais, UVs e cinco partes do OBJ JFX original. Shaders VPO/FPO arquivados e FIFO da 1.0 preservados.
+- Clássico em 0,55; R3 no mínimo; Spine com cinco lombadas por lado, capa frontal selecionada e deduplicação de bibliotecas pequenas/vazias.
+- Animação da caixa anterior e da próxima; reversão durante o movimento sem saltos de posição/opacidade dos jogos já visíveis.
+- 1.200 solicitações rápidas de navegação sem exceder o limite de quatorze caixas, com estabilização posterior.
+- Sincronização real das texturas no caminho host: a textura da caixa anterior permanece até o fim do fade e é liberada depois; onze capas do Spine carregam.
+- Persistência atômica do layout, rejeição de dados inválidos e independência do arquivo de favoritos da 1.0.
+- Cache de imagens codificadas limitado a 32 MiB e texturas reduzidas proporcionalmente a 1024 pixels por lado. Capas acima de 16 milhões de pixels são rejeitadas antes da decodificação.
+- Corpo real da função nativa de desenho exercitado com APIs simuladas em sete ângulos e 1/2/3/11/14 caixas: textura e matriz por jogo, UVs de verso, capas frontais/ausentes, fade de papel/logo, plástico transparente neutro em duas passagens, ordem por opacidade/profundidade, fundo e HUD.
+- Regressões deliberadas de plástico, culling, textura, opacidade do papel, visibilidade, restauração da profundidade e recarga do fragment program foram rejeitadas.
+- O fluxo real de main mantém I/O, gravação de estado, montagem, releitura e alterações de texturas entre quadros confirmados. Falha de rede, montagem confirmada e saída pelo Círculo passaram.
+- Inicialização com 61 flips limitados e calibração fora da tela preservadas. Simulação do controlador FIFO completou 10.000 segmentos alternados; GET/REF/backend label ausentes bloqueiam a reutilização.
+- Regressões herdadas de scanner, favoritos, orientação, UVs, montagem HTTP, interface UTF-8 e empacotamento passaram.
+- Prévias dos dois layouts e das transições foram renderizadas com geometria, matrizes e posições exportadas do código nativo.
 
-A aprovação visual no console não é uma certificação para todos os modelos, firmwares e jogos. HEN/Super Slim permanece sem validação nesta release. Não foi recebido um log de montagem física do FIX30; a integração foi verificada com simulação e TCP local.
+Os segmentos FIFO continuam com 64 KiB. Esta build aceita até quatorze caixas por quadro, com orçamento máximo de 57.344 bytes e guarda inicial de 61.440 bytes. Os testes de API verificam estados, ordem e guardas; não reproduzem o custo exato das chamadas RSX do driver.
 
-As imagens em `docs/images` foram produzidas no computador usando dados nativos. São referências de aparência com capas de teste, não capturas da saída de vídeo de um PS3.
+## O que falta
 
-Para repetir os testes completos, siga `BUILD.md` e execute `bash scripts/test-release.sh`. Não são publicados logs pessoais do console nem arquivos do SDK.
+**Teste físico da 1.1 no PS3.** A aprovação anterior em Slim com CFW foi para a 1.0/FIX30. Não há aprovação de hardware, desempenho ou HEN para esta build.
+
+As prévias de `docs/images` usam capas demonstrativas e simulação gráfica no computador. Consulte [TESTE_1.1.md](TESTE_1.1.md) para verificar a atualização no console.

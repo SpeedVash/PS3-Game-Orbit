@@ -11,9 +11,5 @@ public:
 private:
     bool automatic_=true;
     float remaining_turn_=360.0f;
-#ifdef PS3_GAME_ORBIT_FIX31
-    float scale_=0.55f;
-#else
     float scale_=0.72f;
-#endif
 };
