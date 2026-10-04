@@ -3,6 +3,9 @@
 #include <string>
 #include "cover_image.h"
 #include "full_cover_layout.h"
+#ifdef PS3_GAME_ORBIT_FIX35
+#include "hud_cache_fix35.h"
+#endif
 
 struct DecodedImageRGBA;
 
@@ -32,6 +35,12 @@ public:
     // Call between acknowledged frames, like cover replacement. The decoded HUD
     // is bounded and goes through the same RGBA -> ARGB byte convention.
     bool prepare_overlay(const DecodedImageRGBA& image,GpuTextureStage1& out);
+#ifdef PS3_GAME_ORBIT_FIX32
+    bool update_overlay(const DecodedImageRGBA& image,GpuTextureStage1& out);
+#endif
+#ifdef PS3_GAME_ORBIT_FIX35
+    bool update_overlay_regions(const DecodedImageRGBA& image,GpuTextureStage1& out,const std::vector<HudRectFix35>& regions);
+#endif
     void release_cover(GpuTextureStage1& tex);
     const std::string& last_error() const { return last_error_; }
 #ifdef __PSL1GHT__

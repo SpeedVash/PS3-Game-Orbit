@@ -2,6 +2,7 @@
 #include <cstdint>
 #include <string>
 #include <unordered_map>
+#include <unordered_set>
 #include <vector>
 #include "boot_visual.h"
 #include "cover_cache.h"
@@ -62,6 +63,9 @@ V10FramePlan build_v10_frame_plan(const std::vector<CasePose>& poses,
 
 V10SubmissionStats summarize_v10_submission(const V10FramePlan& plan,
                                              const V14CaseMesh& mesh);
+#ifdef PS3_GAME_ORBIT_FIX32
+bool validate_native_plan_fix32(const V10FramePlan& plan,const V14CaseMesh& mesh);
+#endif
 
 class RsxRendererV10 {
 public:
@@ -71,15 +75,55 @@ public:
     const std::string& last_error() const { return last_error_; }
     BootVisualStage boot_visual_stage() const { return boot_visual_stage_; }
 
-    // Keeps GPU copies only for the selected case and one distinct neighbor. CPU encoded covers
-    // remain owned by CoverCache. Full covers texture BACK|SPINE|FRONT; ICON0 is front-only.
+    // Visible/fading cases are pinned; FIX32 also retains recent textures in a
+    // bounded LRU. Full covers texture BACK|SPINE|FRONT; ICON0 is front-only.
     bool sync_visible_covers(const CoverflowState& state,CoverCache& cache,int radius=2);
+#ifdef PS3_GAME_ORBIT_FIX32
+    static constexpr std::size_t GpuCoverBudgetBytes=64u<<20;
+    static constexpr std::size_t MaxResidentCovers=
+#ifdef PS3_GAME_ORBIT_FIX34
+        15;
+#elif defined(PS3_GAME_ORBIT_FIX33)
+        10;
+#else
+        32;
+#endif
+    bool prefetch_nearby_cover(const CoverflowState& state,CoverCache& cache);
+    std::size_t gpu_cache_bytes() const {return gpu_cache_bytes_;}
+    std::uint64_t gpu_cache_hits() const {return gpu_cache_hits_;}
+    std::uint64_t gpu_cache_misses() const {return gpu_cache_misses_;}
+    std::uint64_t gpu_cache_evictions() const {return gpu_cache_evictions_;}
+#ifdef PS3_GAME_ORBIT_FIX33
+    bool sync_inspection_art(const CoverflowState& state);
+    bool has_inside_texture(int gi) const;
+    bool has_disc_art_texture(int gi) const;
+#ifdef PS3_GAME_ORBIT_FIX34
+    static constexpr std::size_t MaxResidentInspectionArt=15;
+    static constexpr std::size_t InspectionArtBudgetBytes=64u<<20;
+    std::size_t inside_cache_count() const {return inside_cache_.entries.size();}
+    std::size_t disc_cache_count() const {return disc_cache_.entries.size();}
+    std::size_t inside_cache_bytes() const {return inside_cache_.bytes;}
+    std::size_t disc_cache_bytes() const {return disc_cache_.bytes;}
+    std::uint64_t inside_cache_hits() const {return inside_cache_.hits;}
+    std::uint64_t disc_cache_hits() const {return disc_cache_.hits;}
+    std::uint64_t inside_cache_misses() const {return inside_cache_.misses;}
+    std::uint64_t disc_cache_misses() const {return disc_cache_.misses;}
+#endif
+#endif
+#endif
     void clear_cover_textures();
+#ifdef PS3_GAME_ORBIT_FIX35
+    void invalidate_game_art(int game_index);
+#endif
 
     bool render(const CoverflowState& state,const V14CaseMesh& mesh,int radius=2,float selected_scale=0.72f);
     // Texture/geometry changes are allowed only after the stream controller has
     // acknowledged the previous frame. Main performs this before begin_frame().
-    bool set_library_hud(const LibraryHudLinesFix28& lines);
+    bool set_library_hud(const LibraryHudLinesFix28& lines
+#ifdef PS3_GAME_ORBIT_FIX32
+        ,const CoverflowState* state=nullptr
+#endif
+    );
     bool prepare_orbit_background();
     void show_runtime_failure();
     // FIX9: one-shot real-hardware color-clear present probe. No coverflow draw calls.
@@ -118,6 +162,9 @@ private:
         GameCoverKind kind=GameCoverKind::None;
         unsigned orientation=1;
         GpuTextureStage1 texture{};
+#ifdef PS3_GAME_ORBIT_FIX32
+        std::uint64_t stamp=0;
+#endif
     };
 
     RsxStage1* stage1_=nullptr;
@@ -128,8 +175,48 @@ private:
     BootVisualStage boot_visual_stage_=BootVisualStage::None;
     std::string last_error_;
     GpuTextureStage1 hud_texture_{};
+#ifdef PS3_GAME_ORBIT_FIX35
+    HudCacheFix35 hud_cache_;
+    GameMenuStateFix35 hud_menu_;
+#endif
     GpuTextureStage1 background_texture_{};
     LibraryHudLinesFix28 hud_lines_{};
+#ifdef PS3_GAME_ORBIT_FIX32
+    std::size_t gpu_cache_bytes_=0;
+    std::uint64_t gpu_cache_clock_=0,gpu_cache_hits_=0,gpu_cache_misses_=0,gpu_cache_evictions_=0;
+    std::unordered_set<int> failed_gpu_covers_;
+    bool reserve_cover_cache(const std::unordered_set<int>& pinned,std::size_t bytes);
+    bool load_gpu_cover(int gi,const GameEntry& game,CoverCache& cache,const std::unordered_set<int>& pinned);
+    std::vector<std::string> hud_rows_;
+    int hud_active_row_=-1;
+    GpuTextureStage1 disc_label_texture_{},disc_back_texture_{};
+    bool prepare_disc_textures();
+#ifdef PS3_GAME_ORBIT_FIX33
+    struct InspectionArt {
+        int game_index=-1;std::string game_path,path;GpuTextureStage1 texture{};bool attempted=false;
+#ifdef PS3_GAME_ORBIT_FIX34
+        std::uint64_t stamp=0;
+#endif
+    };
+#ifdef PS3_GAME_ORBIT_FIX34
+    struct InspectionArtCache {
+        std::unordered_map<int,InspectionArt> entries;
+        std::unordered_map<int,std::pair<std::string,std::string>> failed;
+        std::size_t bytes=0;
+        std::uint64_t clock=0,hits=0,misses=0,evictions=0;
+    };
+    InspectionArtCache inside_cache_{},disc_cache_{};
+    void clear_inspection_cache(InspectionArtCache& cache);
+    bool load_cached_inspection_art(InspectionArtCache& cache,int gi,const GameEntry& game,const std::string& path,GameCoverKind kind);
+#else
+    InspectionArt inside_art_{},disc_art_{};
+    void release_inspection_art(InspectionArt& art);
+    void load_inspection_art(InspectionArt& art,int gi,const GameEntry& game,const std::string& path,GameCoverKind kind);
+#endif
+    const GpuTextureStage1* texture_for_art_role(V14MeshPart::TextureRole role,int gi) const;
+    void trim_cover_cache(const std::unordered_set<int>& pinned);
+#endif
+#endif
 
     void release_cover_record(GpuCoverRecord& rec);
     const GpuTextureStage1* texture_for_game(int game_index) const;

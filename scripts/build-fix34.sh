@@ -7,7 +7,7 @@ export PATH="$PS3DEV/bin:$PS3DEV/ppu/bin:$PATH"
 [[ "$(realpath "$PS3DEV")" = "$(realpath "$PSL1GHT")" ]] || {
   echo 'Use one complete ps3aqua stack; PS3DEV and PSL1GHT must match'; exit 1;
 }
-[[ "$(ppu-g++ -dumpversion)" = 7.5.0 ]] || { echo 'FIX31 requires GCC 7.5.0'; exit 1; }
+[[ "$(ppu-g++ -dumpversion)" = 7.5.0 ]] || { echo 'FIX34 requires GCC 7.5.0'; exit 1; }
 rg -q '961fddac01337f18da08f4471d558a7a5b0d9af2' "$PS3DEV/build.txt"
 rg -q 'af9d3d964c8faa69abce4961a269f9582e05a33f' "$PS3DEV/build.txt"
 cd "$root"
@@ -33,20 +33,20 @@ Path('dist/B/SOURCE_SHA256.txt').write_text(''.join(
     hashlib.sha256(p.read_bytes()).hexdigest() + '  ' + p.as_posix() + '\n'
     for p in sorted(paths)))
 PY
-make clean VERBOSE=1 2>&1 | tee dist/B/BUILD_LOG.txt
-make -j"${FIX31_BUILD_JOBS:-4}" pkg VERBOSE=1 2>&1 | tee -a dist/B/BUILD_LOG.txt
+env -u CPATH -u LIBRARY_PATH make clean VERBOSE=1 2>&1 | tee dist/B/BUILD_LOG.txt
+env -u CPATH -u LIBRARY_PATH make -j"${FIX34_BUILD_JOBS:-4}" pkg VERBOSE=1 2>&1 | tee -a dist/B/BUILD_LOG.txt
 for ext in elf self gnpdrm.pkg; do
-  cp "ps3_game_orbit_fix32.$ext" "dist/B/PS3_GAME_ORBIT_FIX32.$ext"
+  cp "ps3_game_orbit_fix34.$ext" "dist/B/PS3_GAME_ORBIT_FIX34.$ext"
 done
 cp build/pkg/USRDIR/EBOOT.BIN build/pkg/PARAM.SFO dist/B/
-cp ps3_game_orbit_fix32.map dist/B/renderer.map
-ppu-nm -u src/main.o src/rsx_present_fix20.o src/rsx_renderer_v10.o src/rsx_stage1.o src/image_decode.o src/rsx_command_stream_fix25.o src/webman_mount_fix29.o src/mount_operation_fix29.o src/preferences_fix29.o src/layout_settings_fix31.o src/orbit_flow_fix31.o > dist/B/NATIVE_OBJECT_SYMBOLS.txt
+cp ps3_game_orbit_fix34.map dist/B/renderer.map
+ppu-nm -u src/main.o src/rsx_present_fix20.o src/rsx_renderer_v10.o src/rsx_stage1.o src/image_decode.o src/rsx_command_stream_fix25.o src/webman_mount_fix29.o src/mount_operation_fix29.o src/preferences_fix29.o src/layout_settings_fix31.o src/orbit_flow_fix31.o src/case_animation_fix32.o src/gpu_cover_cache_fix32.o src/inspection_art_fix33.o src/inspection_art_cache_fix34.o > dist/B/NATIVE_OBJECT_SYMBOLS.txt
 ppu-objdump -dr src/main.o src/rsx_present_fix20.o src/rsx_command_stream_fix25.o > dist/B/NATIVE_PRESENT_DISASSEMBLY.txt
-python3 scripts/verify-build-fix31.py dist/B | tee dist/B/PACKAGE_CHECK.txt
+python3 scripts/verify-build-fix34.py dist/B | tee dist/B/PACKAGE_CHECK.txt
 python3 scripts/check-presentation-fix20.py | tee dist/B/HOST_PRESENTATION_CHECK.txt
 python3 scripts/check-renderer-fix28.py | tee dist/B/HOST_RENDERER_CHECK.txt
-python3 scripts/check-library-loop-fix31.py | tee dist/B/HOST_LIBRARY_LOOP_CHECK.txt
-python3 scripts/check-renderer-jfx-fix31.py | tee dist/B/HOST_NATIVE_JFX_CHECK.txt
-bash tests/run_fix31_tests.sh | tee dist/B/HOST_FLOW_CHECK.txt
+python3 scripts/check-library-loop-fix34.py | tee dist/B/HOST_LIBRARY_LOOP_CHECK.txt
+python3 scripts/check-renderer-jfx-fix34.py | tee dist/B/HOST_NATIVE_JFX_CHECK.txt
+bash tests/run_fix34_tests.sh | tee dist/B/HOST_FLOW_CHECK.txt
 python3 scripts/check-command-stream-fix25.py | tee dist/B/HOST_COMMAND_STREAM_CHECK.txt
 (cd dist/B && sha256sum ./*.elf ./*.self ./*.pkg EBOOT.BIN PARAM.SFO > SHA256SUMS.txt)
