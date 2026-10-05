@@ -11,6 +11,9 @@
 #include "rsx_stage1.h"
 #include "v14_case_mesh.h"
 #include "library_hud_fix28.h"
+#ifdef PS3_GAME_ORBIT_FIX36
+#include "orbit_background_fix36.h"
+#endif
 
 struct V10DrawPacket {
     int game_index=-1;
@@ -54,6 +57,9 @@ struct V10SubmissionStats {
     std::size_t uploaded_geometry_bytes=0;
     std::size_t hud_draw_calls=0;
     std::size_t background_draw_calls=0;
+#ifdef PS3_GAME_ORBIT_FIX36
+    std::size_t wave_draw_calls=0;
+#endif
 };
 
 V10FramePlan build_v10_frame_plan(const std::vector<CasePose>& poses,
@@ -95,6 +101,9 @@ public:
     std::uint64_t gpu_cache_evictions() const {return gpu_cache_evictions_;}
 #ifdef PS3_GAME_ORBIT_FIX33
     bool sync_inspection_art(const CoverflowState& state);
+#ifdef PS3_GAME_ORBIT_FIX36
+    bool prefetch_inspection_art(const CoverflowState& state);
+#endif
     bool has_inside_texture(int gi) const;
     bool has_disc_art_texture(int gi) const;
 #ifdef PS3_GAME_ORBIT_FIX34
@@ -113,7 +122,11 @@ public:
 #endif
     void clear_cover_textures();
 #ifdef PS3_GAME_ORBIT_FIX35
-    void invalidate_game_art(int game_index);
+    void invalidate_game_art(int game_index
+#ifdef PS3_GAME_ORBIT_FIX36
+        ,unsigned mask=7
+#endif
+    );
 #endif
 
     bool render(const CoverflowState& state,const V14CaseMesh& mesh,int radius=2,float selected_scale=0.72f);
@@ -125,6 +138,9 @@ public:
 #endif
     );
     bool prepare_orbit_background();
+#ifdef PS3_GAME_ORBIT_FIX36
+    bool update_orbit_background(bool animated,float dt);
+#endif
     void show_runtime_failure();
     // FIX9: one-shot real-hardware color-clear present probe. No coverflow draw calls.
     bool run_first_present_probe();
@@ -180,6 +196,11 @@ private:
     GameMenuStateFix35 hud_menu_;
 #endif
     GpuTextureStage1 background_texture_{};
+#ifdef PS3_GAME_ORBIT_FIX36
+    GpuTextureStage1 animated_base_texture_{},wave_texture_{};
+    OrbitBackgroundFix36::Mesh wave_cpu_mesh_;float wave_phase_=6;bool animated_background_=true;
+    bool prepare_animated_background();
+#endif
     LibraryHudLinesFix28 hud_lines_{};
 #ifdef PS3_GAME_ORBIT_FIX32
     std::size_t gpu_cache_bytes_=0;
@@ -239,6 +260,9 @@ private:
     bool draw_frame_ps3(const V10FramePlan& plan,const V14CaseMesh& mesh);
     bool draw_library_hud_ps3();
     bool draw_orbit_background_ps3();
+#ifdef PS3_GAME_ORBIT_FIX36
+    bool draw_orbit_waves_ps3();
+#endif
     void release_geometry_ps3();
     void setup_texture_ps3(const GpuTextureStage1& tex);
     bool present_boot_visual_ps3(BootVisualStage stage);
@@ -273,6 +297,9 @@ private:
     std::vector<GpuMeshPart> gpu_mesh_;
     GpuMeshPart hud_mesh_{};
     GpuMeshPart background_mesh_{};
+#ifdef PS3_GAME_ORBIT_FIX36
+    GpuMeshPart wave_mesh_{};
+#endif
 #ifdef PS3_SP_LOADER_FIX28
     unsigned diagnostic_frame_number_=0;
     bool front_face_clockwise_=false;

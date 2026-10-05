@@ -6,7 +6,9 @@ inline constexpr const char* Name = "PS3 Game Orbit";
 #ifdef PS3_GAME_ORBIT_FIX31
 #ifdef PS3_GAME_ORBIT_FIX32
 #ifdef PS3_GAME_ORBIT_FIX33
-#ifdef PS3_GAME_ORBIT_FIX35
+#ifdef PS3_GAME_ORBIT_FIX36
+inline constexpr const char* Version = "1.3.3 TESTE FIX36";
+#elif defined(PS3_GAME_ORBIT_FIX35)
 inline constexpr const char* Version = "1.3.2 TESTE FIX35";
 #elif defined(PS3_GAME_ORBIT_FIX34)
 inline constexpr const char* Version = "1.3.1 TESTE FIX34";
@@ -59,12 +61,19 @@ inline constexpr const char* FallbackPreferencesPath = "/dev_hdd0/game/PSSPF2901
 inline constexpr const char* NamesPath = "/dev_hdd0/tmp/PS3_GAME_ORBIT_NAMES.dat";
 inline constexpr const char* FallbackNamesPath = "/dev_hdd0/game/PGORBT301/USRDIR/PS3_GAME_ORBIT_NAMES.dat";
 #endif
+#ifdef PS3_GAME_ORBIT_FIX36
+inline constexpr const char* BackgroundPath = "/dev_hdd0/tmp/PS3_GAME_ORBIT_BACKGROUND.dat";
+inline constexpr const char* FallbackBackgroundPath = "/dev_hdd0/game/PGORBT301/USRDIR/PS3_GAME_ORBIT_BACKGROUND.dat";
+#endif
 inline constexpr const char* CoverDirectory = "/dev_hdd0/PS3COVERS";
 #if defined(__PSL1GHT__) && defined(PS3_GAME_ORBIT_FIX30)
 #ifdef PS3_GAME_ORBIT_FIX31
 #ifdef PS3_GAME_ORBIT_FIX32
 #ifdef PS3_GAME_ORBIT_FIX33
-#ifdef PS3_GAME_ORBIT_FIX35
+#ifdef PS3_GAME_ORBIT_FIX36
+inline constexpr const char* LogPath = "/dev_hdd0/tmp/PS3_GAME_ORBIT_FIX36.log";
+inline constexpr const char* FallbackLogPath = "/dev_hdd0/game/PGORBT301/USRDIR/PS3_GAME_ORBIT_FIX36.log";
+#elif defined(PS3_GAME_ORBIT_FIX35)
 inline constexpr const char* LogPath = "/dev_hdd0/tmp/PS3_GAME_ORBIT_FIX35.log";
 inline constexpr const char* FallbackLogPath = "/dev_hdd0/game/PGORBT301/USRDIR/PS3_GAME_ORBIT_FIX35.log";
 #elif defined(PS3_GAME_ORBIT_FIX34)
@@ -108,7 +117,9 @@ inline constexpr const char* LogPath = "/dev_hdd0/tmp/PS3_SP_LOADER_V13.log";
 inline constexpr const char* SafeBootCoverPath = "/dev_hdd0/game/PSSP00001/USRDIR/FULL_COVER_TEST_275x147.png";
 #else
 #ifdef PS3_GAME_ORBIT_FIX30
-#ifdef PS3_GAME_ORBIT_FIX35
+#ifdef PS3_GAME_ORBIT_FIX36
+inline constexpr const char* LogPath = "/tmp/PS3_GAME_ORBIT_FIX36.log";
+#elif defined(PS3_GAME_ORBIT_FIX35)
 inline constexpr const char* LogPath = "/tmp/PS3_GAME_ORBIT_FIX35.log";
 #else
 inline constexpr const char* LogPath = "/tmp/PS3_GAME_ORBIT_FIX30.log";

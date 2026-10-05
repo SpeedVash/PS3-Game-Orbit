@@ -27,5 +27,8 @@ public:
 private:
     std::string global_dir_;
     static bool file_exists(const std::string& path);
+#ifdef PS3_GAME_ORBIT_FIX36
+public:
+#endif
     static std::string iso_stem(const std::string& path);
 };
