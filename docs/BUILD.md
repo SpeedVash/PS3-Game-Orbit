@@ -1,4 +1,4 @@
-# Compilar PS3 Game Orbit 1.3.2 de teste
+# Compilar PS3 Game Orbit 1.3.3 de teste
 
 O PKG da release já está pronto para instalação. Este procedimento é para desenvolvedores, em Linux x86_64.
 
@@ -52,16 +52,16 @@ bash scripts/test-release.sh
 bash scripts/build-release.sh
 ```
 
-O pacote com nome público fica em `dist/release/PS3_GAME_ORBIT_v1.3.2_TESTE.gnpdrm.pkg`. Os produtos nativos e relatórios ficam em `dist/B`.
+O pacote com nome público fica em `dist/release/PS3_GAME_ORBIT_v1.3.3_TESTE.gnpdrm.pkg`. Os produtos nativos e relatórios ficam em `dist/B`.
 
-Os fontes implementam a atualização FIX35. Geometria JFX fechada, shaders arquivados e o controlador FIFO da base permanecem preservados. A versão pública é 1.3.2-rc.1; o SFO usa APP_VER 01.05 para respeitar o formato numérico de dois campos do instalador e avançar sobre a 1.3.1 (01.04). A data/hora de compilação e os metadados de empacotamento podem variar entre builds; o hash da entrega está em `docs/RELEASE_1.3.2_TESTE.json`.
+Os fontes implementam a atualização FIX36. Geometria JFX fechada, shaders arquivados e o controlador FIFO da base permanecem preservados. As ondas usam esses mesmos shaders; o build não precisa gerar shaders novos. A versão pública é 1.3.3-rc.1; o SFO usa APP_VER 01.06 para respeitar o formato numérico de dois campos do instalador e avançar sobre a 1.3.2 (01.05). A data/hora de compilação e os metadados de empacotamento podem variar entre builds; o hash da entrega está em `docs/RELEASE_1.3.3_TESTE.json`.
 
 Se os arquivos foram enviados ao GitHub pela interface web, os bits de execução podem ter sido perdidos. O script de build restaura a permissão dos scripts necessários; também é possível executar `chmod +x scripts/*.sh tests/*.sh` na cópia local.
 
 Para executar apenas os testes de layout sem obter o modelo licenciado:
 
 ```bash
-FIX35_PUBLIC_ONLY=1 bash tests/run_fix35_tests.sh
+FIX36_PUBLIC_ONLY=1 bash tests/run_fix36_tests.sh
 ```
 
 ## Ativos visuais
@@ -76,4 +76,4 @@ Nenhuma biblioteca de fontes precisa ser instalada no PS3.
 
 ## GitHub Actions
 
-O workflow `checks.yml` executa os testes públicos de Lista/cache FIX35 e os testes de fluxo FIX31, da interface herdada FIX30 e as verificações da apresentação/FIFO sem o modelo de terceiros. Ele não compila o PKG nem publica releases automaticamente. Os testes completos e a compilação nativa exigem a preparação local do modelo acima.
+O workflow `checks.yml` executa testes públicos FIX35/FIX36 de USB parcial/ISO, buffers, caches, menu, fundo e layout, simulações do loop e desenho nativos FIX36, testes herdados de fluxo/interface e verificações de apresentação/FIFO sem o modelo de terceiros. Ele não compila o PKG nem publica releases automaticamente. Os testes completos e a compilação nativa exigem a preparação local do modelo acima.
