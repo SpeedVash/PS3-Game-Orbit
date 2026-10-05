@@ -129,7 +129,9 @@ void paint_hud_fix35(DecodedImageRGBA& p,const std::array<std::string,6>& s,cons
     if(regions&1){
     text(p,s[0],64,13,28,White,760);
 #ifdef PS3_GAME_ORBIT_FIX31
-#ifdef PS3_GAME_ORBIT_FIX35
+#ifdef PS3_GAME_ORBIT_FIX36
+    text(p,"1.3.3",390,20,18,Muted,100);
+#elif defined(PS3_GAME_ORBIT_FIX35)
     text(p,"1.3.2",390,20,18,Muted,100);
 #elif defined(PS3_GAME_ORBIT_FIX34)
     text(p,"1.3.1",390,20,18,Muted,100);
@@ -245,8 +247,14 @@ void paint_hud_fix35(DecodedImageRGBA& p,const std::array<std::string,6>& s,cons
         rect(p,370,185,540,307,{{18,20,23,242}});
         text(p,"Opções do jogo",394,200,28,White,492);
         text(p,s[1],394,242,20,Muted,492);
+#ifdef PS3_GAME_ORBIT_FIX36
+        const char* options[]={"Alterar nome do jogo","Recarregar capas","Copiar capas do pendrive",menu->animated_background?"Fundo animado: Ligado":"Fundo animado: Desligado","Atualizar biblioteca"};
+        constexpr int Count=5,Spacing=31;
+#else
         constexpr const char* options[]={"Alterar nome do jogo","Recarregar capas","Copiar capas do pendrive","Atualizar biblioteca"};
-        for(int i=0;i<4;++i){const int y=283+i*35;
+        constexpr int Count=4,Spacing=35;
+#endif
+        for(int i=0;i<Count;++i){const int y=283+i*Spacing;
             if(i==menu->selected){rect(p,382,y-3,516,33,{{106,141,152,80}});rect(p,382,y-3,3,33,Blue);}
             text(p,options[i],402,y,20,i==menu->selected ? White : Muted,474);
         }
@@ -266,7 +274,9 @@ DecodedImageRGBA hud(const std::array<std::string,6>& s
 #endif
     text(p,s[0],64,13,28,White,760);
 #ifdef PS3_GAME_ORBIT_FIX31
-#ifdef PS3_GAME_ORBIT_FIX35
+#ifdef PS3_GAME_ORBIT_FIX36
+    text(p,"1.3.3",390,20,18,Muted,100);
+#elif defined(PS3_GAME_ORBIT_FIX35)
     text(p,"1.3.2",390,20,18,Muted,100);
 #elif defined(PS3_GAME_ORBIT_FIX34)
     text(p,"1.3.1",390,20,18,Muted,100);
@@ -416,7 +426,11 @@ DecodedImageRGBA splash(const DecodedImageRGBA* artwork){
         }
     }else text(p,"PS3 Game Orbit",(Width-measure("PS3 Game Orbit",28))/2,315,28,White,800);
 #ifdef PS3_GAME_ORBIT_FIX35
+#ifdef PS3_GAME_ORBIT_FIX36
+    const std::string credit="v1.3.3  |  Criado por SpeedVash";
+#else
     const std::string credit="v1.3.2  |  Criado por SpeedVash";
+#endif
     text(p,credit,(Width-measure(credit,20))/2,615,20,White,900);
 #endif
     const std::string status="Carregando sua biblioteca...";

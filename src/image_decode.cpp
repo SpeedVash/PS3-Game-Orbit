@@ -196,7 +196,11 @@ static bool decode_jpeg_host(const CoverImage& src, DecodedImageRGBA& out, std::
 #endif
 
 bool decode_cover_rgba(const CoverImage& src, DecodedImageRGBA& out, std::string& error) {
+#ifdef PS3_GAME_ORBIT_FIX36
+    out.width=out.height=out.pitch=0;out.rgba.clear();
+#else
     out = {};
+#endif
     error.clear();
 #ifdef PS3_GAME_ORBIT_FIX35
     OrbitPerformanceFix35::Scope timer(OrbitPerformanceFix35::Kind::Decode);
@@ -230,7 +234,12 @@ void shutdown_image_decoders_fix35(){
 #endif
 }
 bool decode_cover_argb_fix35(const CoverImage& src,DecodedImageARGB& out,std::string& error){
-    out={};error.clear();
+#ifdef PS3_GAME_ORBIT_FIX36
+    out.width=out.height=out.pitch=0;out.argb.clear();
+#else
+    out={};
+#endif
+    error.clear();
 #ifdef __PSL1GHT__
     OrbitPerformanceFix35::Scope timer(OrbitPerformanceFix35::Kind::Decode);
     if(!src.valid()){error="Invalid image";return false;}

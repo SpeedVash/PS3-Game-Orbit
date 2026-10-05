@@ -15,6 +15,10 @@
 #include "performance_fix35.h"
 #include "image_decode.h"
 #endif
+#ifdef PS3_GAME_ORBIT_FIX36
+#include "background_settings_fix36.h"
+#include "prefetch_policy_fix36.h"
+#endif
 #include "ps3_lifecycle.h"
 #include "project_identity.h"
 #include "rsx_command_stream_fix25.h"
@@ -193,6 +197,11 @@ int main(){
         RuntimeDiag::log("LAYOUT: loaded=%u layout=%s max_cases=%u command_budget=%u",unsigned(layout_loaded),
             OrbitFlowFix31::layout_name(browser.state().layout),unsigned(LibraryPairFix28::MaxCases),unsigned(LibraryPairFix28::FrameCommandBudgetBytes));
 #endif
+#ifdef PS3_GAME_ORBIT_FIX36
+        BackgroundSettingsFix36 background_settings;std::string background_path=ProjectIdentity::BackgroundPath;
+        if(!background_settings.load(background_path) && background_settings.load(ProjectIdentity::FallbackBackgroundPath))background_path=ProjectIdentity::FallbackBackgroundPath;
+        browser.restore_background(background_settings.animated());
+#endif
         MountOperationFix29 mounting;
         bool preferences_dirty=false,mounted_exit=false;
         s64 save_at=0,next_disc_check=0;
@@ -213,6 +222,11 @@ int main(){
             RuntimeDiag::log("LAYOUT: saved=%u layout=%s",unsigned(layout_saved),OrbitFlowFix31::layout_name(browser.state().layout));
             saved=saved && layout_saved;
 #endif
+#ifdef PS3_GAME_ORBIT_FIX36
+            background_settings.capture(browser.state().menu.animated_background);bool background_saved=background_settings.save(background_path);
+            if(!background_saved && background_path!=ProjectIdentity::FallbackBackgroundPath){background_saved=background_settings.save(ProjectIdentity::FallbackBackgroundPath);if(background_saved)background_path=ProjectIdentity::FallbackBackgroundPath;}
+            saved=saved && background_saved;
+#endif
             preferences_dirty=!saved;
         };
 #endif
@@ -230,7 +244,11 @@ int main(){
         RuntimeDiag::log("CONTROLS 1.1: Square changes Classic/Spine; default/reset zoom=.55; old covers survive their exit animation");
 #endif
 #ifdef PS3_GAME_ORBIT_FIX35
+#ifdef PS3_GAME_ORBIT_FIX36
+        RuntimeDiag::log("CONTROLS 1.3.3: START game/background options; creator=SpeedVash; caches=15/15/15; USB/PS3COVERS; partial ID/ISO import");
+#else
         RuntimeDiag::log("CONTROLS 1.3.2: START game options; creator=SpeedVash; caches=15/15/15");
+#endif
 #endif
 #ifdef PS3_GAME_ORBIT_FIX34
         RuntimeDiag::log("CONTROLS 1.3.1: L3 open/close; X mounts open/closed; caches=15 cover/15 inside/15 disc; idle_neighbors=7; ISO artwork uses exact filename without .iso or ID present in filename");
@@ -259,7 +277,8 @@ int main(){
                 browser.menu_status(saved ? "Nome salvo." : accepted ? "Não foi possível salvar o nome." : "Nome não alterado.");
             }
 #endif
-            const auto command=browser.update(controller.poll(),float(now-previous)/1000000.0f);previous=now;
+            const float frame_dt=float(now-previous)/1000000.0f;
+            const auto command=browser.update(controller.poll(),frame_dt);previous=now;
             if(command.request_exit){user_exit=true;break;}
 #ifdef PS3_SP_LOADER_FIX29
             if(command.mount_selected){
@@ -293,15 +312,30 @@ int main(){
                         else browser.menu_status("Digite o nome no teclado.",true);
                     }else{
                         bool reload=action==GameMenuActionFix35::ReloadCovers;
+#ifdef PS3_GAME_ORBIT_FIX36
+                        unsigned reload_mask=7;
+#endif
                         if(action==GameMenuActionFix35::ImportUsb){
                             std::vector<std::string> roots;for(int i=0;i<8;++i){char path[32];std::snprintf(path,sizeof(path),"/dev_usb%03d",i);roots.emplace_back(path);}
                             const auto imported=GameToolsFix35::import_usb(*game,roots,ProjectIdentity::CoverDirectory);
                             reload=imported.ok;browser.menu_status(imported.message);
+#ifdef PS3_GAME_ORBIT_FIX36
+                            reload_mask=imported.updated_mask;
+#endif
                         }
                         if(reload){
                             const auto old_path=game->cover_path;const int gi=browser.state().visible[std::size_t(browser.state().selected)];
+#ifdef PS3_GAME_ORBIT_FIX36
+                            renderer.invalidate_game_art(gi,reload_mask);if(reload_mask&1)cache.invalidate(old_path);
+#else
                             renderer.invalidate_game_art(gi);cache.invalidate(old_path);
-                            GameToolsFix35::resolve_art(*game,ProjectIdentity::CoverDirectory);cache.invalidate(game->cover_path);
+#endif
+                            GameToolsFix35::resolve_art(*game,ProjectIdentity::CoverDirectory);
+#ifdef PS3_GAME_ORBIT_FIX36
+                            if(reload_mask&1)cache.invalidate(game->cover_path);
+#else
+                            cache.invalidate(game->cover_path);
+#endif
                             failed_covers.erase(game->path);prepared_key.clear();
                             if(action==GameMenuActionFix35::ReloadCovers)browser.menu_status("Capas do jogo recarregadas.");
                         }
@@ -385,10 +419,22 @@ int main(){
             if(now-last_selection_time>=400000 && now>=prefetch_at
 #ifdef PS3_GAME_ORBIT_FIX35
                 && !draw.menu.open
+#ifdef PS3_GAME_ORBIT_FIX36
+                && !draw.inspection_target && draw.inspection_phase==0
+#endif
 #endif
             ) {
+#ifdef PS3_GAME_ORBIT_FIX36
+                const bool prepared=now-last_selection_time>=s64(PrefetchPolicyFix36::InspectionIdleUs) && renderer.prefetch_inspection_art(draw);
+                if(!prepared)renderer.prefetch_nearby_cover(draw,cache);
+                prefetch_at=now+s64(PrefetchPolicyFix36::SliceIntervalUs);
+#else
                 renderer.prefetch_nearby_cover(draw,cache);prefetch_at=now+200000;
+#endif
             }
+#endif
+#ifdef PS3_GAME_ORBIT_FIX36
+            if(!renderer.update_orbit_background(draw.menu.animated_background,frame_dt)){result=33;break;}
 #endif
             if(!stream.begin_frame()){result=29;break;}
             const auto yaw=draw.center_yaw_deg;
@@ -436,6 +482,9 @@ int main(){
 #endif
 #ifdef PS3_GAME_ORBIT_FIX35
                 OrbitPerformanceFix35::report();
+#ifdef PS3_GAME_ORBIT_FIX36
+                RuntimeDiag::log("OPT 1.3.3: animated=%u waves=%u allocations=%u reuses=%u pool_bytes=%u",unsigned(draw.menu.animated_background),unsigned(stats.wave_draw_calls),unsigned(rsx.texture_buffer_allocations()),unsigned(rsx.texture_buffer_reuses()),unsigned(rsx.pooled_texture_bytes()));
+#endif
 #endif
                 last_report=now;
             }

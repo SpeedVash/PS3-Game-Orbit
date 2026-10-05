@@ -19,9 +19,13 @@ bool unhex(const std::string& text,std::string& out){
     const auto digit=[](char c){return c>='0' && c<='9' ? c-'0' : c>='a' && c<='f' ? c-'a'+10 : -1;};
     for(std::size_t i=0;i<text.size();i+=2){const int a=digit(text[i]),b=digit(text[i+1]);if(a<0 || b<0)return false;out+=char(a*16+b);}return true;
 }
+#ifndef PS3_GAME_ORBIT_FIX36
 bool exists(const std::string& p){struct stat st{};return stat(p.c_str(),&st)==0;}
+#endif
 bool game_path(const std::string& p){return p.rfind("/dev_",0)==0 && p.size()<=1024 && p.find('\n')==std::string::npos && p.find('\0')==std::string::npos;}
+#ifndef PS3_GAME_ORBIT_FIX36
 bool title_id(const std::string& id){if(id.size()!=9)return false;for(unsigned i=0;i<9;++i)if(i<4 ? id[i]<'A' || id[i]>'Z' : id[i]<'0' || id[i]>'9')return false;return true;}
+#endif
 std::uint32_t digest(const std::string& s){std::uint32_t h=2166136261u;for(unsigned char c:s)h=(h^c)*16777619u;return h;}
 bool write_file(const std::string& path,const unsigned char* bytes,std::size_t count){
     FILE* f=std::fopen(path.c_str(),"wb");if(!f)return false;
@@ -78,6 +82,7 @@ bool Names::load(const std::string& path){
     }names_=std::move(fresh.names_);return true;
 }
 void resolve_art(GameEntry& game,const std::string& covers){CoverResolver resolver(covers);const auto result=resolver.resolve(game);game.cover_path=result.path;game.cover_kind=result.path.empty() ? GameCoverKind::None : result.is_full_cover ? GameCoverKind::FullCover : GameCoverKind::FrontOnly;resolver.resolve_inspection_art(game);}
+#ifndef PS3_GAME_ORBIT_FIX36
 ImportResult import_usb(const GameEntry& game,const std::vector<std::string>& roots,const std::string& covers){
     if(!title_id(game.title_id))return {false,"ID do jogo não disponível para importar."};
     const std::array<std::string,3> names{{game.title_id+".jpg",game.title_id+"_INSIDE.jpg",game.title_id+"_DISC.png"}};
@@ -106,5 +111,6 @@ ImportResult import_usb(const GameEntry& game,const std::vector<std::string>& ro
     for(const auto& backup:backups)std::remove(backup.second.c_str());
     return {true,"Três imagens copiadas. Capas atualizadas."};
 }
+#endif
 }
 #endif

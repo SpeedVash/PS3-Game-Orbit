@@ -21,7 +21,13 @@ Metric metric(Kind kind){return metrics[static_cast<unsigned>(kind)];}
 void report(){
     constexpr const char* names[]={"read","decode","upload","interface"};
     for(unsigned i=0;i<metrics.size();++i){const auto& m=metrics[i];
-        RuntimeDiag::log("PERF 1.3.2: stage=%s count=%llu total_ms=%.3f average_ms=%.3f max_ms=%.3f",names[i],
+        RuntimeDiag::log(
+#ifdef PS3_GAME_ORBIT_FIX36
+            "PERF 1.3.3: stage=%s count=%llu total_ms=%.3f average_ms=%.3f max_ms=%.3f",
+#else
+            "PERF 1.3.2: stage=%s count=%llu total_ms=%.3f average_ms=%.3f max_ms=%.3f",
+#endif
+            names[i],
             static_cast<unsigned long long>(m.count),double(m.total_us)/1000.0,m.count ? double(m.total_us)/double(m.count)/1000.0 : 0.0,double(m.max_us)/1000.0);
     }
 }

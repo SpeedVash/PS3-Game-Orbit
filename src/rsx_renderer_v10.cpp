@@ -245,7 +245,7 @@ bool RsxRendererV10::init(RsxStage1& stage1,const V14CaseMesh& mesh,bool present
 
 void RsxRendererV10::release_cover_record(GpuCoverRecord& rec){
 #ifdef PS3_GAME_ORBIT_FIX32
-    const auto bytes=std::size_t(rec.texture.pitch)*std::size_t(rec.texture.height);
+    const auto bytes=gpu_texture_storage_bytes(rec.texture);
     gpu_cache_bytes_-=std::min(gpu_cache_bytes_,bytes);
 #endif
     if(stage1_ && rec.texture.gpu_ptr) stage1_->release_cover(rec.texture);
@@ -268,6 +268,10 @@ void RsxRendererV10::shutdown(){
     clear_cover_textures();
     if(stage1_) stage1_->release_cover(hud_texture_);
     if(stage1_) stage1_->release_cover(background_texture_);
+#ifdef PS3_GAME_ORBIT_FIX36
+    if(stage1_){stage1_->release_cover(animated_base_texture_);stage1_->release_cover(wave_texture_);}
+    wave_cpu_mesh_={};wave_phase_=6;
+#endif
     hud_lines_={};
 #ifdef PS3_GAME_ORBIT_FIX35
     hud_cache_.clear();hud_menu_={};
@@ -283,6 +287,11 @@ void RsxRendererV10::shutdown(){
     if(background_mesh_.vertices) rsxFree(background_mesh_.vertices);
     if(background_mesh_.indices) rsxFree(background_mesh_.indices);
     background_mesh_={};
+#ifdef PS3_GAME_ORBIT_FIX36
+    if(wave_mesh_.vertices)rsxFree(wave_mesh_.vertices);
+    if(wave_mesh_.indices)rsxFree(wave_mesh_.indices);
+    wave_mesh_={};
+#endif
     release_geometry_ps3();
     if(fragment_ucode_) rsxFree(fragment_ucode_);
     fragment_ucode_=nullptr;
@@ -397,6 +406,9 @@ bool RsxRendererV10::render(const CoverflowState& state,const V14CaseMesh& mesh,
     last_stats_=summarize_v10_submission(last_plan_,mesh);
     last_stats_.hud_draw_calls=hud_texture_.uploaded ? 1 : 0;
     last_stats_.background_draw_calls=background_texture_.uploaded ? 1 : 0;
+#ifdef PS3_GAME_ORBIT_FIX36
+    last_stats_.wave_draw_calls=animated_background_ && wave_texture_.uploaded ? OrbitBackgroundFix36::Ribbons : 0;
+#endif
 #ifdef __PSL1GHT__
     return draw_frame_ps3(last_plan_,mesh);
 #else
@@ -496,6 +508,9 @@ bool RsxRendererV10::prepare_orbit_background(){
     if(!stage1_->prepare_overlay(OrbitUiFix30::background(),fresh)){last_error_=stage1_->last_error();return false;}
     stage1_->release_cover(background_texture_);background_texture_=fresh;
     RuntimeDiag::log("ORBIT UI: background=%dx%d font=Noto Sans Light controls=compact help=SELECT",fresh.width,fresh.height);
+#ifdef PS3_GAME_ORBIT_FIX36
+    if(!prepare_animated_background())return false;
+#endif
 #endif
     return true;
 }
@@ -1213,12 +1228,19 @@ bool RsxRendererV10::draw_orbit_background_ps3(){
     rsxSetFragmentProgramParameter(ctx,fp,static_cast<const rsxProgramConst*>(fp_use_texture_),use,fragment_offset_,GCM_LOCATION_RSX);
     rsxSetFragmentProgramParameter(ctx,fp,static_cast<const rsxProgramConst*>(fp_alpha_),alpha,fragment_offset_,GCM_LOCATION_RSX);
     rsxLoadFragmentProgramLocation(ctx,fp,fragment_offset_,GCM_LOCATION_RSX);
+#ifdef PS3_GAME_ORBIT_FIX36
+    setup_texture_ps3(animated_background_ ? animated_base_texture_ : background_texture_);
+#else
     setup_texture_ps3(background_texture_);
+#endif
     const u8 stride=sizeof(V14Vertex);
     rsxBindVertexArrayAttrib(ctx,attr_position_,0,background_mesh_.vertex_offset+offsetof(V14Vertex,x),stride,3,GCM_VERTEX_DATA_TYPE_F32,GCM_LOCATION_RSX);
     rsxBindVertexArrayAttrib(ctx,attr_normal_,0,background_mesh_.vertex_offset+offsetof(V14Vertex,nx),stride,3,GCM_VERTEX_DATA_TYPE_F32,GCM_LOCATION_RSX);
     rsxBindVertexArrayAttrib(ctx,attr_uv_,0,background_mesh_.vertex_offset+offsetof(V14Vertex,u),stride,2,GCM_VERTEX_DATA_TYPE_F32,GCM_LOCATION_RSX);
     rsxDrawIndexArray(ctx,GCM_TYPE_TRIANGLES,background_mesh_.index_offset,background_mesh_.index_count,GCM_INDEX_TYPE_16B,GCM_LOCATION_RSX);
+#ifdef PS3_GAME_ORBIT_FIX36
+    if(!draw_orbit_waves_ps3())return false;
+#endif
     return true;
 }
 #endif
@@ -1370,6 +1392,9 @@ bool RsxRendererV10::draw_frame_ps3(const V10FramePlan& plan,const V14CaseMesh& 
     last_stats_.textured_draw_calls=0;
     last_stats_.shell_draw_calls=0;
     last_stats_.background_draw_calls=0;
+#ifdef PS3_GAME_ORBIT_FIX36
+    last_stats_.wave_draw_calls=0;
+#endif
 #ifdef PS3_GAME_ORBIT_FIX30
     if(background_texture_.uploaded){
         if(!draw_orbit_background_ps3()) return false;

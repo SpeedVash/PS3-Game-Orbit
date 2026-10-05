@@ -22,6 +22,9 @@ static std::size_t align_up(std::size_t v, std::size_t a) {
 
 bool RsxStage1::init() {
     last_error_.clear();
+#ifdef PS3_GAME_ORBIT_FIX36
+    texture_pool_.reserve(BufferPoolSlots);
+#endif
 #ifdef __PSL1GHT__
     constexpr std::size_t IO_SIZE = 8u << 20;
     constexpr std::size_t CMD_SIZE = 1u << 20;
@@ -47,6 +50,9 @@ bool RsxStage1::init() {
 }
 
 void RsxStage1::shutdown() {
+#ifdef PS3_GAME_ORBIT_FIX36
+    clear_texture_pool();decode_scratch_={};argb_scratch_={};
+#endif
 #ifdef __PSL1GHT__
     if (io_buffer_) std::free(io_buffer_);
     io_buffer_ = nullptr;
@@ -70,9 +76,17 @@ bool RsxStage1::prepare_cover(const CoverImage& image, GpuTextureStage1& out,uns
     }
 #endif
 
+#ifdef PS3_GAME_ORBIT_FIX36
+    auto& decoded=decode_scratch_;
+#else
     DecodedImageRGBA decoded;
+#endif
 #ifdef PS3_GAME_ORBIT_FIX35
+#ifdef PS3_GAME_ORBIT_FIX36
+    auto& argb=argb_scratch_;
+#else
     DecodedImageARGB argb;
+#endif
     const bool direct_argb=read_cover_orientation_fix28(image)==1 && manual_orientation==1 && image.width<=1024 && image.height<=1024;
     if(direct_argb){if(!decode_cover_argb_fix35(image,argb,last_error_))return false;}
     else
@@ -97,10 +111,14 @@ bool RsxStage1::prepare_cover(const CoverImage& image, GpuTextureStage1& out,uns
     const std::size_t pitch = align_up(static_cast<std::size_t>(width) * 4u, 64u);
     const std::size_t bytes = pitch * static_cast<std::size_t>(height);
     void* mem = nullptr;
+#ifdef PS3_GAME_ORBIT_FIX36
+    std::size_t allocation_bytes=0;mem=acquire_texture_buffer(bytes,allocation_bytes);
+#else
 #ifdef __PSL1GHT__
     mem = rsxMemalign(128, static_cast<u32>(bytes));
 #else
     if (posix_memalign(&mem, 128, bytes) != 0) mem = nullptr;
+#endif
 #endif
     if (!mem) { last_error_ = "Could not allocate texture memory"; return false; }
     std::memset(mem, 0, bytes);
@@ -126,6 +144,9 @@ bool RsxStage1::prepare_cover(const CoverImage& image, GpuTextureStage1& out,uns
     out.width = width;
     out.height = height;
     out.pitch = static_cast<int>(pitch);
+#ifdef PS3_GAME_ORBIT_FIX36
+    out.allocation_bytes=allocation_bytes;out.reusable=true;
+#endif
 #ifdef __PSL1GHT__
     if (rsxAddressToOffset(mem, &out.gpu_offset) != 0) {
         rsxFree(mem); out = {}; last_error_ = "rsxAddressToOffset failed"; return false;
@@ -150,6 +171,10 @@ bool RsxStage1::prepare_cover(const CoverImage& image, GpuTextureStage1& out,uns
         out.back_uv = {0,0,0,0};
         out.spine_uv = {0,0,0,0};
     }
+#ifdef PS3_GAME_ORBIT_FIX36
+    if(decoded.rgba.capacity()>(4u<<20))decoded={};
+    if(argb.argb.capacity()>(4u<<20))argb={};
+#endif
     return true;
 }
 
@@ -211,6 +236,11 @@ bool RsxStage1::update_overlay(const DecodedImageRGBA& image,GpuTextureStage1& o
 
 void RsxStage1::release_cover(GpuTextureStage1& tex) {
     if (tex.gpu_ptr) {
+#ifdef PS3_GAME_ORBIT_FIX36
+        if(tex.reusable && initialized_ && tex.allocation_bytes && tex.allocation_bytes<=BufferPoolBytes-pooled_texture_bytes_ && texture_pool_.size()<BufferPoolSlots){
+            texture_pool_.push_back({tex.gpu_ptr,tex.allocation_bytes});pooled_texture_bytes_+=tex.allocation_bytes;tex={};return;
+        }
+#endif
 #ifdef __PSL1GHT__
         rsxFree(tex.gpu_ptr);
 #else

@@ -4,6 +4,9 @@
 #include "runtime_diag.h"
 #include <limits>
 #include <algorithm>
+#ifdef PS3_GAME_ORBIT_FIX36
+#include "prefetch_policy_fix36.h"
+#endif
 #ifdef PS3_GAME_ORBIT_FIX34
 #include "orbit_flow_fix31.h"
 #endif
@@ -60,7 +63,7 @@ bool RsxRendererV10::load_gpu_cover(int gi,const GameEntry& game,CoverCache& cac
         return false;
     }
     fresh.stamp=++gpu_cache_clock_;
-    gpu_cache_bytes_+=std::size_t(fresh.texture.pitch)*std::size_t(fresh.texture.height);
+    gpu_cache_bytes_+=gpu_texture_storage_bytes(fresh.texture);
     covers_.emplace(gi,std::move(fresh));return true;
 }
 bool RsxRendererV10::prefetch_nearby_cover(const CoverflowState& state,CoverCache& cache) {
@@ -75,6 +78,13 @@ bool RsxRendererV10::prefetch_nearby_cover(const CoverflowState& state,CoverCach
 #ifdef PS3_GAME_ORBIT_FIX33
     if(pinned.size()>=MaxResidentCovers) return false;
 #endif
+#ifdef PS3_GAME_ORBIT_FIX36
+    for(const int gi:PrefetchPolicyFix36::candidates(state)){
+        const auto& g=state.games[std::size_t(gi)];
+        if(covers_.count(gi) || g.cover_path.empty() || failed_gpu_covers_.count(gi))continue;
+        return load_gpu_cover(gi,g,cache,pinned);
+    }
+#else
     const int n=int(state.visible.size());
     for(int distance=1;distance<=
 #ifdef PS3_GAME_ORBIT_FIX34
@@ -91,6 +101,7 @@ bool RsxRendererV10::prefetch_nearby_cover(const CoverflowState& state,CoverCach
         if(covers_.count(gi) || g.cover_path.empty() || failed_gpu_covers_.count(gi)) continue;
         return load_gpu_cover(gi,g,cache,pinned);
     }
+#endif
     return false;
 }
 #endif

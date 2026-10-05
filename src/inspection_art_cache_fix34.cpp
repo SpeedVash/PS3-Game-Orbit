@@ -19,7 +19,7 @@ bool RsxRendererV10::load_cached_inspection_art(InspectionArtCache& cache,int gi
         if(art.game_path==game.path && art.path==path && art.texture.uploaded) {
             art.stamp=++cache.clock;++cache.hits;return true;
         }
-        cache.bytes-=std::min(cache.bytes,std::size_t(art.texture.pitch)*std::size_t(art.texture.height));
+        cache.bytes-=std::min(cache.bytes,gpu_texture_storage_bytes(art.texture));
         if(art.texture.gpu_ptr) stage1_->release_cover(art.texture);
         cache.entries.erase(found);
     }
@@ -44,7 +44,7 @@ bool RsxRendererV10::load_cached_inspection_art(InspectionArtCache& cache,int gi
             if(it->second.stamp<oldest) {victim=it;oldest=it->second.stamp;}
         if(victim==cache.entries.end()) return false;
         auto& art=victim->second;
-        cache.bytes-=std::min(cache.bytes,std::size_t(art.texture.pitch)*std::size_t(art.texture.height));
+        cache.bytes-=std::min(cache.bytes,gpu_texture_storage_bytes(art.texture));
         if(art.texture.gpu_ptr) stage1_->release_cover(art.texture);
         cache.entries.erase(victim);++cache.evictions;
     }
@@ -58,7 +58,7 @@ bool RsxRendererV10::load_cached_inspection_art(InspectionArtCache& cache,int gi
         return false;
     }
     fresh.stamp=++cache.clock;
-    cache.bytes+=std::size_t(fresh.texture.pitch)*std::size_t(fresh.texture.height);
+    cache.bytes+=gpu_texture_storage_bytes(fresh.texture);
     cache.failed.erase(gi);
     const int width=fresh.texture.width,height=fresh.texture.height;
     cache.entries.emplace(gi,std::move(fresh));
@@ -72,12 +72,45 @@ bool RsxRendererV10::sync_inspection_art(const CoverflowState& state) {
     if(!ready_ || !stage1_) {last_error_="Renderer not ready for inspection artwork";return false;}
     const auto* game=current_game(state);
     if(!game || (!state.inspection_target && state.inspection_phase==0)) return true;
+#ifdef PS3_GAME_ORBIT_FIX36
+    prefetch_inspection_art(state);
+#else
     const int gi=state.visible[std::size_t(state.selected)];
     load_cached_inspection_art(inside_cache_,gi,*game,game->inside_cover_path,GameCoverKind::FullCover);
     load_cached_inspection_art(disc_cache_,gi,*game,game->disc_art_path,GameCoverKind::FrontOnly);
+#endif
     return true; // Missing optional art uses the existing neutral/default surfaces.
 }
 
+#ifdef PS3_GAME_ORBIT_FIX36
+bool RsxRendererV10::prefetch_inspection_art(const CoverflowState& state){
+    if(!ready_ || !stage1_)return false;
+    const auto* game=current_game(state);
+    if(!game)return false;
+    const int gi=state.visible[std::size_t(state.selected)];
+    const auto attempt=[&](InspectionArtCache& cache,const std::string& path,GameCoverKind kind){
+        const auto found=cache.entries.find(gi);
+        if(path.empty()){
+            if(found!=cache.entries.end()){
+                cache.bytes-=std::min(cache.bytes,gpu_texture_storage_bytes(found->second.texture));
+                stage1_->release_cover(found->second.texture);
+                cache.entries.erase(found);
+            }
+            cache.failed.erase(gi);
+            return false;
+        }
+        if(found!=cache.entries.end() && found->second.game_path==game->path && found->second.path==path && found->second.texture.uploaded){
+            found->second.stamp=++cache.clock;
+            ++cache.hits;
+            return false;
+        }
+        const auto failed=cache.failed.find(gi);if(failed!=cache.failed.end() && failed->second==std::make_pair(game->path,path))return false;
+        load_cached_inspection_art(cache,gi,*game,path,kind);return true;
+    };
+    if(attempt(inside_cache_,game->inside_cover_path,GameCoverKind::FullCover))return true;
+    return attempt(disc_cache_,game->disc_art_path,GameCoverKind::FrontOnly);
+}
+#endif
 bool RsxRendererV10::has_inside_texture(int gi) const {
     const auto found=inside_cache_.entries.find(gi);
     return found!=inside_cache_.entries.end() && found->second.texture.uploaded;
@@ -89,10 +122,21 @@ bool RsxRendererV10::has_disc_art_texture(int gi) const {
 #endif
 
 #ifdef PS3_GAME_ORBIT_FIX35
-void RsxRendererV10::invalidate_game_art(int gi){
+void RsxRendererV10::invalidate_game_art(int gi
+#ifdef PS3_GAME_ORBIT_FIX36
+    ,unsigned mask
+#endif
+){
+#ifdef PS3_GAME_ORBIT_FIX36
+    if(mask&1){auto cover=covers_.find(gi);if(cover!=covers_.end()){release_cover_record(cover->second);covers_.erase(cover);}failed_gpu_covers_.erase(gi);}
+    for(const auto& pair:{std::make_pair(&inside_cache_,2u),std::make_pair(&disc_cache_,4u)}){
+        if(!(mask&pair.second))continue;
+        auto* cache=pair.first;
+#else
     auto cover=covers_.find(gi);if(cover!=covers_.end()){release_cover_record(cover->second);covers_.erase(cover);}failed_gpu_covers_.erase(gi);
     for(auto* cache:{&inside_cache_,&disc_cache_}){
-        auto it=cache->entries.find(gi);if(it!=cache->entries.end()){const auto bytes=std::size_t(it->second.texture.pitch)*it->second.texture.height;stage1_->release_cover(it->second.texture);cache->bytes-=std::min(cache->bytes,bytes);cache->entries.erase(it);}cache->failed.erase(gi);
+#endif
+        auto it=cache->entries.find(gi);if(it!=cache->entries.end()){const auto bytes=gpu_texture_storage_bytes(it->second.texture);stage1_->release_cover(it->second.texture);cache->bytes-=std::min(cache->bytes,bytes);cache->entries.erase(it);}cache->failed.erase(gi);
     }
 }
 #endif

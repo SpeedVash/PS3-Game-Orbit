@@ -1,5 +1,18 @@
 # Histórico de versões
 
+## 1.3.3-rc.1 — TESTE / FIX36
+
+- Pré-carga do Inside Cover Full e disco do jogo selecionado durante o repouso, uma imagem por etapa, antes da abertura com L3.
+- Reutilização de buffers RGBA/ARGB e de blocos liberados de texturas, com pool limitado a 8 MiB/três blocos e contabilização da alocação real.
+- Pré-carga por layout: três vizinhos na Lista, cinco no Clássico e até quatorze no Spine, priorizando a direção de navegação e preservando superfícies visíveis.
+- USB passa a procurar em PS3COVERS na raiz de cada dispositivo, sem subpastas. Qualquer subconjunto de artes pode ser atualizado; tipos ausentes ou corrompidos preservam a arte anterior.
+- Importação de artes para ISO pela ID reconhecida ou pelo nome exato sem extensão, inclusive sem ID conhecida. Invalidação somente dos tipos copiados.
+- Fundo animado próprio inspirado no XMB, com opção Ligado/Desligado no menu START e preferência persistente separada. Desligado mantém a imagem estática.
+- Mantidos caches independentes 15/15/15, geometria da caixa e disco, UVs, shaders, sequência de apresentação, montagem webMAN e otimizações da 1.3.2.
+- Primeira tela v1.3.3 / SpeedVash; log FIX36 com PERF 1.3.3 e contadores de reutilização/ondas.
+- Mesma identidade PGORBT301; APP_VER 01.06, acima de 01.05 da 1.3.2.
+- Testes de arquivos, buffers, caches com 57 jogos, menu, persistência, pré-carga, loop nativo e fundo; compilação PowerPC64 e pacote verificados no computador. Teste físico no PS3 pendente.
+
 ## 1.3.2-rc.1 — TESTE / FIX35
 
 - Atualização parcial da interface e upload das regiões alteradas, com textura persistente.
