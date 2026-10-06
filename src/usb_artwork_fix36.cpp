@@ -4,6 +4,10 @@
 #include "image_decode.h"
 #include "cover_limits_fix31.h"
 #include "runtime_diag.h"
+#ifdef PS3_GAME_ORBIT_FIX37
+#include "artwork_resize_fix37.h"
+#include "cover_orientation_fix28.h"
+#endif
 #include <array>
 #include <algorithm>
 #include <cerrno>
@@ -34,6 +38,9 @@ ImportResult import_usb(const GameEntry& game,const std::vector<std::string>& ro
     const std::array<Role,3> roles{{{"","capa",GameCoverKind::FullCover,1},{"_INSIDE","interior",GameCoverKind::FullCover,2},{"_DISC","disco",GameCoverKind::FrontOnly,4}}};
     const std::array<const char*,6> exts{{".jpg",".jpeg",".png",".JPG",".JPEG",".PNG"}};
     DecodedImageRGBA decoded;unsigned mask=0,failed=0;bool any=false;
+#ifdef PS3_GAME_ORBIT_FIX37
+    DecodedImageRGBA normalized;std::vector<std::uint8_t> encoded;
+#endif
     for(const auto& role:roles){
         std::string source,extension;
         for(const auto& root:roots){for(const auto& key:keys){for(const auto* ext:exts){const auto path=root+"/PS3COVERS/"+key+role.suffix+ext;if(regular(path)){source=path;extension=ext;break;}}if(!source.empty())break;}if(!source.empty())break;}
@@ -44,10 +51,26 @@ ImportResult import_usb(const GameEntry& game,const std::vector<std::string>& ro
             ++failed;RuntimeDiag::log("USB 1.3.3 rejected: role=%s path=%s error=%s",role.label,source.c_str(),error.c_str());continue;
         }
         if(mkdir(covers.c_str(),0777)!=0 && errno!=EEXIST){++failed;continue;}
+#ifdef PS3_GAME_ORBIT_FIX37
+        const bool disc=role.bit==4;
+        if(!orient_cover_rgba_fix28(decoded,read_cover_orientation_fix28(image),error) ||
+           !orient_cover_rgba_fix28(decoded,default_cover_orientation_fix30(image),error) ||
+           !ArtworkResizeFix37::resize(decoded,disc?500:1000,disc?500:550,normalized) ||
+           !ArtworkResizeFix37::encode(normalized,disc,encoded)){
+            ++failed;RuntimeDiag::log("USB 1.4 conversion failed: role=%s path=%s",role.label,source.c_str());continue;
+        }
+        extension=disc?".png":".jpg";
+#endif
         for(char& c:extension)if(c>='A' && c<='Z')c=char(c-'A'+'a');
         const auto base=covers+"/"+target_key+role.suffix,dest=base+extension,temp=dest+".orbit-new";
         if(exists(temp)){++failed;continue;}
-        if(!stage_file(temp,image.encoded)){std::remove(temp.c_str());++failed;continue;}
+        if(!stage_file(temp,
+#ifdef PS3_GAME_ORBIT_FIX37
+            encoded
+#else
+            image.encoded
+#endif
+        )){std::remove(temp.c_str());++failed;continue;}
         std::vector<std::pair<std::string,std::string>> backups;bool ok=true;
         for(const auto* ext:exts){const auto old=base+ext;if(!exists(old))continue;const auto backup=old+".orbit-old";if(exists(backup) || !regular(old) || std::rename(old.c_str(),backup.c_str())!=0){ok=false;break;}backups.emplace_back(old,backup);}
         if(ok)ok=std::rename(temp.c_str(),dest.c_str())==0;

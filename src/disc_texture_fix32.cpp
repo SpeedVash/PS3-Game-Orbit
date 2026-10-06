@@ -9,7 +9,13 @@ bool RsxRendererV10::prepare_disc_textures() {
 #endif
     const auto label=load_cover_file(base+"ORBIT_DISC_LABEL.png",GameCoverKind::FrontOnly);
     const auto back=load_cover_file(base+"ORBIT_DISC_BACK.png",GameCoverKind::FrontOnly);
-    if(!stage1_->prepare_cover(label,disc_label_texture_) || !stage1_->prepare_cover(back,disc_back_texture_)) {
+    const bool label_ready=
+#ifdef PS3_GAME_ORBIT_FIX38
+        stage1_->prepare_disc_artwork(label,disc_label_texture_);
+#else
+        stage1_->prepare_cover(label,disc_label_texture_);
+#endif
+    if(!label_ready || !stage1_->prepare_cover(back,disc_back_texture_)) {
         last_error_=stage1_->last_error();return false;
     }
     return true;

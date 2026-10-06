@@ -53,6 +53,50 @@ AppCommands LibraryBrowserFix28::update(const InputFrame& raw_input,float dt){
     dt=std::clamp(dt,0.0f,0.1f);
 #ifdef PS3_GAME_ORBIT_FIX35
     AppCommands menu_command;
+#ifdef PS3_GAME_ORBIT_FIX37
+    constexpr int MenuItems=4;
+    const bool menu_was_open=state_.menu.open;
+    bool toggled=false;
+    if(input.connected && !mount_busy_ && !state_.menu.busy &&
+       (input.start.pressed || (input.triangle.pressed && !state_.visible.empty()))){
+        const bool home=input.start.pressed;
+        state_.menu.open=!(state_.menu.open && state_.menu.homebrew==home);
+        state_.menu.homebrew=home;help_open_=false;toggled=true;
+        if(state_.menu.open){state_.menu.selected=0;state_.menu.status.clear();pending_path_.clear();pending_layout_=-1;}
+    }
+    input.start.pressed=input.triangle.pressed=false;
+    if(menu_was_open || state_.menu.open){
+        if(!toggled && !state_.menu.busy && menu_was_open && input.connected){
+            if(input.circle.pressed)state_.menu.open=false;
+            if(input.up.pressed)state_.menu.selected=(state_.menu.selected+MenuItems-1)%MenuItems;
+            if(input.down.pressed)state_.menu.selected=(state_.menu.selected+1)%MenuItems;
+            if(input.cross.pressed && state_.menu.open){
+                if(state_.menu.homebrew){
+                    switch(state_.menu.selected){
+                    case 0:menu_command.rescan_library=true;state_.menu.open=false;break;
+                    case 1:state_.menu.animated_background=!state_.menu.animated_background;preferences_changed_=true;break;
+                    case 2:menu_command.import_all_usb=true;break;
+                    case 3:state_.menu.remember_last_game=!state_.menu.remember_last_game;preferences_changed_=true;break;
+                    }
+                }else{
+                    switch(state_.menu.selected){
+                    case 0:menu_command.game_menu_action=GameMenuActionFix35::Rename;break;
+                    case 1:menu_command.game_menu_action=GameMenuActionFix35::ImportUsb;break;
+                    case 2:menu_command.game_menu_action=GameMenuActionFix35::ReloadCovers;break;
+                    case 3:
+                        if(auto* game=current_game(state_)){
+                            game->favorite=!game->favorite;preferences_changed_=true;
+                            if(state_.filter==FilterMode::Favorites){rebuild_visible(state_);OrbitFlowFix31::reset(state_);}
+                            state_.menu.open=false;
+                        }
+                        break;
+                    }
+                }
+            }
+        }
+        input=InputFrame{};
+    }
+#else
 #ifdef PS3_GAME_ORBIT_FIX36
     constexpr int MenuItems=5;
 #else
@@ -85,6 +129,7 @@ AppCommands LibraryBrowserFix28::update(const InputFrame& raw_input,float dt){
         }
         input=InputFrame{};
     }
+#endif
 #endif
 #ifdef PS3_GAME_ORBIT_FIX32
     const bool was_inspecting=state_.inspection_target || state_.inspection_phase>0;
@@ -168,6 +213,9 @@ AppCommands LibraryBrowserFix28::update(const InputFrame& raw_input,float dt){
 #ifdef PS3_GAME_ORBIT_FIX35
     commands.game_menu_action=menu_command.game_menu_action;
     commands.rescan_library=commands.rescan_library || menu_command.rescan_library;
+#ifdef PS3_GAME_ORBIT_FIX37
+    commands.import_all_usb=menu_command.import_all_usb;
+#endif
 #endif
 #ifdef PS3_GAME_ORBIT_FIX31
     if(!OrbitFlowFix31::can_admit(state_)) {
@@ -214,6 +262,16 @@ AppCommands LibraryBrowserFix28::update(const InputFrame& raw_input,float dt){
     rotation.cross.pressed=input.up.pressed;
 #endif
     inspect_.update(state_,rotation,dt);
+#ifdef PS3_GAME_ORBIT_FIX37
+    if(input.connected && (input.l2.held || input.r2.held || input.r3.pressed || input.up.pressed ||
+       std::fabs(input.right_x)>.18f || std::fabs(input.right_y)>.18f))preferences_changed_=true;
+    state_.menu.selected_favorite=current_game(state_) && current_game(state_)->favorite;
+    if(state_.visible.empty()){
+        state_.inspection_target=false;state_.inspection_phase=0;
+        if(!state_.menu.homebrew)state_.menu.open=false;
+        OrbitFlowFix31::reset(state_);
+    }
+#endif
 #ifdef PS3_GAME_ORBIT_FIX31
     if(input.connected && input.r3.pressed && state_.layout==OrbitLayout::Spine) state_.center_yaw_deg=0;
     state_.case_scale=inspect_.scale();
@@ -240,6 +298,9 @@ void LibraryBrowserFix28::restore_layout(OrbitLayout layout) {
 }
 #endif
 CoverflowState LibraryBrowserFix28::render_state() const {
+#ifdef PS3_GAME_ORBIT_FIX37
+    return state_;
+#else
     if(!state_.visible.empty()) return state_;
 #ifdef PS3_GAME_ORBIT_FIX30
     auto empty=make_safe_boot_state("");
@@ -258,6 +319,7 @@ CoverflowState LibraryBrowserFix28::render_state() const {
     empty.layout=state_.layout;empty.case_scale=inspect_.scale();OrbitFlowFix31::reset(empty);
 #endif
     return empty;
+#endif
 }
 LibraryHudLinesFix28 LibraryBrowserFix28::hud_lines(const std::string& cover_status) const {
     const char* filter=state_.filter==FilterMode::HDD ? "HDD" : state_.filter==FilterMode::USB ? "USB" :

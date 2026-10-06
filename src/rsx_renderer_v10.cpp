@@ -17,6 +17,9 @@
 #ifdef PS3_GAME_ORBIT_FIX32
 #include "case_animation_fix32.h"
 #endif
+#ifdef PS3_GAME_ORBIT_FIX37
+#include "case_model_fix37.h"
+#endif
 
 #ifdef __PSL1GHT__
 #include <cstddef>
@@ -59,7 +62,11 @@ V10FramePlan build_v10_frame_plan(const std::vector<CasePose>& poses,
 #ifdef PS3_GAME_ORBIT_FIX32
             const bool opened=pose.selected && pose.inspection_phase>.20f;
             if((part.joint==V14MeshPart::Joint::Closed)==opened) continue;
+#ifdef PS3_GAME_ORBIT_FIX37
+            const auto joint=opened ? CaseModelFix37::joint_transform(part.joint,pose.inspection_phase) : mat4_identity();
+#else
             const auto joint=opened ? CaseAnimationFix32::joint_transform(part.joint,pose.inspection_phase) : mat4_identity();
+#endif
             const auto part_model=mat4_mul(model,joint);
 #endif
             V10DrawPacket p{};
@@ -88,6 +95,24 @@ V10FramePlan build_v10_frame_plan(const std::vector<CasePose>& poses,
     }
     return out;
 }
+
+#ifdef PS3_GAME_ORBIT_FIX37
+bool RsxRendererV10::sync_case_animation(V14CaseMesh& mesh,float phase){
+    if(!std::isfinite(phase) || phase<0 || phase>1)return false;
+    if(std::fabs(phase-geometry_phase_)<.00001f)return true;
+    CaseModelFix37::deform_spine(mesh,phase);
+#ifdef __PSL1GHT__
+    if(gpu_mesh_.size()!=mesh.parts.size())return false;
+    for(std::size_t i=0;i<mesh.parts.size();++i){
+        const auto& part=mesh.parts[i];if(part.flex_rest.empty())continue;
+        if(!gpu_mesh_[i].vertices || gpu_mesh_[i].vertex_count!=part.vertices.size())return false;
+        std::memcpy(gpu_mesh_[i].vertices,part.vertices.data(),part.vertices.size()*sizeof(V14Vertex));
+    }
+    __asm__ volatile("sync" ::: "memory");
+#endif
+    geometry_phase_=phase;return true;
+}
+#endif
 
 std::size_t native_packet_part(const V10DrawPacket& packet,std::size_t i,const V14CaseMesh& mesh){
     return packet.mesh_part==static_cast<std::size_t>(-1) ? i%mesh.parts.size() : packet.mesh_part;

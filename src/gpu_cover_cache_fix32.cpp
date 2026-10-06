@@ -13,7 +13,13 @@
 
 #ifdef PS3_GAME_ORBIT_FIX33
 void RsxRendererV10::trim_cover_cache(const std::unordered_set<int>& pinned) {
-    const auto limit=std::max(MaxResidentCovers,pinned.size());
+    const auto limit=std::max(
+#ifdef PS3_GAME_ORBIT_FIX37
+        resident_limit_,
+#else
+        MaxResidentCovers,
+#endif
+        pinned.size());
     while(covers_.size()>limit || gpu_cache_bytes_>GpuCoverBudgetBytes) {
         auto victim=covers_.end();auto oldest=std::numeric_limits<std::uint64_t>::max();
         for(auto it=covers_.begin();it!=covers_.end();++it)
@@ -27,7 +33,13 @@ void RsxRendererV10::trim_cover_cache(const std::unordered_set<int>& pinned) {
 bool RsxRendererV10::reserve_cover_cache(const std::unordered_set<int>& pinned,std::size_t bytes) {
     const auto limit=
 #ifdef PS3_GAME_ORBIT_FIX33
-        std::max(MaxResidentCovers,pinned.size());
+        std::max(
+#ifdef PS3_GAME_ORBIT_FIX37
+            resident_limit_,
+#else
+            MaxResidentCovers,
+#endif
+            pinned.size());
 #else
         MaxResidentCovers;
 #endif

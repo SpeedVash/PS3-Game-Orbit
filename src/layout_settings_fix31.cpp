@@ -1,10 +1,17 @@
+#include "file_store_fix38.h"
 #include "layout_settings_fix31.h"
 #include <cstdio>
 #include <cstring>
 #include <unistd.h>
 
 bool LayoutSettingsFix31::load(const std::string& path) {
-    auto* f=std::fopen(path.c_str(),"rb");if(!f) return false;
+    auto* f=
+#ifdef PS3_GAME_ORBIT_FIX38
+FileStoreFix38::open_read(path)
+#else
+std::fopen(path.c_str(),"rb")
+#endif
+;if(!f) return false;
     char bytes[64]{};const auto count=std::fread(bytes,1,sizeof(bytes),f);
     const bool valid_read=!std::ferror(f);std::fclose(f);
     if(!valid_read || count==sizeof(bytes)) return false;
@@ -27,7 +34,13 @@ bool LayoutSettingsFix31::save(const std::string& path) const {
     bool ok=std::fwrite(value,1,std::strlen(value),f)==std::strlen(value);
     if(std::fflush(f)!=0 || fsync(fileno(f))!=0) ok=false;
     if(std::fclose(f)!=0) ok=false;
-    if(ok) ok=std::rename(temp.c_str(),path.c_str())==0;
+    if(ok) ok=
+#ifdef PS3_GAME_ORBIT_FIX38
+FileStoreFix38::commit(temp,path)
+#else
+std::rename(temp.c_str(),path.c_str())==0
+#endif
+;
     if(!ok) std::remove(temp.c_str());
     return ok;
 }

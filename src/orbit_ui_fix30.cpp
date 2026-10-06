@@ -1,4 +1,5 @@
 #include "orbit_ui_fix30.h"
+#include "project_identity.h"
 #include <algorithm>
 #include <cmath>
 #include <vector>
@@ -129,7 +130,11 @@ void paint_hud_fix35(DecodedImageRGBA& p,const std::array<std::string,6>& s,cons
     if(regions&1){
     text(p,s[0],64,13,28,White,760);
 #ifdef PS3_GAME_ORBIT_FIX31
-#ifdef PS3_GAME_ORBIT_FIX36
+#ifdef PS3_GAME_ORBIT_FIX39
+    text(p,ProjectIdentity::Version,390,20,18,Muted,100);
+#elif defined(PS3_GAME_ORBIT_FIX37)
+    text(p,"1.4",390,20,18,Muted,100);
+#elif defined(PS3_GAME_ORBIT_FIX36)
     text(p,"1.3.3",390,20,18,Muted,100);
 #elif defined(PS3_GAME_ORBIT_FIX35)
     text(p,"1.3.2",390,20,18,Muted,100);
@@ -158,15 +163,31 @@ void paint_hud_fix35(DecodedImageRGBA& p,const std::array<std::string,6>& s,cons
     text(p,s[3].empty() ? s[2] : s[3],64,128,18,Muted,1152);
     if(menu && menu->open){
         button(p,"X",73,157,"Selecionar",Blue);button(p,"ARROWS",300,157,"Opções");
-        button(p,"START",810,157,"Fechar menu");button(p,"O",1123,157,"Fechar",Red);
+#ifdef PS3_GAME_ORBIT_FIX37
+        button(p,menu->homebrew?"START":"TRIANGLE",810,157,"Fechar menu");
+#else
+        button(p,"START",810,157,"Fechar menu");
+#endif
+        button(p,"O",1123,157,"Fechar",Red);
     }else{
         const bool opened=s[4].find("OPEN")!=std::string::npos;
         const bool mounting=s[4].find("MOUNT")!=std::string::npos;
         button(p,"X",73,157,mounting ? "Montando" : "Montar",Blue);
         if(opened){
+#ifdef PS3_GAME_ORBIT_FIX37
+            button(p,"L3",260,157,"Fechar");button(p,"TRIANGLE",400,157,"Jogo",Green);
+            button(p,"START",560,157,"Opções");button(p,"SELECT",820,157,"Ajuda");
+#else
             button(p,"L3",300,157,"Fechar");button(p,"START",530,157,"Opções");button(p,"SELECT",820,157,"Ajuda");
+#endif
         }else{
-            button(p,"ARROWS",210,157,"Jogos");button(p,"TRIANGLE",328,157,"Favorito",Green);
+            button(p,"ARROWS",210,157,"Jogos");button(p,"TRIANGLE",328,157,
+#ifdef PS3_GAME_ORBIT_FIX37
+                "Jogo",
+#else
+                "Favorito",
+#endif
+                Green);
             button(p,"L3",463,157,"Abrir");button(p,"SQUARE",580,157,"Layout",{{211,169,203,255}});
             button(p,"START",730,157,"Opções");button(p,"SELECT",923,157,"Ajuda");
         }
@@ -222,7 +243,11 @@ void paint_hud_fix35(DecodedImageRGBA& p,const std::array<std::string,6>& s,cons
         text(p,"Lista   Cima / baixo: navegar",74,369,18,White,480);
         text(p,"Cima   Autogiro no Clássico / Spine",74,397,18,White,480);
 #ifdef PS3_GAME_ORBIT_FIX35
+#ifdef PS3_GAME_ORBIT_FIX37
+        text(p,"Triângulo: jogo    START: homebrew",74,425,18,White,480);
+#else
         text(p,"START   Opções do jogo",74,425,18,White,480);
+#endif
 #else
         text(p,"START   Atualizar biblioteca",74,425,18,White,480);
 #endif
@@ -245,6 +270,19 @@ void paint_hud_fix35(DecodedImageRGBA& p,const std::array<std::string,6>& s,cons
     }
     if(menu && menu->open){
         rect(p,370,185,540,307,{{18,20,23,242}});
+#ifdef PS3_GAME_ORBIT_FIX37
+        text(p,menu->homebrew?"Opções do PS3 Game Orbit":"Opções do jogo",394,200,28,White,492);
+#ifdef PS3_GAME_ORBIT_FIX39
+        text(p,menu->homebrew?std::string("Versão ")+ProjectIdentity::Version+" · SpeedVash":s[1],394,242,20,Muted,492);
+#else
+        text(p,menu->homebrew?"Versão 1.4 · SpeedVash":s[1],394,242,20,Muted,492);
+#endif
+        const char* game_options[]={"Alterar nome","Copiar capas do USB","Recarregar capas",menu->selected_favorite?"Remover dos favoritos":"Adicionar aos favoritos"};
+        const char* home_options[]={"Atualizar biblioteca",menu->animated_background?"Fundo animado: Ligado":"Fundo animado: Desligado",
+            "Atualizar todas as capas via USB",menu->remember_last_game?"Salvar último jogo visto: Ligado":"Salvar último jogo visto: Desligado"};
+        const auto* options=menu->homebrew?home_options:game_options;
+        constexpr int Count=4,Spacing=35;
+#else
         text(p,"Opções do jogo",394,200,28,White,492);
         text(p,s[1],394,242,20,Muted,492);
 #ifdef PS3_GAME_ORBIT_FIX36
@@ -253,6 +291,7 @@ void paint_hud_fix35(DecodedImageRGBA& p,const std::array<std::string,6>& s,cons
 #else
         constexpr const char* options[]={"Alterar nome do jogo","Recarregar capas","Copiar capas do pendrive","Atualizar biblioteca"};
         constexpr int Count=4,Spacing=35;
+#endif
 #endif
         for(int i=0;i<Count;++i){const int y=283+i*Spacing;
             if(i==menu->selected){rect(p,382,y-3,516,33,{{106,141,152,80}});rect(p,382,y-3,3,33,Blue);}
@@ -426,7 +465,9 @@ DecodedImageRGBA splash(const DecodedImageRGBA* artwork){
         }
     }else text(p,"PS3 Game Orbit",(Width-measure("PS3 Game Orbit",28))/2,315,28,White,800);
 #ifdef PS3_GAME_ORBIT_FIX35
-#ifdef PS3_GAME_ORBIT_FIX36
+#ifdef PS3_GAME_ORBIT_FIX38
+    const std::string credit=std::string("v")+ProjectIdentity::Version+"  |  Criado por SpeedVash";
+#elif defined(PS3_GAME_ORBIT_FIX36)
     const std::string credit="v1.3.3  |  Criado por SpeedVash";
 #else
     const std::string credit="v1.3.2  |  Criado por SpeedVash";

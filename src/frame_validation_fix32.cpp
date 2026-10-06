@@ -7,8 +7,18 @@
 // Validate every case range before emitting any RSX command. Articulation
 // changes the range count, but never permits missing or duplicate surfaces.
 bool validate_native_plan_fix32(const V10FramePlan& plan,const V14CaseMesh& mesh) {
-    if(plan.packets.empty() || mesh.parts.empty() || mesh.parts.size()>64 ||
-       plan.packets.size()>LibraryPairFix28::MaxCases*6+32) return false;
+    if(
+#ifndef PS3_GAME_ORBIT_FIX37
+       plan.packets.empty() ||
+#endif
+       mesh.parts.empty() || mesh.parts.size()>64 ||
+       plan.packets.size()>LibraryPairFix28::MaxCases*6+
+#ifdef PS3_GAME_ORBIT_FIX37
+       64
+#else
+       32
+#endif
+       ) return false;
     struct Range {int game=-1;bool open=false;std::array<unsigned char,64> counts{};};
     std::array<Range,LibraryPairFix28::MaxCases> ranges{};
     std::size_t range_count=0;

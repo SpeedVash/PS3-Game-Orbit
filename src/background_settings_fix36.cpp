@@ -1,9 +1,16 @@
+#include "file_store_fix38.h"
 #include "background_settings_fix36.h"
 #ifdef PS3_GAME_ORBIT_FIX36
 #include <cstdio>
 #include <unistd.h>
 bool BackgroundSettingsFix36::load(const std::string& path){
-    auto* f=std::fopen(path.c_str(),"rb");if(!f)return false;
+    auto* f=
+#ifdef PS3_GAME_ORBIT_FIX38
+FileStoreFix38::open_read(path)
+#else
+std::fopen(path.c_str(),"rb")
+#endif
+;if(!f)return false;
     char bytes[64]{};const auto n=std::fread(bytes,1,sizeof(bytes),f);const bool ok=!std::ferror(f);std::fclose(f);
     if(!ok || n==sizeof(bytes))return false;
     const std::string data(bytes,n);
@@ -18,7 +25,13 @@ bool BackgroundSettingsFix36::save(const std::string& path)const{
     bool ok=std::fwrite(data.data(),1,data.size(),f)==data.size() && std::fflush(f)==0;
     if(ok)ok=fsync(fileno(f))==0;
     if(std::fclose(f)!=0)ok=false;
-    if(ok)ok=std::rename(temp.c_str(),path.c_str())==0;
+    if(ok)ok=
+#ifdef PS3_GAME_ORBIT_FIX38
+FileStoreFix38::commit(temp,path)
+#else
+std::rename(temp.c_str(),path.c_str())==0
+#endif
+;
     if(!ok)std::remove(temp.c_str());
     return ok;
 }

@@ -6,7 +6,12 @@ std::vector<int> candidates(const CoverflowState& s){
     std::vector<int> out;const int n=int(s.visible.size());
     if(n<2 || s.selected<0 || s.selected>=n)return out;
     const int forward=s.layout==OrbitLayout::List?2:s.layout==OrbitLayout::Classic?3:7;
-    const int behind=s.layout==OrbitLayout::List?1:s.layout==OrbitLayout::Classic?2:7;
+    const int behind=
+#ifdef PS3_GAME_ORBIT_FIX37
+        forward;
+#else
+        s.layout==OrbitLayout::List?1:s.layout==OrbitLayout::Classic?2:7;
+#endif
     const int direction=s.navigation_direction<0?-1:1;
     out.reserve(std::min(n-1,forward+behind));
     for(int d=1;d<=forward;++d)for(int sign:{direction,-direction}){

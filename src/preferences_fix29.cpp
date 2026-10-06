@@ -1,3 +1,4 @@
+#include "file_store_fix38.h"
 #include "preferences_fix29.h"
 #include <algorithm>
 #include <cstdio>
@@ -27,7 +28,13 @@ bool unhex(const std::string& in,std::string& out){
 bool valid_path(const std::string& s){return !s.empty() && s.size()<=1024 && s.rfind("/dev_",0)==0;}
 }
 bool PreferencesFix29::load(const std::string& path){
-    FILE* file=std::fopen(path.c_str(),"rb");if(!file) return false;
+    FILE* file=
+#ifdef PS3_GAME_ORBIT_FIX38
+FileStoreFix38::open_read(path)
+#else
+std::fopen(path.c_str(),"rb")
+#endif
+;if(!file) return false;
     std::string data;char block[4096];
     while(const auto n=std::fread(block,1,sizeof(block),file)){
         data.append(block,n);if(data.size()>MaxBytes){std::fclose(file);return false;}
@@ -71,7 +78,13 @@ bool PreferencesFix29::save(const std::string& path) const {
     bool ok=std::fwrite(data.data(),1,data.size(),file)==data.size() && std::fflush(file)==0;
     if(ok) ok=fsync(fileno(file))==0;
     if(std::fclose(file)!=0) ok=false;
-    if(ok) ok=std::rename(temporary.c_str(),path.c_str())==0;
+    if(ok) ok=
+#ifdef PS3_GAME_ORBIT_FIX38
+FileStoreFix38::commit(temporary,path)
+#else
+std::rename(temporary.c_str(),path.c_str())==0
+#endif
+;
     if(!ok) std::remove(temporary.c_str());
     return ok;
 }

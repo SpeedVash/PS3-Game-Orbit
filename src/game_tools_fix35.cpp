@@ -1,3 +1,4 @@
+#include "file_store_fix38.h"
 #include "game_tools_fix35.h"
 #ifdef PS3_GAME_ORBIT_FIX35
 #include "cover_resolver.h"
@@ -64,12 +65,24 @@ bool Names::save(const std::string& path)const{
     if(data.size()>2u*1024*1024)return false;
     const auto temp=path+".tmp";
     bool ok=write_file(temp,reinterpret_cast<const unsigned char*>(data.data()),data.size());
-    if(ok)ok=std::rename(temp.c_str(),path.c_str())==0;
+    if(ok)ok=
+#ifdef PS3_GAME_ORBIT_FIX38
+FileStoreFix38::commit(temp,path)
+#else
+std::rename(temp.c_str(),path.c_str())==0
+#endif
+;
     if(!ok)std::remove(temp.c_str());
     return ok;
 }
 bool Names::load(const std::string& path){
-    FILE* f=std::fopen(path.c_str(),"rb");if(!f)return false;std::string data;std::array<char,4096> block{};
+    FILE* f=
+#ifdef PS3_GAME_ORBIT_FIX38
+FileStoreFix38::open_read(path)
+#else
+std::fopen(path.c_str(),"rb")
+#endif
+;if(!f)return false;std::string data;std::array<char,4096> block{};
     while(const auto n=std::fread(block.data(),1,block.size(),f)){data.append(block.data(),n);if(data.size()>2u*1024*1024){std::fclose(f);return false;}}
     const bool ok=!std::ferror(f);std::fclose(f);if(!ok)return false;
     const auto newline=data.find('\n');if(newline==std::string::npos)return false;
