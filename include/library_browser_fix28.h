@@ -4,6 +4,9 @@
 #include <vector>
 #include "app_controller.h"
 #include "inspect_case_fix25.h"
+#ifdef PS3_GAME_ORBIT_FIX37
+#include "orbit_flow_fix31.h"
+#endif
 
 using LibraryHudLinesFix28=std::array<std::string,6>;
 
@@ -18,6 +21,13 @@ public:
     float scale() const { return inspect_.scale(); }
     bool automatic() const { return inspect_.automatic(); }
     bool help_open() const { return help_open_; }
+#ifdef PS3_GAME_ORBIT_FIX37
+    GameEntry* entry(int index){return index>=0 && index<int(state_.games.size())?&state_.games[std::size_t(index)]:nullptr;}
+    void restore_view(float zoom,float yaw,float pitch,bool automatic,bool remember){
+        inspect_.restore(zoom,automatic);state_.case_scale=zoom;state_.center_yaw_deg=yaw;state_.center_pitch_deg=pitch;
+        state_.menu.remember_last_game=remember;OrbitFlowFix31::reset(state_);preferences_changed_=false;
+    }
+#endif
 #ifdef PS3_GAME_ORBIT_FIX35
 #ifdef PS3_GAME_ORBIT_FIX36
     void restore_background(bool animated){state_.menu.animated_background=animated;preferences_changed_=false;}

@@ -9,6 +9,9 @@ public:
     bool automatic() const { return automatic_; }
     void stop_auto() { automatic_=false; }
     float scale() const { return scale_; }
+#ifdef PS3_GAME_ORBIT_FIX37
+    void restore(float scale,bool automatic){scale_=scale;automatic_=automatic;remaining_turn_=-1;}
+#endif
 private:
     bool automatic_=true;
     float remaining_turn_=360.0f;

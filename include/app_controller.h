@@ -8,6 +8,9 @@ struct AppCommands {
     GameMenuActionFix35 game_menu_action=GameMenuActionFix35::None;
 #endif
     bool rescan_library = false;
+#ifdef PS3_GAME_ORBIT_FIX37
+    bool import_all_usb=false;
+#endif
     bool request_exit = false;
 };
 

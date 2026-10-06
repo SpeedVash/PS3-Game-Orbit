@@ -11,6 +11,9 @@ public:
     const CoverImage* get_or_load(const GameEntry& game);
     void warm_visible_neighborhood(const CoverflowState& state, int radius = 2);
     void clear();
+#ifdef PS3_GAME_ORBIT_FIX37
+    void set_limit(size_t items){max_items_=items?items:1;evict_if_needed();}
+#endif
 #ifdef PS3_GAME_ORBIT_FIX35
     void invalidate(const std::string& path);
 #endif
