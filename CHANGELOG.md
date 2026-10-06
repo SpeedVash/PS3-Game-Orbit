@@ -1,5 +1,41 @@
 # Histórico de versões
 
+## 1.4.2 — 2026-10-06 (FIX39)
+
+- Plástico neutro na lombada e relevos; retirada a faixa reta de duas camadas que acinzentava a arte.
+- Lombada feita das curvas do próprio invólucro, com topo e base arredondados e pontos de união idênticos às laterais.
+- Transporte das extremidades por duas articulações, com normais suavizadas e buffers reutilizados durante a animação.
+- Tela inicial sem TESTE; versão 1.4.2 centralizada também no cabeçalho e no menu START.
+- Mantidos o modelo aprovado fechado/aberto, abertura de 160°, disco da 1.4.1, salvamento das configurações e caches por layout.
+- PGORBT301 mantido, SFO APP_VER/VERSION 01.09, fontes e pacote atualizados.
+- Testes de união do plástico em seis fases, geometria, fluxo/menu, PNG/USB, configurações e submissão nativa. Verificação física no PS3 pendente.
+
+## 1.4.1 — TESTE (FIX38)
+
+- Corrigida a peça cinza com triângulos duplicados que sobrescrevia a arte frontal do disco.
+- Caixa fechada gerada da mesma geometria aprovada que abre, preservando seis draws para a biblioteca e a calibração.
+- Abertura de 160°, disco deslocado para x=96 mm e z=24,7 mm na retirada completa.
+- Bordas transparentes internas/externas de 0,5 mm, com furo físico de 15 mm e diâmetro de 120 mm.
+- Verso Blu-ray prateado com textura procedural; PNG frontal composto sobre substrato opaco.
+- Disco e inside selecionados carregados ao abrir; caches e pré-carga em repouso mantidos.
+- Gravações sucessivas de configurações, nomes, favoritos, seleção, layout e fundo com transação compatível com rename do PS3, rollback e recuperação de backup.
+- USRDIR é o destino persistente; migração dos dados antigos em /dev_hdd0/tmp.
+- Splash usa a versão atual, exibindo v1.4.1 e SpeedVash. SFO 01.08 mantém PGORBT301.
+- Novos testes de PNG→ARGB, ausência da sobreposição, equivalência do modelo fechado, gravações repetidas e falhas simuladas na troca de arquivo.
+
+
+## 1.4-rc.1 — 2026-10-06
+
+- Configuração unificada com checksum e gravação atômica, preservando preferências antigas.
+- Triângulo para nome/USB/recarregar/favoritos; START para biblioteca/fundo/USB em lote/último jogo.
+- Importação parcial ID/ISO em USB/PS3COVERS com saídas JPG 1000×550 e PNG 500×500.
+- Cópia da biblioteca inteira com progresso, deduplicação por ID e cancelamento entre jogos.
+- Caches por layout: Clássico 7/7/7, Lista 5/5/5, Spine 15/15/15; três vizinhos visíveis por lado no Spine.
+- Filtro vazio sem caixa; pré-carga equilibrada entre capa e artes internas, mantendo buffers reutilizados.
+- Interior procedural, arte interna completa, duas articulações com lombada contínua, topo transparente e borda externa do disco de 0,4 mm.
+- PGORBT301 mantido; SFO APP_VER 01.07. Publicação inicial como TESTE, aguardando verificação física.
+
+
 ## 1.3.3-rc.1 — TESTE / FIX36
 
 - Pré-carga do Inside Cover Full e disco do jogo selecionado durante o repouso, uma imagem por etapa, antes da abertura com L3.

@@ -2,135 +2,112 @@
 
 ![PS3 Game Orbit](pkgfiles/ICON0.PNG)
 
-**v1.3.3-rc.1 — criado por SpeedVash.** Biblioteca de jogos PS3 com caixas 3D, capas completas, layouts Clássico/Spine/Lista, favoritos e montagem pelo webMAN MOD.
+**v1.4.2 — criado por SpeedVash.** Biblioteca de jogos PS3 com capas completas, caixas 3D articuladas, layouts Clássico, Spine e Lista, favoritos e montagem pelo webMAN MOD.
 
-## Novidades da 1.3.3
+## Novidades da v1.4.2
 
-- **Interior e disco preparados durante a espera:** após 900 ms no mesmo jogo, prepara primeiro o Inside Cover Full e depois o disco, uma imagem por etapa. Abrir com L3 reaproveita as texturas que já estiverem prontas.
-- **Buffers reutilizados:** memória de decodificação e blocos liberados de texturas são reaproveitados, com limites de retenção. Texturas visíveis continuam protegidas.
-- **Pré-carga conforme o layout:** Lista considera três vizinhos, Clássico cinco e Spine até quatorze. A direção da navegação recebe prioridade.
-- **USB em `PS3COVERS`:** copia qualquer combinação de capa, interior e disco. Não exige as três imagens e preserva os tipos ausentes.
-- **Importação para ISO:** aceita a ID reconhecida ou o nome exato do arquivo ISO, sem a extensão.
-- **Fundo animado inspirado no XMB:** três ondas suaves, com opção de ligar/desligar no menu START. Desligado mantém a imagem estática; a escolha fica salva.
-- **Caches mantidos em 15 capas / 15 interiores / 15 discos.** Mantidas as otimizações da 1.3.2: interface parcial, decodificadores carregados, logs em lotes e medições em milissegundos.
+- **Acabamento transparente e sem o tom cinza da lombada:** os relevos usam plástico de cor neutra, com normais suavizadas nas curvas. A faixa reta sobreposta foi substituída pela espessura do próprio invólucro.
+- **Extremidades arredondadas e contínuas:** a lombada acompanha as curvas superiores e inferiores da caixa. As duas peças usam os mesmos pontos de união; a articulação transporta esses pontos durante a abertura.
+- Mesmo modelo fechado e aberto, limite de **160°**, disco mais para fora/frente, bordas transparentes interna e externa de **0,5 mm** e verso prateado.
+- **v1.4.2 em todas as telas:** início, cabeçalho da biblioteca e opções do homebrew usam a versão central do projeto. A palavra TESTE foi retirada da tela inicial.
+- Configurações, favoritos, nomes, último jogo, USB parcial/em lote e montagem webMAN mantidos.
+- Caches mantidos: Clássico 7/7/7, Lista 5/5/5 e Spine 15/15/15, com três vizinhos visíveis de cada lado.
 
-A compilação nativa e os testes automatizados no computador foram concluídos. **O teste físico desta v1.3.3 no PS3 está pendente.** A primeira leitura/decodificação de uma imagem continua síncrona; a pré-carga não usa uma thread separada nem garante ausência de pausas.
+Compilação nativa e testes no computador concluídos. O teste físico desta versão no PS3 está pendente; consulte [validação](docs/TESTE_1.4.2.md). A iluminação continua sendo a do renderizador aprovado: varia com o ângulo e não simula reflexão óptica real do plástico. Leitura/decodificação inicial continuam síncronas.
 
 ## Instalação
 
-1. Copie `PS3_GAME_ORBIT_v1.3.3_TESTE.gnpdrm.pkg` para um pendrive FAT32 e instale pelo gerenciador de pacotes do XMB, por cima da versão anterior.
-2. A identidade permanece `PGORBT301`; nomes personalizados, favoritos e layout continuam nos mesmos arquivos. O SFO usa `APP_VER 01.06` para avançar sobre a 1.3.2 (`01.05`).
-3. No Super Slim, habilite HEN antes de abrir. Mantenha o webMAN MOD ativo para a montagem dos jogos.
-4. Quadrado alterna os layouts; L3 abre/fecha a caixa. X monta pelo webMAN e volta ao XMB após a confirmação. Abra o jogo pelo ícone do disco no XMB.
+1. Coloque `PS3_GAME_ORBIT_v1.4.2.gnpdrm.pkg` em um pendrive FAT32.
+2. Instale pelo gerenciador de pacotes do XMB, por cima da versão anterior. A identidade continua **PGORBT301**, com `APP_VER 01.09`.
+3. No Super Slim, habilite HEN antes de abrir. Para montar jogos, mantenha o webMAN MOD ativo.
+4. Use X para montar o jogo, com a caixa aberta ou fechada. Após a confirmação, o app volta ao XMB; abra o jogo no ícone do disco.
 
-## Menu START
+## Modelo 3D
 
-| Opção | Comportamento |
+Prévias geradas da geometria compilada no computador: [caixa fechada](assets/previews/CAIXA_FECHADA_1_4_2.png), [acabamento superior](assets/previews/LOMBADA_TOPO_1_4_2.png), [acabamento inferior](assets/previews/LOMBADA_BASE_1_4_2.png) e [caixa aberta](assets/previews/CAIXA_ABERTA_1_4_2.png). Usam arte de demonstração e iluminação difusa equivalente; não são capturas de um PS3.
+
+## Menus
+
+Prévias da interface geradas no computador: [tela inicial v1.4.2](assets/previews/TELA_INICIAL_1_4_2.png), [homebrew](assets/previews/MENU_HOME_1_4_2.png) e [jogo](assets/previews/MENU_JOGO_1_4_2.png).
+
+| Botão | Opções |
 | --- | --- |
-| Alterar nome do jogo | Abre o teclado do PS3 e salva apenas o nome exibido no Game Orbit. Não modifica pasta, ISO, ID, PARAM.SFO ou nomes das imagens. |
-| Recarregar capas | Relê as três artes do jogo selecionado, inclusive tentativas que falharam. Preserva os caches dos demais jogos. |
-| Copiar capas do pendrive | Valida e copia as imagens encontradas em `USB/PS3COVERS`, depois invalida somente os tipos atualizados. |
-| Fundo animado: Ligado/Desligado | Alterna as ondas animadas e o fundo estático. Ligado por padrão; preferência salva para a próxima abertura. |
-| Atualizar biblioteca | Reescaneia os jogos e limpa os três caches, mantendo nomes, favoritos, layout e escolha do fundo. |
+| **Triângulo — jogo** | Alterar nome · Copiar capas do USB · Recarregar capas · Adicionar/Remover dos favoritos |
+| **START — homebrew** | Atualizar biblioteca · Fundo animado · Atualizar todas as capas via USB · Salvar último jogo visto |
 
-Cima/baixo selecionam, X confirma, Círculo ou START fecham o menu. Também funciona com a caixa aberta. Com a biblioteca vazia, START permite configurar o fundo e atualizar a biblioteca; ações de jogo informam que não há título selecionado.
+Cima/baixo selecionam, X confirma, Círculo fecha. Triângulo fecha o menu do jogo; START fecha o menu do homebrew. É possível trocar de menu com esses botões. START também funciona sem jogos no filtro atual. Durante uma cópia em lote, Círculo cancela antes do próximo jogo; as imagens já concluídas ficam salvas.
 
-## Atualizar imagens por pendrive
+Alterar nome modifica apenas o título exibido, sem renomear ISO/pasta/ID/PARAM.SFO ou arquivos de arte. Recarregar capas relê as três artes daquele jogo e permite tentar novamente arquivos que falharam. Atualizar biblioteca refaz a busca pelos jogos e limpa os caches, preservando as preferências.
 
-Crie uma pasta chamada **`PS3COVERS` na raiz do pendrive FAT32**. Coloque as imagens diretamente nessa pasta:
+## Imagens no pendrive e no HDD
 
-| Imagem | Com ID `BLES01287` | Para `Bayonetta.iso`, sem ID reconhecida |
-| --- | --- | --- |
-| Capa exterior completa | `PS3COVERS/BLES01287.jpg` | `PS3COVERS/Bayonetta.jpg` |
-| Inside Cover Full | `PS3COVERS/BLES01287_INSIDE.jpg` | `PS3COVERS/Bayonetta_INSIDE.jpg` |
-| Rótulo do disco | `PS3COVERS/BLES01287_DISC.png` | `PS3COVERS/Bayonetta_DISC.png` |
+Crie **PS3COVERS na raiz do pendrive**. As imagens devem ficar diretamente nessa pasta, sem subpastas.
 
-Selecione o jogo e use **START → Copiar capas do pendrive**. A busca ocorre em `/dev_usb000` até `/dev_usb007`, somente dentro de `PS3COVERS`, sem subpastas e sem procurar imagens soltas na raiz do USB. O PKG de instalação continua podendo ficar na raiz do pendrive.
+| Arte | Exemplo com ID | ISO sem ID reconhecida | Saída no HDD |
+| --- | --- | --- | --- |
+| Capa completa | `PS3COVERS/BLES01287.jpg` | `PS3COVERS/Bayonetta.jpg` | 1000 × 550, JPG |
+| Inside Cover Full | `PS3COVERS/BLES01287_INSIDE.jpg` | `PS3COVERS/Bayonetta_INSIDE.jpg` | 1000 × 550, JPG |
+| Disco | `PS3COVERS/BLES01287_DISC.png` | `PS3COVERS/Bayonetta_DISC.png` | 500 × 500, PNG |
 
-**Uma imagem já basta.** Se houver somente a capa exterior, ela é copiada e as artes de interior/disco anteriores são preservadas. O mesmo vale para apenas inside, apenas disco ou qualquer par. As imagens também podem estar distribuídas entre os dispositivos USB reconhecidos.
+Use **Triângulo → Copiar capas do USB** para o jogo atual, ou **START → Atualizar todas as capas via USB** para a biblioteca inteira, incluindo jogos fora do filtro atual.
 
-Para ISO, use o nome exato sem `.iso`/`.ISO`, preservando espaços e maiúsculas/minúsculas. Exemplo: `My ISO Game.ISO` → `My ISO Game.jpg`, `My ISO Game_INSIDE.jpg`, `My ISO Game_DISC.png`. Quando a ID é conhecida, ela tem prioridade na busca; arquivos pelo nome da ISO também são aceitos e salvos no HDD com essa ID. Sem ID conhecida, o destino usa o nome da ISO.
+**Uma imagem já basta.** Tipos ausentes ou inválidos preservam a arte anterior; os outros tipos válidos ainda são copiados. A busca percorre `/dev_usb000` até `/dev_usb007`, somente dentro de `PS3COVERS`. JPG, JPEG e PNG são aceitos como origem, inclusive extensões maiúsculas. `_INSIDE` e `_DISC` devem permanecer em maiúsculas. A origem no USB fica intacta.
 
-Cada imagem é validada e substituída separadamente, com arquivo temporário e backup. Um tipo ausente ou corrompido mantém a arte anterior; os outros tipos válidos ainda podem ser copiados. O menu informa a quantidade atualizada e eventuais erros. Formatos concorrentes antigos são removidos somente do tipo atualizado.
+O destino é **`/dev_hdd0/PS3COVERS`**. A cópia usa dimensões exatas, sem manter proporções diferentes: prepare a arte no aspecto 1000:550 para evitar distorção. A transparência do PNG do disco é preservada; capa/inside são convertidos para JPG. Arquivos antigos concorrentes são removidos apenas para o tipo atualizado, após gravação e troca com backup.
 
-## Imagens no HDD
+Para ISO, use o nome exato sem `.iso`/`.ISO`, preservando espaços e maiúsculas/minúsculas. Exemplo: `My ISO Game.ISO` → `My ISO Game_DISC.png`. Uma ID reconhecida tem prioridade; a origem pelo nome da ISO também é aceita e gravada no HDD com a ID. Sem ID, o destino mantém o nome da ISO. A ID interna do ISO ainda não é lida; o scanner reconhece uma ID de quatro letras e cinco números juntos no nome do arquivo.
 
-Pasta principal: **`/dev_hdd0/PS3COVERS`**. Jogos em pasta usam a TITLE_ID conhecida. **A ID interna dos ISOs ainda não é lida:** o scanner reconhece uma ID no nome do ISO com quatro letras e cinco números juntos, como `BLES01287`, sem hífen. Para ISO sem ID reconhecida, use o nome exato do arquivo sem extensão.
+Jogos em pasta usam a TITLE_ID. Renomear um jogo pelo menu não muda os nomes esperados das imagens. Cópias manuais no HDD não são redimensionadas: use Triângulo → Recarregar capas depois de copiá-las.
 
-Uma imagem nomeada apenas pela ID não é encontrada para `Bayonetta.iso` se o scanner não conhecer essa ID. Não é necessário renomear o ISO: use `Bayonetta` nos nomes das imagens. A resolução prioriza a ID na pasta global, depois o nome exato na pasta global e os fallbacks locais do jogo.
+Modelos de arte: [Inside Cover Full 1000×550](assets/examples/INSIDE_COVER_FULL_MODELO_1000x550.png) e [disco 500×500](assets/examples/DISC_EXEMPLO_500.png).
 
-JPG, JPEG e PNG são aceitos, inclusive extensões maiúsculas. Os sufixos **`_INSIDE`** e **`_DISC`** devem estar em maiúsculas. Prefira ter apenas um formato para cada tipo; inside/disc priorizam PNG na resolução quando há vários.
-
-A capa exterior inteira segue **verso · lombada · frente**. O inside segue **interior esquerdo · centro/lombada · interior direito**, sem espelhar a imagem. O mapeamento orienta a tampa ao abrir. O centro ocupa aproximadamente 46,22% a 53,79% da largura. Veja o [modelo de 1000 × 535](assets/examples/INSIDE_COVER_FULL_MODELO_1000x535.png) e o [exemplo identificado](assets/examples/INSIDE_COVER_FULL_EXEMPLO.png).
-
-Use capas exterior/interior com aproximadamente **1000 pixels de largura** e discos de **512 × 512**. A geometria recorta o contorno circular e o furo central do disco. A arte chega até o furo físico; não há anel transparente artificial. Sem inside válido, o interior fica neutro; sem disco válido, aparece o rótulo padrão. Isso não impede montar o jogo.
-
-Após uma cópia manual no HDD, use **START → Recarregar capas**. Nome personalizado no menu não muda o nome esperado dos arquivos de arte. SELECT continua mostrando somente controles.
+A capa completa segue **verso · lombada · frente**. O inside segue **interior esquerdo · lombada · interior direito**, usando a mesma área e o mesmo recorte central. O disco é recortado pela geometria circular com furo de 15 mm. A arte cobre a região opaca de raio 8,0 até 59,5 mm. A borda de 7,5 a 8,0 mm e a de 59,5 a 60,0 mm ficam transparentes. Sem imagens opcionais, o app usa o interior neutro e o disco padrão.
 
 ## Controles
 
-| Controle | Ação |
+| Controle | Função |
 | --- | --- |
-| Esquerda/direita ou analógico esquerdo | Trocar jogo |
-| Cima/baixo ou analógico esquerdo vertical, na Lista | Trocar linha |
-| Quadrado | Clássico / Spine / Lista |
-| L3 | Abrir / fechar caixa e disco |
-| X, caixa aberta ou fechada | Montar pelo webMAN MOD e voltar ao XMB após confirmação |
-| Círculo, caixa aberta e sem montagem | Recolher disco e fechar caixa |
-| Círculo, durante montagem | Cancelar operação e sair ao XMB |
-| Círculo, caixa fechada | Sair ao XMB |
-| Analógico direito | Girar / inclinar caixa |
-| Triângulo | Marcar / remover favorito |
-| L1 / R1 | Todos / HDD / USB / Favoritos |
-| Cima, no Clássico ou Spine | Ativar / pausar autogiro |
+| Esquerda/direita ou analógico esquerdo | Trocar de jogo |
+| Cima/baixo no layout Lista | Navegar na lista |
+| Analógico direito | Girar/inclinar a caixa |
+| Quadrado | Alternar Clássico → Spine → Lista |
+| L1 / R1 | Alternar Todos / Favoritos / USB / HD |
+| L3 | Abrir/fechar a caixa e retirar/recolocar o disco |
+| X | Montar o jogo pelo webMAN MOD |
+| Triângulo | Opções do jogo |
+| START | Opções do homebrew |
 | L2 / R2 | Zoom |
-| R3 | Restaurar posição e zoom mínimo |
-| SELECT | Abrir / fechar ajuda de controles |
-| START | Abrir / fechar opções do jogo e fundo |
+| R3 | Restaurar a visualização |
+| Cima em Clássico/Spine | Rotação automática |
+| SELECT | Ajuda dos controles |
+| Círculo | Fechar menu/caixa, cancelar operação ou sair |
 
-Durante a inspeção, navegação, filtros, layout e favoritos ficam bloqueados. X monta e START abre o menu do mesmo jogo. Dentro do menu, X confirma a opção. Durante montagem, um segundo X não cria outra solicitação.
+## Caches e pré-carga
 
-## Pré-carga e memória
+| Layout | Jogos anteriores | Atual | Jogos seguintes | Limite de cada cache |
+| --- | ---: | ---: | ---: | ---: |
+| Clássico | 3 | 1 | 3 | 7 capas, 7 inside, 7 discos |
+| Lista | 2 | 1 | 2 | 5 capas, 5 inside, 5 discos |
+| Spine | Recentes | Atual | Recentes | 15 capas, 15 inside, 15 discos |
 
-Os três caches guardam até **15 texturas válidas por tipo**, por ordem de uso recente. Cada cache tem limite de **64 MiB**. O cache de arquivos codificados das capas guarda 15 entradas / 16 MiB. Uma textura de 1024 × 1024 ocupa aproximadamente 4 MiB; texturas menores usam menos memória.
+Janelas circulares seguem o filtro ativo e não repetem jogos em bibliotecas curtas. A pré-carga considera a direção da navegação; Após 900 ms de espera também prepara inside/disco. Ao abrir a caixa, ambas as imagens do jogo atual são preparadas antes do desenho. Uma imagem é preparada por etapa, alternando trabalho de capa e interior/disco. Spine mantém o cache de artes recentes e prepara inside/disco do jogo atual. Caixas que estão terminando a transição mantêm sua capa até o último quadro reconhecido pela GPU; esse período pode reter uma capa adicional ao limite de repouso.
 
-A pré-carga de capas começa após 400 ms de repouso, com intervalo mínimo de 200 ms entre etapas. A Lista considera dois vizinhos na direção de navegação e um no sentido oposto; Clássico considera três e dois; Spine até sete por lado. As caixas visíveis e em transição permanecem protegidas, e uma pré-carga já completa não entra em um ciclo de descarte/releitura.
+Buffers de decodificação e de texturas liberadas continuam sendo reaproveitados. Os logs seguem agrupados e incluem tempo de leitura, decodificação, upload e interface, em milissegundos.
 
-Após 900 ms no mesmo jogo, interior e disco do **jogo selecionado** recebem prioridade. Cada etapa prepara no máximo uma imagem: primeiro inside, depois disco, depois continua com os vizinhos. A pré-carga em repouso pausa com o menu aberto ou a caixa aberta/em animação. Se L3 for pressionado antes de as artes estarem prontas, a preparação ocorre em quadros sucessivos, sem decodificar as duas no mesmo quadro.
+## Configurações e compatibilidade
 
-Blocos liberados de texturas são reutilizados por tamanho, com até **8 MiB / três blocos livres**. Apenas memória que já foi liberada entra nesse pool. O cache contabiliza o tamanho real do bloco reutilizado, incluindo espaço excedente. Buffers RGBA/ARGB mantêm capacidade de até 4 MiB cada após preparações bem-sucedidas; alocações maiores são descartadas. Os decodificadores do SDK ainda podem alocar memória temporária internamente.
+Preferências unificadas: `/dev_hdd0/game/PGORBT301/USRDIR/PS3_GAME_ORBIT_SETTINGS.dat`. Arquivos de nomes, favoritos/seleção, layout e fundo usam o mesmo diretório. Os dados antigos de `/dev_hdd0/tmp` continuam sendo lidos para migração. Cada gravação usa um temporário sincronizado e uma cópia `.bak` da versão anterior; o PS3 não precisa sobrescrever um arquivo via rename. Se o arquivo principal estiver ausente, a leitura usa o backup. Para restaurar padrões manualmente, remova o arquivo de configuração e sua cópia `.bak`. Arquivos de favoritos/seleção, nomes, layout e fundo das versões anteriores continuam compatíveis. As preferências antigas são migradas para USRDIR quando ainda não existe uma configuração atual válida.
 
-O limite somado dos três caches de texturas é 192 MiB. Pool, arquivos codificados, decodificação temporária, geometria, HUD e vídeo usam memória adicional. Texturas são limitadas a 1024 pixels por lado depois de decodificadas; imagens acima de 8192 pixels por lado ou 16 milhões de pixels são rejeitadas. Não há cache persistente de imagens ou miniaturas em disco.
+“Salvar último jogo visto” vem ligado para preservar o comportamento anterior. Desligado, o app começa no primeiro jogo do filtro salvo. Se o último jogo não estiver disponível, começa no primeiro disponível. Alterações são gravadas após um breve intervalo e ao sair normalmente.
 
-Leitura, decode e upload continuam no fluxo principal, entre quadros confirmados pela GPU. Imagens residentes evitam esse trabalho. As medições no próprio PS3 permitem avaliar a melhora real com o mesmo conjunto de capas.
+Diagnóstico: `/dev_hdd0/tmp/PS3_GAME_ORBIT_FIX39.log`; alternativa em `USRDIR`. Consulte [o roteiro de teste](docs/TESTE_1.4.2.md) ao reportar um problema.
 
-## Fundo animado
+## Fontes, compilação e GitHub
 
-As ondas são uma implementação própria inspirada no XMB: três faixas neutras, 582 vértices e 576 triângulos, sobre um gradiente. As texturas são criadas e enviadas uma vez; a cada quadro, somente as posições dos vértices são atualizadas, entre quadros confirmados. Não há decodificação de uma imagem do fundo a cada quadro.
+- [Compilar a v1.4.2](docs/BUILD.md)
+- [Passo a passo para publicar](docs/GITHUB_1.4.2.md)
+- [Notas prontas para o release](docs/RELEASE_NOTES_1.4.2.md)
+- [Histórico de mudanças](CHANGELOG.md)
+- [Créditos e licenças](docs/CREDITS.md)
 
-**START → Fundo animado → X** liga ou desliga. Desligado usa a mesma imagem estática da versão anterior e pausa o movimento. A preferência fica em `PS3_GAME_ORBIT_BACKGROUND.dat`, separada das preferências de jogos.
-
-## Medições e diagnóstico
-
-Log principal: **`/dev_hdd0/tmp/PS3_GAME_ORBIT_FIX36.log`**; fallback no `USRDIR` do aplicativo. Saia normalmente para gravar o último lote. O log continua limitado a 64 KiB pendentes, com gravação em repouso a intervalos mínimos de três segundos e ao encerrar.
-
-As linhas `PERF 1.3.3` registram `count`, `total_ms`, `average_ms` e `max_ms`, acumulados desde a abertura:
-
-| stage | Escopo |
-| --- | --- |
-| read | Leitura do arquivo e identificação do cabeçalho; acerto no cache evita nova leitura. |
-| decode | PNG/JPEG e cópia do resultado do decodificador. |
-| upload | Preparação, orientação/redução quando necessárias, aquisição do buffer, cópia e mapeamento da textura. Não mede a conclusão da GPU. |
-| interface | Redesenho e cópia das regiões alteradas; quadros sem mudança não entram no contador. |
-
-`OPT 1.3.3` registra fundo ligado/desligado, desenhos de ondas, alocações, reutilizações e bytes livres no pool. Esses contadores auxiliam a comparação; não são uma medição completa do tempo de quadro.
-
-Arquivos de estado em `/dev_hdd0/tmp/`: `PS3_GAME_ORBIT_STATE.dat`, `PS3_GAME_ORBIT_LAYOUT.dat`, `PS3_GAME_ORBIT_NAMES.dat` e `PS3_GAME_ORBIT_BACKGROUND.dat`. Todos têm fallback no `USRDIR` de `PGORBT301`.
-
-## Fontes, testes e créditos
-
-Veja [teste físico da 1.3.3](docs/TESTE_1.3.3.md), [validação](docs/VALIDATION.md), [compilação](docs/BUILD.md), [guia do GitHub](docs/GITHUB_1.3.3.md), [histórico](CHANGELOG.md) e [créditos](CREDITS.md).
-
-O scanner lê `GAMES`, `GAMEZ` e `PS3ISO` no HDD e USB 000–007. HTTP local do webMAN na porta 80; interface 1280 × 720. NTFS, rede e leitura do PARAM.SFO dentro de ISOs não foram adicionados nesta versão.
-
-O ZIP completo inclui fontes públicos, ativos do aplicativo, PKG e relatórios. Obtenha o modelo JFX separadamente para compilar: OBJ/PSD e sua malha editável derivada são excluídos dos fontes públicos, como nas versões anteriores. Os testes públicos e o workflow usam uma malha de teste quando necessário e não publicam releases automaticamente.
+A malha exterior JFX licenciada não é redistribuída em formato editável. Para compilar localmente, use sua própria cópia obtida na fonte indicada em `assets/jfx_bluray/README.md` e execute `scripts/prepare-jfx.py --source SEU_ARQUIVO.zip`. O ZIP público contém o código das melhorias procedurais, os shaders arquivados e as instruções; o PKG já está compilado. A renderização PS3 usa os shaders RSX preservados e transparência por alpha, portanto a iluminação difere do preview PBR aprovado.

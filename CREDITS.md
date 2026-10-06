@@ -46,3 +46,17 @@ Nenhuma licença geral de reutilização do código foi definida nesta preparaç
 ## Disco 3D da 1.2
 
 Geometria original criada para PS3 Game Orbit, aprovada pelo usuário; variante leve de 48 segmentos/1.056 triângulos. O JSON das malhas e a representação nativa acompanham os fontes. Texturas de demonstração próprias; nenhuma arte de disco de jogos foi baixada. A licença geral do projeto continua pendente de escolha do mantenedor.
+
+## Componentes da v1.4
+
+Interior, disco e duas articulações são construídos proceduralmente em `src/case_model_fix37.cpp`, a partir do exterior preparado localmente. A lombada flexiona sem recortar sua arte; o disco tem borda transparente externa de 0,4 mm. Os shaders arquivados são preservados.
+
+A importação usa **stb_image_write v1.16**, Sean Barrett e colaboradores, do commit upstream `2c980bb59875b0d32144a71867fbdebb2f77cd20`. Inclui um ajuste local no acumulador de bits JPEG, documentado em `include/third_party/README.md`. Licença MIT/domínio público em `assets/licenses/STB_LICENSE.txt`, também incluída em `USRDIR` do PKG.
+
+## v1.4.1
+
+O fechamento usa a mesma malha aprovada em repouso, agrupada para o RSX. A borda dupla do disco, a correção da sobreposição e o armazenamento com backup são código do projeto. ORBIT_DISC_BACK.png é uma textura procedural reproduzível por scripts/bake-disc-back-fix38.py; a iluminação continua nos shaders originais e não é reflexão de ambiente em tempo real. A arte da marca e a fonte mantêm os créditos anteriores.
+
+## Acabamento da v1.4.2
+
+A lombada usa as bordas curvas do mesmo exterior JFX, preparadas localmente, junto ao interior procedural aprovado. A união é recortada no mesmo plano das laterais e transportada pelas duas articulações. Os relevos usam plástico neutro; as normais suavizadas reutilizam buffers. Os termos do modelo de terceiros continuam os mesmos.
