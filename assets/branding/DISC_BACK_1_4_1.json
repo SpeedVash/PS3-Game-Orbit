@@ -1,0 +1,10 @@
+{
+  "asset": "ORBIT_DISC_BACK.png",
+  "size": [
+    512,
+    512
+  ],
+  "type": "procedural cool-silver Blu-ray underside",
+  "runtime": "archived shader + texture, no real environment reflection",
+  "sha256": "51d292f89aa644c9b89cfbeed535dc004cf21e3b56dd3e5e4f69c7557f8082ca"
+}

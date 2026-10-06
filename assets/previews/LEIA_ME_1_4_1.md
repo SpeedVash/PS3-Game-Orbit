@@ -1,0 +1,1 @@
+Prévias geradas no computador pelas funções reais de interface e fonte do programa, com as flags da v1.4.1. Não são capturas de um PS3. A imagem inicial mostra a versão e SpeedVash. Os menus são recortes de 1280×512 sobre fundo neutro; no console o fundo e a caixa 3D são desenhados separadamente.

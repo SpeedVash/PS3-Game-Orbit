@@ -1,4 +1,4 @@
-# Compilar PS3 Game Orbit 1.3.3 de teste
+# Compilar PS3 Game Orbit 1.4.2
 
 O PKG da release já está pronto para instalação. Este procedimento é para desenvolvedores, em Linux x86_64.
 
@@ -23,7 +23,7 @@ O OBJ e `src/jfx_case_data_fix29.inc` são locais e ignorados pelo Git. Não os 
 ```bash
 sudo apt-get update
 sudo apt-get install -y build-essential git curl wget patch autoconf automake \
-  libtool bison flex texinfo python3 python3-pil ripgrep libgmp-dev libmpfr-dev libmpc-dev \
+  libtool pkg-config bison flex texinfo python3 python3-pil ripgrep libgmp-dev libmpfr-dev libmpc-dev \
   libelf-dev libssl-dev libncurses5-dev zlib1g-dev libpng-dev libjpeg-dev
 ```
 
@@ -52,16 +52,22 @@ bash scripts/test-release.sh
 bash scripts/build-release.sh
 ```
 
-O pacote com nome público fica em `dist/release/PS3_GAME_ORBIT_v1.3.3_TESTE.gnpdrm.pkg`. Os produtos nativos e relatórios ficam em `dist/B`.
+O pacote com nome público fica em `dist/release/PS3_GAME_ORBIT_v1.4.2.gnpdrm.pkg`. Os produtos nativos e relatórios ficam em `dist/B`.
 
-Os fontes implementam a atualização FIX36. Geometria JFX fechada, shaders arquivados e o controlador FIFO da base permanecem preservados. As ondas usam esses mesmos shaders; o build não precisa gerar shaders novos. A versão pública é 1.3.3-rc.1; o SFO usa APP_VER 01.06 para respeitar o formato numérico de dois campos do instalador e avançar sobre a 1.3.2 (01.05). A data/hora de compilação e os metadados de empacotamento podem variar entre builds; o hash da entrega está em `docs/RELEASE_1.3.3_TESTE.json`.
+Os fontes implementam a atualização FIX39. O modelo fechado é gerado do mesmo modelo aprovado em repouso, com seus relevos e lombada, agrupando materiais em seis draws. A atualização FIX39 usa as curvas do próprio invólucro para terminar a lombada junto às bordas. Os pontos de união acompanham suas respectivas articulações; a suavização reutiliza arrays preparados na construção. A malha fonte JFX, os shaders arquivados e o controlador FIFO da base permanecem preservados. As ondas usam esses mesmos shaders; o build não precisa gerar shaders novos. A versão pública é 1.4.2; o SFO usa APP_VER 01.09 para respeitar o formato numérico de dois campos do instalador e avançar sobre a 1.4.1 (01.08). A data/hora de compilação e os metadados de empacotamento podem variar entre builds; o hash da entrega está em `docs/RELEASE_1.4.2.json`.
 
 Se os arquivos foram enviados ao GitHub pela interface web, os bits de execução podem ter sido perdidos. O script de build restaura a permissão dos scripts necessários; também é possível executar `chmod +x scripts/*.sh tests/*.sh` na cópia local.
 
-Para executar apenas os testes de layout sem obter o modelo licenciado:
+Para executar os testes públicos de menus, configurações, importação, caches e layout sem obter o modelo licenciado:
 
 ```bash
-FIX36_PUBLIC_ONLY=1 bash tests/run_fix36_tests.sh
+FIX39_PUBLIC_ONLY=1 bash tests/run_fix39_tests.sh
+```
+
+Para regenerar as prévias da interface usando o código real e a fonte rasterizada:
+
+```bash
+python3 scripts/render-ui-previews-fix39.py
 ```
 
 ## Ativos visuais
@@ -70,10 +76,11 @@ A fonte rasterizada, ícone, splash e fundo necessários ao aplicativo já acomp
 
 ```bash
 python3 scripts/bake-orbit-assets-fix30.py
+python3 scripts/bake-disc-back-fix38.py
 ```
 
 Nenhuma biblioteca de fontes precisa ser instalada no PS3.
 
 ## GitHub Actions
 
-O workflow `checks.yml` executa testes públicos FIX35/FIX36 de USB parcial/ISO, buffers, caches, menu, fundo e layout, simulações do loop e desenho nativos FIX36, testes herdados de fluxo/interface e verificações de apresentação/FIFO sem o modelo de terceiros. Ele não compila o PKG nem publica releases automaticamente. Os testes completos e a compilação nativa exigem a preparação local do modelo acima.
+O workflow `checks.yml` executa testes públicos FIX35/FIX36/FIX37/FIX38/FIX39 de USB parcial/ISO, buffers, caches, menu, fundo e layout, simulações do loop, testes herdados de fluxo/interface e verificações de apresentação/FIFO sem o modelo de terceiros. Ele não compila o PKG nem publica releases automaticamente. Os testes completos e a compilação nativa exigem a preparação local do modelo acima.

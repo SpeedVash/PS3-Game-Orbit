@@ -1,0 +1,113 @@
+{
+  "version": "1.4.1-rc.1",
+  "public_version": "1.4.1 TESTE",
+  "build": "FIX38",
+  "creator": "SpeedVash",
+  "title_id": "PGORBT301",
+  "app_ver": "01.08",
+  "package": "PS3_GAME_ORBIT_v1.4.1_TESTE.gnpdrm.pkg",
+  "package_bytes": 2458480,
+  "package_sha256": "10dc0bb4ed87d10ba856f30da8805cc512e8043fdee0aecb304d749fa89e7e38",
+  "ps3_hardware_test": "pending",
+  "native_compilation": "passed",
+  "host_validation": "passed",
+  "cache_limits": {
+    "Classic": {
+      "cover": 7,
+      "inside": 7,
+      "disc": 7,
+      "ahead": 3,
+      "behind": 3
+    },
+    "List": {
+      "cover": 5,
+      "inside": 5,
+      "disc": 5,
+      "ahead": 2,
+      "behind": 2
+    },
+    "Spine": {
+      "cover": 15,
+      "inside": 15,
+      "disc": 15,
+      "visible_each_side": 3
+    }
+  },
+  "temporary_fading_cover_retention": true,
+  "menu_triangle": [
+    "rename",
+    "import_usb",
+    "reload_art",
+    "favorite"
+  ],
+  "menu_start": [
+    "rescan_library",
+    "toggle_animated_background",
+    "import_all_usb",
+    "remember_last_game"
+  ],
+  "settings_file": "/dev_hdd0/game/PGORBT301/USRDIR/PS3_GAME_ORBIT_SETTINGS.dat",
+  "settings_backup": ".bak",
+  "settings_legacy_migration": "/dev_hdd0/tmp",
+  "settings_transaction": "flushed temporary, non-overwriting rename via backup, rollback/recovery",
+  "settings_atomic": false,
+  "settings_checksum": "FNV-1a 32-bit",
+  "remember_last_game_default": true,
+  "animated_background_default": true,
+  "empty_filter_3d_case": false,
+  "usb_directory": "PS3COVERS",
+  "usb_recursive": false,
+  "usb_partial": true,
+  "usb_iso_stem": true,
+  "usb_output_sizes": {
+    "cover": [
+      1000,
+      550
+    ],
+    "inside": [
+      1000,
+      550
+    ],
+    "disc": [
+      500,
+      500
+    ]
+  },
+  "usb_output_formats": {
+    "cover": "JPEG quality 90",
+    "inside": "JPEG quality 90",
+    "disc": "RGBA PNG"
+  },
+  "usb_import_all_cancel": "Between games; completed images remain saved",
+  "usb_import_all_duplicate_key": "title ID, else ISO filename stem",
+  "case_model": "Same approved geometry closed/open, procedural interior, full-size inside art, clear header and continuous two-hinge spine",
+  "closed_case_baked_from_approved_rest_geometry": true,
+  "disc_label_gray_overlay_removed": true,
+  "max_opening_degrees": 160,
+  "disc_diameter_mm": 120,
+  "disc_hole_diameter_mm": 15,
+  "disc_clear_outer_rim_mm": 0.5,
+  "disc_clear_inner_rim_mm": 0.5,
+  "disc_label_radius_mm": [
+    8.0,
+    59.5
+  ],
+  "disc_ejected_position_mm": [
+    96,
+    -10,
+    24.7
+  ],
+  "disc_back_texture": "procedural cool-silver metallic highlights",
+  "disc_label_png_transparency": "composited onto opaque substrate; clear geometry separate",
+  "selected_disc_inside_on_open": "both prepared before drawing",
+  "idle_cover_delay_ms": 400,
+  "idle_inspection_delay_ms": 900,
+  "idle_slice_interval_ms": 200,
+  "private_editable_jfx_geometry_in_public_zip": false,
+  "archived_shaders_preserved": true,
+  "asan_ubsan_public_suite": "passed; leak detection disabled due sandbox process inspection limitation",
+  "stb_jpeg_local_patch": "Unsigned bit accumulator removes signed-left-shift undefined behavior",
+  "compiler": "GCC 7.5.0",
+  "toolchain_commit": "961fddac01337f18da08f4471d558a7a5b0d9af2",
+  "sdk_commit": "af9d3d964c8faa69abce4961a269f9582e05a33f"
+}
