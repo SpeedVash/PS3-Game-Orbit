@@ -4,7 +4,12 @@
 
 namespace OrbitFlowFix31 {
 inline constexpr std::size_t MaxCases = 14;
-inline constexpr int SpineRadius = 5;
+inline constexpr int SpineRadius =
+#ifdef PS3_GAME_ORBIT_FIX37
+    3;
+#else
+    5;
+#endif
 inline constexpr std::size_t FrameCommandBudgetBytes = 57344;
 inline constexpr std::size_t InitialFrameGuardBytes = 61440;
 inline constexpr float MinimumScale = 0.55f;

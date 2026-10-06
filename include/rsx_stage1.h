@@ -45,6 +45,9 @@ public:
     bool initialized() const { return initialized_; }
 
     bool prepare_cover(const CoverImage& image, GpuTextureStage1& out,unsigned manual_orientation=1);
+#ifdef PS3_GAME_ORBIT_FIX38
+    bool prepare_disc_artwork(const CoverImage& image,GpuTextureStage1& out);
+#endif
     // Call between acknowledged frames, like cover replacement. The decoded HUD
     // is bounded and goes through the same RGBA -> ARGB byte convention.
     bool prepare_overlay(const DecodedImageRGBA& image,GpuTextureStage1& out);

@@ -6,7 +6,13 @@ inline constexpr const char* Name = "PS3 Game Orbit";
 #ifdef PS3_GAME_ORBIT_FIX31
 #ifdef PS3_GAME_ORBIT_FIX32
 #ifdef PS3_GAME_ORBIT_FIX33
-#ifdef PS3_GAME_ORBIT_FIX36
+#ifdef PS3_GAME_ORBIT_FIX39
+inline constexpr const char* Version = "1.4.2";
+#elif defined(PS3_GAME_ORBIT_FIX38)
+inline constexpr const char* Version = "1.4.1 TESTE";
+#elif defined(PS3_GAME_ORBIT_FIX37)
+inline constexpr const char* Version = "1.4 TESTE";
+#elif defined(PS3_GAME_ORBIT_FIX36)
 inline constexpr const char* Version = "1.3.3 TESTE FIX36";
 #elif defined(PS3_GAME_ORBIT_FIX35)
 inline constexpr const char* Version = "1.3.2 TESTE FIX35";
@@ -21,8 +27,13 @@ inline constexpr const char* Version = "1.2 TESTE FIX32";
 #else
 inline constexpr const char* Version = "1.1 TESTE FIX31";
 #endif
+#ifdef PS3_GAME_ORBIT_FIX38
+inline constexpr const char* LayoutPath = "/dev_hdd0/game/PGORBT301/USRDIR/PS3_GAME_ORBIT_LAYOUT.dat";
+inline constexpr const char* FallbackLayoutPath="/dev_hdd0/tmp/PS3_GAME_ORBIT_LAYOUT.dat";
+#else
 inline constexpr const char* LayoutPath = "/dev_hdd0/tmp/PS3_GAME_ORBIT_LAYOUT.dat";
 inline constexpr const char* FallbackLayoutPath = "/dev_hdd0/game/PGORBT301/USRDIR/PS3_GAME_ORBIT_LAYOUT.dat";
+#endif
 #else
 inline constexpr const char* Version = "FIX30";
 #endif
@@ -49,8 +60,13 @@ inline constexpr const char* AppId = "PSSP00001";
 #endif
 #endif
 #ifdef PS3_GAME_ORBIT_FIX30
+#ifdef PS3_GAME_ORBIT_FIX38
+inline constexpr const char* PreferencesPath = "/dev_hdd0/game/PGORBT301/USRDIR/PS3_GAME_ORBIT_STATE.dat";
+inline constexpr const char* FallbackPreferencesPath="/dev_hdd0/tmp/PS3_GAME_ORBIT_STATE.dat";
+#else
 inline constexpr const char* PreferencesPath = "/dev_hdd0/tmp/PS3_GAME_ORBIT_STATE.dat";
 inline constexpr const char* FallbackPreferencesPath = "/dev_hdd0/game/PGORBT301/USRDIR/PS3_GAME_ORBIT_STATE.dat";
+#endif
 inline constexpr const char* LegacyPreferencesPath = "/dev_hdd0/tmp/PS3_SP_LOADER_STATE.dat";
 inline constexpr const char* LegacyFallbackPreferencesPath = "/dev_hdd0/game/PSSPF2901/USRDIR/PS3_SP_LOADER_STATE.dat";
 #else
@@ -58,19 +74,47 @@ inline constexpr const char* PreferencesPath = "/dev_hdd0/tmp/PS3_SP_LOADER_STAT
 inline constexpr const char* FallbackPreferencesPath = "/dev_hdd0/game/PSSPF2901/USRDIR/PS3_SP_LOADER_STATE.dat";
 #endif
 #ifdef PS3_GAME_ORBIT_FIX35
+#ifdef PS3_GAME_ORBIT_FIX38
+inline constexpr const char* NamesPath = "/dev_hdd0/game/PGORBT301/USRDIR/PS3_GAME_ORBIT_NAMES.dat";
+inline constexpr const char* FallbackNamesPath="/dev_hdd0/tmp/PS3_GAME_ORBIT_NAMES.dat";
+#else
 inline constexpr const char* NamesPath = "/dev_hdd0/tmp/PS3_GAME_ORBIT_NAMES.dat";
 inline constexpr const char* FallbackNamesPath = "/dev_hdd0/game/PGORBT301/USRDIR/PS3_GAME_ORBIT_NAMES.dat";
 #endif
+#endif
 #ifdef PS3_GAME_ORBIT_FIX36
+#ifdef PS3_GAME_ORBIT_FIX38
+inline constexpr const char* BackgroundPath = "/dev_hdd0/game/PGORBT301/USRDIR/PS3_GAME_ORBIT_BACKGROUND.dat";
+inline constexpr const char* FallbackBackgroundPath="/dev_hdd0/tmp/PS3_GAME_ORBIT_BACKGROUND.dat";
+#else
 inline constexpr const char* BackgroundPath = "/dev_hdd0/tmp/PS3_GAME_ORBIT_BACKGROUND.dat";
 inline constexpr const char* FallbackBackgroundPath = "/dev_hdd0/game/PGORBT301/USRDIR/PS3_GAME_ORBIT_BACKGROUND.dat";
 #endif
+#endif
 inline constexpr const char* CoverDirectory = "/dev_hdd0/PS3COVERS";
+#ifdef PS3_GAME_ORBIT_FIX37
+#ifdef PS3_GAME_ORBIT_FIX38
+inline constexpr const char* SettingsPath="/dev_hdd0/game/PGORBT301/USRDIR/PS3_GAME_ORBIT_SETTINGS.dat";
+inline constexpr const char* FallbackSettingsPath="/dev_hdd0/tmp/PS3_GAME_ORBIT_SETTINGS.dat";
+#else
+inline constexpr const char* SettingsPath="/dev_hdd0/tmp/PS3_GAME_ORBIT_SETTINGS.dat";
+inline constexpr const char* FallbackSettingsPath="/dev_hdd0/game/PGORBT301/USRDIR/PS3_GAME_ORBIT_SETTINGS.dat";
+#endif
+#endif
 #if defined(__PSL1GHT__) && defined(PS3_GAME_ORBIT_FIX30)
 #ifdef PS3_GAME_ORBIT_FIX31
 #ifdef PS3_GAME_ORBIT_FIX32
 #ifdef PS3_GAME_ORBIT_FIX33
-#ifdef PS3_GAME_ORBIT_FIX36
+#ifdef PS3_GAME_ORBIT_FIX39
+inline constexpr const char* LogPath = "/dev_hdd0/tmp/PS3_GAME_ORBIT_FIX39.log";
+inline constexpr const char* FallbackLogPath = "/dev_hdd0/game/PGORBT301/USRDIR/PS3_GAME_ORBIT_FIX39.log";
+#elif defined(PS3_GAME_ORBIT_FIX38)
+inline constexpr const char* LogPath = "/dev_hdd0/tmp/PS3_GAME_ORBIT_FIX38.log";
+inline constexpr const char* FallbackLogPath = "/dev_hdd0/game/PGORBT301/USRDIR/PS3_GAME_ORBIT_FIX38.log";
+#elif defined(PS3_GAME_ORBIT_FIX37)
+inline constexpr const char* LogPath = "/dev_hdd0/tmp/PS3_GAME_ORBIT_FIX37.log";
+inline constexpr const char* FallbackLogPath = "/dev_hdd0/game/PGORBT301/USRDIR/PS3_GAME_ORBIT_FIX37.log";
+#elif defined(PS3_GAME_ORBIT_FIX36)
 inline constexpr const char* LogPath = "/dev_hdd0/tmp/PS3_GAME_ORBIT_FIX36.log";
 inline constexpr const char* FallbackLogPath = "/dev_hdd0/game/PGORBT301/USRDIR/PS3_GAME_ORBIT_FIX36.log";
 #elif defined(PS3_GAME_ORBIT_FIX35)
@@ -117,7 +161,13 @@ inline constexpr const char* LogPath = "/dev_hdd0/tmp/PS3_SP_LOADER_V13.log";
 inline constexpr const char* SafeBootCoverPath = "/dev_hdd0/game/PSSP00001/USRDIR/FULL_COVER_TEST_275x147.png";
 #else
 #ifdef PS3_GAME_ORBIT_FIX30
-#ifdef PS3_GAME_ORBIT_FIX36
+#ifdef PS3_GAME_ORBIT_FIX39
+inline constexpr const char* LogPath = "/tmp/PS3_GAME_ORBIT_FIX39.log";
+#elif defined(PS3_GAME_ORBIT_FIX38)
+inline constexpr const char* LogPath = "/tmp/PS3_GAME_ORBIT_FIX38.log";
+#elif defined(PS3_GAME_ORBIT_FIX37)
+inline constexpr const char* LogPath = "/tmp/PS3_GAME_ORBIT_FIX37.log";
+#elif defined(PS3_GAME_ORBIT_FIX36)
 inline constexpr const char* LogPath = "/tmp/PS3_GAME_ORBIT_FIX36.log";
 #elif defined(PS3_GAME_ORBIT_FIX35)
 inline constexpr const char* LogPath = "/tmp/PS3_GAME_ORBIT_FIX35.log";

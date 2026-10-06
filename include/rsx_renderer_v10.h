@@ -84,6 +84,11 @@ public:
     // Visible/fading cases are pinned; FIX32 also retains recent textures in a
     // bounded LRU. Full covers texture BACK|SPINE|FRONT; ICON0 is front-only.
     bool sync_visible_covers(const CoverflowState& state,CoverCache& cache,int radius=2);
+#ifdef PS3_GAME_ORBIT_FIX37
+    void apply_cache_policy(const CoverflowState& state,CoverCache& cache);
+    std::size_t resident_limit()const{return resident_limit_;}
+    bool sync_case_animation(V14CaseMesh& mesh,float phase);
+#endif
 #ifdef PS3_GAME_ORBIT_FIX32
     static constexpr std::size_t GpuCoverBudgetBytes=64u<<20;
     static constexpr std::size_t MaxResidentCovers=
@@ -206,6 +211,10 @@ private:
     std::size_t gpu_cache_bytes_=0;
     std::uint64_t gpu_cache_clock_=0,gpu_cache_hits_=0,gpu_cache_misses_=0,gpu_cache_evictions_=0;
     std::unordered_set<int> failed_gpu_covers_;
+#ifdef PS3_GAME_ORBIT_FIX37
+    std::size_t resident_limit_=15;
+    float geometry_phase_=0;
+#endif
     bool reserve_cover_cache(const std::unordered_set<int>& pinned,std::size_t bytes);
     bool load_gpu_cover(int gi,const GameEntry& game,CoverCache& cache,const std::unordered_set<int>& pinned);
     std::vector<std::string> hud_rows_;
