@@ -1,0 +1,92 @@
+{
+  "source_sha256": "4263705eb3e9801ee10d173094865fb50c5b52dfd52d2f1160390a09e3034c55",
+  "source_geometry_preserved": true,
+  "triangles": 5597,
+  "native_parts": [
+    {
+      "name": "plastic",
+      "surface": "ShellEdge",
+      "material": "ClearPlastic",
+      "color": [
+        1,
+        1,
+        1,
+        0.14
+      ],
+      "vertices": 3057,
+      "triangles": 2642
+    },
+    {
+      "name": "front",
+      "surface": "CoverFront",
+      "material": "Paper",
+      "color": [
+        0.82,
+        0.82,
+        0.82,
+        1
+      ],
+      "vertices": 4,
+      "triangles": 2
+    },
+    {
+      "name": "back",
+      "surface": "CoverBack",
+      "material": "Paper",
+      "color": [
+        0.82,
+        0.82,
+        0.82,
+        1
+      ],
+      "vertices": 4,
+      "triangles": 2
+    },
+    {
+      "name": "spine",
+      "surface": "CoverSpine",
+      "material": "Paper",
+      "color": [
+        0.82,
+        0.82,
+        0.82,
+        1
+      ],
+      "vertices": 30,
+      "triangles": 26
+    },
+    {
+      "name": "logo",
+      "surface": "ShellEdge",
+      "material": "Logo",
+      "color": [
+        0.75,
+        0.75,
+        0.75,
+        1
+      ],
+      "vertices": 3365,
+      "triangles": 2925
+    }
+  ],
+  "center": [
+    -1.3969500000000004,
+    31.293950000000002,
+    0.76355
+  ],
+  "uniform_scale": 2.7166140122950755,
+  "dimensions_mm": [
+    141.61681679954106,
+    170.0,
+    13.391548773608575
+  ],
+  "native_shader": "Archived V14 shader: alpha blending, no physical refraction/specular PBR.",
+  "native_plastic_rgba": [
+    1,
+    1,
+    1,
+    0.14
+  ],
+  "draws_per_case": 6,
+  "generated_sha256": "9ae460c688c269393668cdd5072cfc5365594832410e72f70c18721501289956"
+}

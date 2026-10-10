@@ -1,0 +1,31 @@
+{
+  "passed": true,
+  "source_sha256": "4263705eb3e9801ee10d173094865fb50c5b52dfd52d2f1160390a09e3034c55",
+  "triangles": 5597,
+  "render_vertices": 6460,
+  "max_decimal_attribute_error": 4.983402845937235e-08,
+  "ranges": {
+    "plastic": {
+      "vertices": 3057,
+      "triangles": 2642
+    },
+    "front": {
+      "vertices": 4,
+      "triangles": 2
+    },
+    "back": {
+      "vertices": 4,
+      "triangles": 2
+    },
+    "spine": {
+      "vertices": 30,
+      "triangles": 26
+    },
+    "logo": {
+      "vertices": 3365,
+      "triangles": 2925
+    }
+  },
+  "verification": "Every source triangle matched in order, positions, normalized normals and transformed cover UVs; all attributes within 0.000001 mm / normalized attribute units.",
+  "native_material": "Unpigmented RGB [1,1,1], alpha 0.14; opaque original logo; archived RSX shader. No PBR refraction."
+}

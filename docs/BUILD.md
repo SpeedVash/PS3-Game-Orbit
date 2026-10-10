@@ -1,4 +1,4 @@
-# Compilar PS3 Game Orbit 1.4.2
+# Compilar PS3 Game Orbit 1.5.1
 
 O PKG da release já está pronto para instalação. Este procedimento é para desenvolvedores, em Linux x86_64.
 
@@ -52,22 +52,27 @@ bash scripts/test-release.sh
 bash scripts/build-release.sh
 ```
 
-O pacote com nome público fica em `dist/release/PS3_GAME_ORBIT_v1.4.2.gnpdrm.pkg`. Os produtos nativos e relatórios ficam em `dist/B`.
+O pacote com nome público fica em `dist/release/PS3_GAME_ORBIT_v1.5.1.gnpdrm.pkg`. Os produtos nativos e relatórios ficam em `dist/B`.
 
-Os fontes implementam a atualização FIX39. O modelo fechado é gerado do mesmo modelo aprovado em repouso, com seus relevos e lombada, agrupando materiais em seis draws. A atualização FIX39 usa as curvas do próprio invólucro para terminar a lombada junto às bordas. Os pontos de união acompanham suas respectivas articulações; a suavização reutiliza arrays preparados na construção. A malha fonte JFX, os shaders arquivados e o controlador FIFO da base permanecem preservados. As ondas usam esses mesmos shaders; o build não precisa gerar shaders novos. A versão pública é 1.4.2; o SFO usa APP_VER 01.09 para respeitar o formato numérico de dois campos do instalador e avançar sobre a 1.4.1 (01.08). A data/hora de compilação e os metadados de empacotamento podem variar entre builds; o hash da entrega está em `docs/RELEASE_1.4.2.json`.
+Os fontes implementam FIX41: gerenciador HD/USB de dois painéis, cores por jogo e pré-carga adiada durante comandos manuais. A caixa selecionada usa o conjunto completo articulado desde a fase fechada. As caixas vizinhas preservam o exterior leve do modelo aprovado. Os shaders e o controlador FIFO arquivados permanecem intactos. O SFO usa APP_VER 01.11; a versão pública é 1.5.1. Data/hora e metadados podem variar entre builds; confira o hash da entrega em `docs/RELEASE_1.5.1.json`.
+
+Esta entrega foi compilada com o GCC/newlib/binutils e bibliotecas dos commits fixados acima. As ferramentas host de empacotamento vieram da distribuição oficial PS3DEV `nightly-2026-07-26`, com os mesmos argumentos de linha de comando. Em uma pilha híbrida, use um diretório de headers limpo para o SDK fixado, evitando headers antigos de outro PSL1GHT. A configuração pelo script `setup-stack-fix25.sh` mantém a rota de compilação integral das ferramentas.
 
 Se os arquivos foram enviados ao GitHub pela interface web, os bits de execução podem ter sido perdidos. O script de build restaura a permissão dos scripts necessários; também é possível executar `chmod +x scripts/*.sh tests/*.sh` na cópia local.
 
 Para executar os testes públicos de menus, configurações, importação, caches e layout sem obter o modelo licenciado:
 
 ```bash
-FIX39_PUBLIC_ONLY=1 bash tests/run_fix39_tests.sh
+FIX41_PUBLIC_ONLY=1 bash tests/run_fix41_tests.sh
+bash tests/run_features_fix41.sh
+python3 scripts/check-file-manager-native-fix41.py
+python3 scripts/check-library-loop-fix41.py
 ```
 
 Para regenerar as prévias da interface usando o código real e a fonte rasterizada:
 
 ```bash
-python3 scripts/render-ui-previews-fix39.py
+python3 scripts/render-ui-previews-fix41.py
 ```
 
 ## Ativos visuais
@@ -83,4 +88,4 @@ Nenhuma biblioteca de fontes precisa ser instalada no PS3.
 
 ## GitHub Actions
 
-O workflow `checks.yml` executa testes públicos FIX35/FIX36/FIX37/FIX38/FIX39 de USB parcial/ISO, buffers, caches, menu, fundo e layout, simulações do loop, testes herdados de fluxo/interface e verificações de apresentação/FIFO sem o modelo de terceiros. Ele não compila o PKG nem publica releases automaticamente. Os testes completos e a compilação nativa exigem a preparação local do modelo acima.
+O workflow `checks.yml` executa testes públicos FIX41, cópia em lote e simulação da API sysFs, além das regressões herdadas de USB parcial/ISO, buffers, caches, menu, fundo e layout, simulações do loop, testes herdados de fluxo/interface e verificações de apresentação/FIFO sem o modelo de terceiros. Ele não compila o PKG nem publica releases automaticamente. Os testes completos e a compilação nativa exigem a preparação local do modelo acima.
