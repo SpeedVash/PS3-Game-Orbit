@@ -1,0 +1,78 @@
+{
+  "version": "1.5",
+  "public_version": "1.5",
+  "build": "FIX40",
+  "creator": "SpeedVash",
+  "title_id": "PGORBT301",
+  "app_ver": "01.10",
+  "package": "PS3_GAME_ORBIT_v1.5.gnpdrm.pkg",
+  "package_bytes": 2502832,
+  "package_sha256": "72d02a51238326d04af974dd39565abd06f023f7e1f869155993f1a8bb327928",
+  "native_compilation": "passed",
+  "host_validation": "passed",
+  "ps3_hardware_test": "pending",
+  "sort_modes": [
+    "A-Z",
+    "Z-A",
+    "Custom"
+  ],
+  "custom_order_persistent": true,
+  "catalog_indices_preserved": true,
+  "file_manager_root": "/dev_hdd0",
+  "file_copy_slice_bytes": 262144,
+  "file_sizes_64_bit": true,
+  "overwrite_confirmation": true,
+  "copy_cancellation": true,
+  "animated_background_temporarily_paused_in_file_manager": true,
+  "background_preference_restored": true,
+  "selected_case_complete_when_closed": true,
+  "selected_case_shared_articulated_parts_all_phases": true,
+  "opening_degrees": 160,
+  "disc_clear_inner_outer_rim_mm": 0.5,
+  "disc_back": "silver",
+  "cache_limits": {
+    "Classic": {
+      "cover": 7,
+      "inside": 7,
+      "disc": 7
+    },
+    "Spine": {
+      "cover": 15,
+      "inside": 15,
+      "disc": 15
+    },
+    "List": {
+      "cover": 5,
+      "inside": 5,
+      "disc": 5
+    }
+  },
+  "artwork_sizes": {
+    "cover": [
+      1000,
+      550
+    ],
+    "inside": [
+      1000,
+      550
+    ],
+    "disc": [
+      500,
+      500
+    ]
+  },
+  "main_loop_scenarios": 21,
+  "native_draw_phases": [
+    0,
+    0.1,
+    0.2,
+    0.25,
+    0.5,
+    0.65,
+    0.76,
+    1
+  ],
+  "asan_ubsan": "passed; leak detection disabled",
+  "native_build_checks": 8,
+  "validation_date_utc": "2026-10-10"
+}
