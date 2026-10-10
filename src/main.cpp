@@ -18,11 +18,16 @@
 #ifdef PS3_GAME_ORBIT_FIX36
 #include "background_settings_fix36.h"
 #include "prefetch_policy_fix36.h"
+#include "interaction_policy_fix41.h"
 #endif
 #include "ps3_lifecycle.h"
 #include "project_identity.h"
 #include "rsx_command_stream_fix25.h"
 #include "library_browser_fix28.h"
+#ifdef PS3_GAME_ORBIT_FIX40
+#include "game_order_fix40.h"
+#include "file_manager_fix40.h"
+#endif
 #include "library_pair_fix28.h"
 #include "cover_orientation_fix28.h"
 #include "jfx_case_fix29.h"
@@ -242,6 +247,19 @@ int main(){
         RuntimeDiag::log("SETTINGS 1.4.2: loaded=%u layout=%s background=%u remember_last=%u zoom=%.3f",unsigned(settings_loaded),
             OrbitFlowFix31::layout_name(settings.layout),unsigned(settings.animated_background),unsigned(settings.remember_last_game),double(settings.zoom));
 #endif
+#ifdef PS3_GAME_ORBIT_FIX40
+        GameOrderFix40::Saved game_order;std::string order_path=ProjectIdentity::OrderPath;
+        bool order_loaded=game_order.load(order_path);
+        if(!order_loaded)order_loaded=game_order.load(ProjectIdentity::FallbackOrderPath);
+        browser.restore_order(game_order);
+        browser.restore_selection(preferences.filter(),settings.remember_last_game?preferences.selected_path():"");
+        browser.restore_view(settings.zoom,settings.yaw,settings.pitch,settings.automatic_rotation,settings.remember_last_game);
+        FileManagerFix40 file_manager;bool force_closed_art=true;
+#ifdef PS3_GAME_ORBIT_FIX41
+        InteractionPolicyFix41 interaction;
+#endif
+        RuntimeDiag::log("ORDER 1.5: loaded=%u mode=%s",unsigned(order_loaded),GameOrderFix40::name(game_order.mode));
+#endif
         MountOperationFix29 mounting;
         bool preferences_dirty=
 #ifdef PS3_GAME_ORBIT_FIX38
@@ -284,6 +302,13 @@ int main(){
             RuntimeDiag::log("SETTINGS 1.4.2: saved=%u path=%s",unsigned(settings_saved),settings_path.c_str());
             if(!settings_saved)browser.menu_status("Não foi possível salvar as configurações.");
 #endif
+#endif
+#ifdef PS3_GAME_ORBIT_FIX40
+            game_order.mode=browser.state().sort_mode;game_order.paths=browser.state().custom_order;
+            bool order_saved=game_order.save(order_path);
+            if(!order_saved && order_path!=ProjectIdentity::FallbackOrderPath){order_saved=game_order.save(ProjectIdentity::FallbackOrderPath);if(order_saved)order_path=ProjectIdentity::FallbackOrderPath;}
+            saved=saved&&order_saved;
+            if(!order_saved)browser.menu_status("Não foi possível salvar a listagem.");
 #endif
             preferences_dirty=!saved;
         };
@@ -329,7 +354,11 @@ int main(){
                     if(candidate.set(rename_target,edited_title)){
                         saved=candidate.save(names_path);
                         if(!saved && candidate.save(ProjectIdentity::FallbackNamesPath)){names_path=ProjectIdentity::FallbackNamesPath;saved=true;}
-                        if(saved){names=std::move(candidate);auto* game=browser.selected_entry();if(game && game->path==rename_target)game->title=edited_title;}
+                        if(saved){names=std::move(candidate);auto* game=browser.selected_entry();if(game && game->path==rename_target)game->title=edited_title;
+#ifdef PS3_GAME_ORBIT_FIX40
+                            browser.refresh_order();
+#endif
+                        }
                     }
                 }
                 browser.menu_status(saved ? "Nome salvo." : accepted ? "Não foi possível salvar o nome." : "Nome não alterado.");
@@ -337,13 +366,26 @@ int main(){
 #endif
             const float frame_dt=float(now-previous)/1000000.0f;
             auto polled_input=controller.poll();
+#ifdef PS3_GAME_ORBIT_FIX41
+            interaction.note(polled_input,now);
+#endif
 #ifdef PS3_GAME_ORBIT_FIX37
             if(bulk_active && polled_input.circle.pressed){
                 bulk_active=false;polled_input.circle.pressed=false;
                 browser.menu_status("Atualização cancelada. "+std::to_string(bulk_images)+" imagem(ns) salva(s).");
             }
 #endif
+#ifdef PS3_GAME_ORBIT_FIX40
+            const bool was_managing=file_manager.active();AppCommands command;
+            if(was_managing){file_manager.update(polled_input,frame_dt);browser.update(InputFrame{},0);}
+            else command=browser.update(polled_input,frame_dt);
+            if(command.open_file_manager)file_manager.open();
+            file_manager.step();const bool managing=file_manager.active();
+            if(was_managing&&!managing){last_selection_time=now;prefetch_at=now+400000;}
+            previous=now;
+#else
             const auto command=browser.update(polled_input,frame_dt);previous=now;
+#endif
             if(command.request_exit){user_exit=true;break;}
 #ifdef PS3_SP_LOADER_FIX29
             if(command.mount_selected){
@@ -365,7 +407,11 @@ int main(){
             }
             if(mounting.exit_ready(std::uint64_t(now/1000))){mounted_exit=true;break;}
             if(browser.take_preferences_changed()){preferences_dirty=true;save_at=now+700000;}
-            if(preferences_dirty && now>=save_at){save_preferences();save_at=now+2000000;}
+            if(preferences_dirty && now>=save_at
+#ifdef PS3_GAME_ORBIT_FIX41
+                && interaction.quiet(now)
+#endif
+            ){save_preferences();save_at=now+2000000;}
 #endif
 #ifdef PS3_GAME_ORBIT_FIX35
 #ifdef PS3_GAME_ORBIT_FIX37
@@ -465,12 +511,18 @@ int main(){
 #endif
             }
             auto draw=browser.render_state();
+#ifdef PS3_GAME_ORBIT_FIX40
+            if(managing){draw.visible.clear();draw.flow.clear();draw.flow_initialized=false;}
+#endif
             auto* selected=current_game(draw);
 #ifndef PS3_GAME_ORBIT_FIX37
             if(!selected){result=28;break;}
 #endif
             const int index=selected?draw.visible[draw.selected]:-1;
 #ifdef PS3_GAME_ORBIT_FIX37
+#ifdef PS3_GAME_ORBIT_FIX40
+            if(!managing)
+#endif
             renderer.apply_cache_policy(draw,cache);
 #endif
             const auto poses=LibraryPairFix28::poses(draw,1);
@@ -481,7 +533,11 @@ int main(){
                      std::to_string(static_cast<int>(game.cover_kind))+"\n"+std::to_string(game.cover_orientation)+"\n";
             }
             for(auto& game:draw.games) if(failed_covers.count(game.path)) game.cover_path.clear();
-            if(key!=prepared_key){
+            if(key!=prepared_key
+#ifdef PS3_GAME_ORBIT_FIX40
+                && !managing
+#endif
+            ){
                 if(!renderer.sync_visible_covers(draw,cache,1)){result=26;break;}
                 for(const auto& pose:poses){
                     auto& game=draw.games[pose.game_index];
@@ -509,10 +565,22 @@ int main(){
             // All changing resources are prepared before begin_frame, after the
             // previous GET/REF/backend-label completion. No allocations in draw.
 #ifdef PS3_GAME_ORBIT_FIX37
-            if(!renderer.sync_case_animation(mesh,draw.inspection_phase)){result=33;break;}
+            if(
+#ifdef PS3_GAME_ORBIT_FIX40
+                !managing &&
+#endif
+                !renderer.sync_case_animation(mesh,draw.inspection_phase)){result=33;break;}
 #endif
 #ifdef PS3_GAME_ORBIT_FIX33
+#ifdef PS3_GAME_ORBIT_FIX40
+            if(!managing){if(!renderer.sync_inspection_art(draw,force_closed_art)){result=33;break;}force_closed_art=false;}
+#else
             if(!renderer.sync_inspection_art(draw)){result=33;break;}
+#endif
+#endif
+#ifdef PS3_GAME_ORBIT_FIX40
+            if(managing){if(!renderer.set_file_manager_hud(file_manager.view())){result=32;break;}}
+            else
 #endif
             if(!renderer.set_library_hud(browser.hud_lines(cover_status)
 #ifdef PS3_GAME_ORBIT_FIX32
@@ -526,6 +594,12 @@ int main(){
             if(prefetch_layout!=draw.layout || previous_inspection_phase!=draw.inspection_phase){last_selection_time=now;prefetch_layout=draw.layout;previous_inspection_phase=draw.inspection_phase;}
 #endif
             if(now-last_selection_time>=400000 && now>=prefetch_at
+#ifdef PS3_GAME_ORBIT_FIX41
+                && interaction.idle(now,draw)
+#endif
+#ifdef PS3_GAME_ORBIT_FIX40
+                && !managing
+#endif
 #ifdef PS3_GAME_ORBIT_FIX35
                 && !draw.menu.open
 #ifdef PS3_GAME_ORBIT_FIX36
@@ -555,7 +629,11 @@ int main(){
             }
 #endif
 #ifdef PS3_GAME_ORBIT_FIX36
-            if(!renderer.update_orbit_background(draw.menu.animated_background,frame_dt)){result=33;break;}
+            if(!renderer.update_orbit_background(draw.menu.animated_background
+#ifdef PS3_GAME_ORBIT_FIX40
+                && !managing
+#endif
+                ,frame_dt)){result=33;break;}
 #endif
             if(!stream.begin_frame()){result=29;break;}
             const auto yaw=draw.center_yaw_deg;
@@ -610,7 +688,11 @@ int main(){
                 last_report=now;
             }
 #ifdef PS3_GAME_ORBIT_FIX35
-            const bool idle=now-last_selection_time>=400000 && !draw.menu.busy && !keyboard.busy() && !mounting.busy();
+            const bool idle=now-last_selection_time>=400000 && !draw.menu.busy && !keyboard.busy() && !mounting.busy()
+#ifdef PS3_GAME_ORBIT_FIX41
+                && interaction.idle(now,draw)
+#endif
+            ;
             RuntimeDiag::flush_if_idle(idle,std::uint64_t(now));
 #endif
         }

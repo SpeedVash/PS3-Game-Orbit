@@ -6,6 +6,7 @@
 #include <cstdio>
 #include <utility>
 #ifdef __PSL1GHT__
+#include <sys/select.h>
 #include <net/net.h>
 #else
 #include <cerrno>

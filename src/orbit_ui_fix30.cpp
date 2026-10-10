@@ -88,6 +88,9 @@ void button(DecodedImageRGBA& p,const std::string& symbol,int x,int y,const std:
     else if(symbol=="SELECT") text(p,"SELECT",x-28,y-7,18,Muted,84);
     else if(symbol=="ARROWS"){line(p,x-12,y,x-4,y-5,c);line(p,x-12,y,x-4,y+5,c);line(p,x+12,y,x+4,y-5,c);line(p,x+12,y,x+4,y+5,c);}
     else if(symbol=="UP"){line(p,x-7,y+4,x,y-5,c);line(p,x,y-5,x+7,y+4,c);}
+#ifdef PS3_GAME_ORBIT_FIX41
+    else if(symbol=="UPDOWN"){line(p,x-7,y-3,x,y-10,c);line(p,x,y-10,x+7,y-3,c);line(p,x-7,y+3,x,y+10,c);line(p,x,y+10,x+7,y+3,c);}
+#endif
     else text(p,symbol,x-12,y-10,18,c,82);
     text(p,label,x+(symbol=="SELECT" ? 47 : symbol=="START" ? 50 : symbol.size()>6 ? 16 : symbol=="L2/R2" || symbol=="L1/R1" ? 50 : 25),y-10,20,White,270);
 }
@@ -97,6 +100,108 @@ V14Vertex vertex(int x,int y,float u,float v){return {2.0f*x/1280-1,1-2.0f*y/720
 }
 
 namespace OrbitUiFix30 {
+#ifdef PS3_GAME_ORBIT_FIX40
+#ifdef PS3_GAME_ORBIT_FIX41
+DecodedImageRGBA file_manager_hud(const FileManagerFix40::View& v){
+    auto p=bitmap(Width,HudHeight);
+    text(p,ProjectIdentity::Name,64,13,28,White,760);
+    text(p,ProjectIdentity::Version,390,20,18,Muted,100);
+    text(p,"Arquivos · HD / USB",960,19,20,Muted,255);
+    text(p,v.status,64,77,20,White,v.mode==FileManagerFix40::Mode::Browse?770:1152);
+    if(v.mode==FileManagerFix40::Mode::Notice){
+        rect(p,62,176,1154,336,{{18,20,23,242}});
+        text(p,"Gerenciador de arquivos · Dois painéis",86,229,28,White,1104);
+        text(p,"O fundo animado será pausado durante este modo.",86,280,20,White,1104);
+        text(p,"Ao sair, a configuração anterior será restaurada.",86,315,20,Muted,1104);
+        text(p,"Abra a origem em um painel e o destino no outro.",86,362,20,White,1104);
+        text(p,"HD interno e USBs conectados · Cópia de vários arquivos",86,401,20,Muted,1104);
+        button(p,"X",73,157,"Continuar",Blue);button(p,"O",360,157,"Voltar",Red);
+        return p;
+    }
+    for(int panel=0;panel<2;++panel){
+        const int x=62+panel*585;const auto& view=v.panels[panel];const bool active=v.active_panel==panel;
+        rect(p,x,176,569,336,{{18,20,23,242}});rect(p,x,176,569,3,active?Blue:Muted);
+        text(p,panel==0?"Painel esquerdo":"Painel direito",x+18,187,20,active?White:Muted,520);
+        text(p,view.path.empty()?"Dispositivos":view.path,x+18,217,18,Muted,530);
+        const int count=int(view.entries.size()),begin=std::max(0,std::min(view.selected-3,count-8));
+        for(int i=begin;i<std::min(count,begin+8);++i){const int y=249+(i-begin)*27;const auto& e=view.entries[std::size_t(i)];
+            if(e.copied)rect(p,x+12,y-1,545,26,{{53,116,82,72}});
+            if(e.marked)rect(p,x+12,y-1,545,26,{{87,130,177,94}});
+            if(i==view.selected){rect(p,x+12,y-1,545,26,{{106,141,152,static_cast<unsigned char>(active?100:45)}});if(active)rect(p,x+12,y-1,3,26,Blue);}
+            const std::string prefix=e.marked?"[x] ":e.copied?"OK  ":e.directory?"[P] ":"     ";
+            text(p,prefix+e.name,x+24,y+2,18,e.marked?Blue:e.copied?Green:i==view.selected?White:Muted,415);
+            if(e.regular){const auto size=e.size>=1048576?std::to_string(e.size/1048576)+" MB":e.size>=1024?std::to_string(e.size/1024)+" KB":std::to_string(e.size)+" B";
+                text(p,size,x+447,y+2,18,Muted,108);}
+        }
+        text(p,count?std::to_string(view.selected+1)+" / "+std::to_string(count):"Pasta vazia",x+18,485,18,Muted,310);
+        text(p,"[x] Selecionado   OK Copiado",x+244,485,18,Muted,313);
+    }
+    if(v.mode==FileManagerFix40::Mode::Browse){
+        text(p,"Selecionados: "+std::to_string(v.marked_count),875,77,18,Blue,335);
+        button(p,"X",73,116,"Abrir",Blue);button(p,"SQUARE",240,116,"Marcar",Blue);
+        button(p,"TRIANGLE",430,116,"Copiar ao outro painel",Green);button(p,"ARROWS",865,116,"Trocar painel");
+        button(p,"SELECT",73,157,"Marcar todos");button(p,"L1/R1",330,157,"Página");button(p,"O",555,157,"Voltar",Red);
+        button(p,"R3",760,157,"Atualizar");button(p,"START",1030,157,"Sair");
+    }else if(v.mode==FileManagerFix40::Mode::Overwrite){
+        rect(p,240,186,800,308,{{18,20,23,252}});
+        text(p,"Arquivo já existe no destino",264,202,28,White,752);
+        text(p,v.destination,264,246,18,Muted,752);
+        const char* options[]={"Sobrescrever este arquivo","Pular este arquivo","Sobrescrever todos","Pular todos","Cancelar o lote"};
+        for(int i=0;i<5;++i){const int y=283+i*32;if(i==v.overwrite_selected)rect(p,254,y-3,773,29,{{106,141,152,100}});
+            text(p,options[i],270,y,20,i==v.overwrite_selected?White:Muted,744);}
+        button(p,"X",73,157,"Confirmar",Blue);button(p,"UPDOWN",350,157,"Opções");button(p,"O",710,157,"Cancelar lote",Red);
+    }else{
+        rect(p,240,202,800,272,{{18,20,23,252}});
+        text(p,"Copiando "+std::to_string(v.file_index)+" / "+std::to_string(v.file_count),264,221,28,White,752);
+        text(p,"De: "+v.source,264,269,18,Muted,752);text(p,"Para: "+v.destination,264,303,18,Muted,752);
+        const double fraction=v.total?double(v.done)/double(v.total):1;
+        rect(p,264,345,750,10,{{80,87,94,210}});rect(p,264,345,int(750*std::clamp(fraction,0.0,1.0)),10,Blue);
+        text(p,std::to_string(int(fraction*100))+"% · "+std::to_string(v.done)+" / "+std::to_string(v.total)+" bytes",264,375,20,White,752);
+        text(p,std::to_string(v.copied_count)+" copiado(s) · "+std::to_string(v.skipped_count)+" ignorado(s)",264,415,18,Muted,752);
+        button(p,"O",73,157,"Cancelar lote",Red);button(p,"START",425,157,"Cancelar e sair");
+    }
+    return p;
+}
+#else
+DecodedImageRGBA file_manager_hud(const FileManagerFix40::View& v){
+    auto p=bitmap(Width,HudHeight);
+    text(p,ProjectIdentity::Name,64,13,28,White,760);
+    text(p,ProjectIdentity::Version,390,20,18,Muted,100);
+    text(p,"Arquivos · HDD",1010,19,20,Muted,210);
+    rect(p,62,176,1154,336,{{18,20,23,242}});
+    text(p,v.path,86,184,20,White,1104);
+    text(p,v.status,64,77,20,White,1152);
+    text(p,v.clipboard.empty()?"Nenhum arquivo copiado":std::string("Copiado: ")+v.clipboard,64,109,18,Muted,1152);
+    if(v.mode==FileManagerFix40::Mode::Notice){
+        text(p,"Gerenciador de arquivos do HD",86,235,28,White,1104);
+        text(p,"O fundo animado será desligado durante este modo.",86,287,20,White,1104);
+        text(p,"Ao sair, a configuração anterior será restaurada.",86,320,20,Muted,1104);
+        text(p,"Copie arquivos entre pastas do /dev_hdd0.",86,366,20,White,1104);
+        button(p,"X",73,157,"Continuar",Blue);button(p,"O",360,157,"Voltar",Red);
+    }else if(v.mode==FileManagerFix40::Mode::Copy || v.mode==FileManagerFix40::Mode::Overwrite){
+        text(p,v.mode==FileManagerFix40::Mode::Copy?"Copiando arquivo":"Substituir arquivo?",86,237,28,White,1104);
+        text(p,v.destination,86,286,20,Muted,1104);
+        if(v.mode==FileManagerFix40::Mode::Copy){
+            const double fraction=v.total?double(v.done)/double(v.total):1;
+            rect(p,86,339,1100,10,{{80,87,94,210}});rect(p,86,339,int(1100*std::clamp(fraction,0.0,1.0)),10,Blue);
+            text(p,std::to_string(int(fraction*100))+"%    "+std::to_string(v.done)+" / "+std::to_string(v.total)+" bytes",86,370,20,White,1104);
+            button(p,"O",73,157,"Cancelar",Red);button(p,"START",360,157,"Cancelar e sair");
+        }else{button(p,"X",73,157,"Substituir",Blue);button(p,"O",360,157,"Cancelar",Red);}
+    }else{
+        const int count=int(v.entries.size()),begin=std::max(0,std::min(v.selected-4,count-9));
+        for(int i=begin;i<std::min(count,begin+9);++i){const int y=221+(i-begin)*29;const auto& e=v.entries[std::size_t(i)];
+            if(i==v.selected)rect(p,74,y-1,1128,28,{{106,141,152,80}});
+            text(p,(e.directory?"[Pasta] ":"")+e.name,86,y+1,20,i==v.selected?White:Muted,860);
+            if(e.regular)text(p,std::to_string(e.size)+" B",970,y+3,18,Muted,220);
+        }
+        text(p,count?std::to_string(v.selected+1)+" / "+std::to_string(count):"Pasta vazia",86,486,18,Muted,1104);
+        button(p,"X",73,157,"Abrir",Blue);button(p,"SQUARE",230,157,"Copiar");button(p,"TRIANGLE",405,157,"Colar",Green);
+        button(p,"O",580,157,"Voltar",Red);button(p,"L1/R1",775,157,"Página");button(p,"START",1030,157,"Sair");
+    }
+    return p;
+}
+#endif
+#endif
 DecodedImageRGBA background(){
     auto p=bitmap(Width,BackgroundHeight);
     for(int y=0;y<p.height;++y) for(int x=0;x<p.width;++x){
@@ -271,17 +376,56 @@ void paint_hud_fix35(DecodedImageRGBA& p,const std::array<std::string,6>& s,cons
     if(menu && menu->open){
         rect(p,370,185,540,307,{{18,20,23,242}});
 #ifdef PS3_GAME_ORBIT_FIX37
-        text(p,menu->homebrew?"Opções do PS3 Game Orbit":"Opções do jogo",394,200,28,White,492);
+        text(p,
+#ifdef PS3_GAME_ORBIT_FIX40
+            menu->reorder?"Alterar posição":
+#endif
+            menu->homebrew?"Opções do PS3 Game Orbit":"Opções do jogo",394,200,28,White,492);
 #ifdef PS3_GAME_ORBIT_FIX39
         text(p,menu->homebrew?std::string("Versão ")+ProjectIdentity::Version+" · SpeedVash":s[1],394,242,20,Muted,492);
 #else
         text(p,menu->homebrew?"Versão 1.4 · SpeedVash":s[1],394,242,20,Muted,492);
 #endif
-        const char* game_options[]={"Alterar nome","Copiar capas do USB","Recarregar capas",menu->selected_favorite?"Remover dos favoritos":"Adicionar aos favoritos"};
+        const char* game_options[]={"Alterar nome","Copiar capas do USB","Recarregar capas",menu->selected_favorite?"Remover dos favoritos":"Adicionar aos favoritos"
+#ifdef PS3_GAME_ORBIT_FIX41
+            ,nullptr,"Alterar posição"
+#elif defined(PS3_GAME_ORBIT_FIX40)
+            ,"Alterar posição"
+#endif
+        };
+#ifdef PS3_GAME_ORBIT_FIX40
+        const std::string order_label=std::string("Listagem: ")+GameOrderFix40::name(static_cast<GameSortFix40>(menu->sort_mode));
+#endif
         const char* home_options[]={"Atualizar biblioteca",menu->animated_background?"Fundo animado: Ligado":"Fundo animado: Desligado",
-            "Atualizar todas as capas via USB",menu->remember_last_game?"Salvar último jogo visto: Ligado":"Salvar último jogo visto: Desligado"};
+            "Atualizar todas as capas via USB",menu->remember_last_game?"Salvar último jogo visto: Ligado":"Salvar último jogo visto: Desligado"
+#ifdef PS3_GAME_ORBIT_FIX40
+            ,order_label.c_str(),
+#ifdef PS3_GAME_ORBIT_FIX41
+            "Gerenciador de arquivos (HD / USB)"
+#else
+            "Gerenciador de arquivos do HD"
+#endif
+#endif
+        };
+#ifdef PS3_GAME_ORBIT_FIX41
+        const std::string case_label=std::string("Tipo de caixa: ")+CaseStyleFix41::name(static_cast<GameCaseStyleFix41>(menu->case_style));
+        game_options[4]=case_label.c_str();
+#endif
         const auto* options=menu->homebrew?home_options:game_options;
+#ifdef PS3_GAME_ORBIT_FIX40
+#ifdef PS3_GAME_ORBIT_FIX41
+        const int Count=menu->reorder?0:menu->homebrew?6:menu->sort_mode==2?6:5,Spacing=27;
+#else
+        const int Count=menu->reorder?0:menu->homebrew?6:menu->sort_mode==2?5:4,Spacing=menu->homebrew?27:31;
+#endif
+        if(menu->reorder){
+            text(p,"Posição "+std::to_string(menu->reorder_position+1)+" / "+std::to_string(menu->reorder_count),394,294,28,White,492);
+            text(p,"Direcional: posição    L1 / R1: 10 posições",394,347,18,Muted,492);
+            text(p,"X confirmar    Círculo cancelar",394,382,20,White,492);
+        }
+#else
         constexpr int Count=4,Spacing=35;
+#endif
 #else
         text(p,"Opções do jogo",394,200,28,White,492);
         text(p,s[1],394,242,20,Muted,492);
@@ -294,7 +438,7 @@ void paint_hud_fix35(DecodedImageRGBA& p,const std::array<std::string,6>& s,cons
 #endif
 #endif
         for(int i=0;i<Count;++i){const int y=283+i*Spacing;
-            if(i==menu->selected){rect(p,382,y-3,516,33,{{106,141,152,80}});rect(p,382,y-3,3,33,Blue);}
+            if(i==menu->selected){rect(p,382,y-3,516,Spacing-2,{{106,141,152,80}});rect(p,382,y-3,3,Spacing-2,Blue);}
             text(p,options[i],402,y,20,i==menu->selected ? White : Muted,474);
         }
         text(p,menu->status.empty() ? "X selecionar   Círculo voltar" : menu->status,394,448,18,Muted,492);

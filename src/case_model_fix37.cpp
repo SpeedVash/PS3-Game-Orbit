@@ -194,6 +194,9 @@ std::vector<V14Vertex> clip(const std::vector<V14Vertex>& polygon,int axis,float
 }
 V14MeshPart shell_half(const V14MeshPart& source,Joint joint){
     auto p=source;p.vertices.clear();p.indices.clear();p.joint=joint;p.color[3]=.14f;
+#ifdef PS3_GAME_ORBIT_FIX41
+    p.external_plastic=true;
+#endif
     for(std::size_t i=0;i<source.indices.size();i+=3){
         std::vector<V14Vertex> poly{source.vertices[source.indices[i]],source.vertices[source.indices[i+1]],source.vertices[source.indices[i+2]]};
         poly=clip(clip(poly,0,HingeX,true),2,0,joint==Joint::Lid);
@@ -209,7 +212,11 @@ V14MeshPart shell_half(const V14MeshPart& source,Joint joint){
 void plastic_spine(V14CaseMesh& mesh,const V14MeshPart& paper){
     std::map<float,Point> stations;for(const auto& v:paper.vertices)stations[v.u]={v.x,0,v.z};
     std::vector<Point> curve;for(const auto& pair:stations)curve.push_back(pair.second);
-    auto p=clear_part(Joint::Spine);const unsigned n=curve.size();
+    auto p=clear_part(Joint::Spine);
+#ifdef PS3_GAME_ORBIT_FIX41
+    p.external_plastic=true;
+#endif
+    const unsigned n=curve.size();
     for(unsigned layer=0;layer<2;++layer)for(unsigned row=0;row<2;++row)for(const auto v:curve){
         p.vertices.push_back({v.x,row?84.2f:-84.2f,v.z,0,0,1,0,0});p.flex_offsets.push_back(layer ? .58f:-.16f);}
     const auto at=[&](unsigned l,unsigned r,unsigned i){return std::uint16_t(l*2*n+r*n+i);};
@@ -232,6 +239,9 @@ void rounded_spine(V14CaseMesh& mesh,const V14MeshPart& shell,const V14MeshPart&
     for(const auto& v:paper.vertices)stations[v.u]={v.x,0,v.z};
     std::vector<std::pair<float,Point>> curve(stations.begin(),stations.end());
     auto p=clear_part(Joint::Spine);
+#ifdef PS3_GAME_ORBIT_FIX41
+    p.external_plastic=true;
+#endif
     for(std::size_t i=0;i<shell.indices.size();i+=3){
         const std::vector<V14Vertex> tri{shell.vertices[shell.indices[i]],shell.vertices[shell.indices[i+1]],shell.vertices[shell.indices[i+2]]};
         const auto left=clip(tri,0,HingeX,false);
@@ -399,10 +409,25 @@ V14CaseMesh build(const V14CaseMesh& original){
     // transition pool. Bake them from THIS model at rest, including its new
     // mouldings, spine and clear header. No old closed shell is inserted.
     // Inside paper and the seated disc are entirely behind the opaque wrap.
+    #ifdef PS3_GAME_ORBIT_FIX41
+    std::array<V14MeshPart,6> closed;
+    closed[5]=clear_part(Joint::Closed);
+#else
     std::array<V14MeshPart,5> closed;
+#endif
     closed[0]=clear_part(Joint::Closed);
+#ifdef PS3_GAME_ORBIT_FIX41
+    closed[0].external_plastic=true;
+#endif
     for(const auto& p:mesh.parts){
-        if(p.material==Material::ClearPlastic){merge(closed[0],p);continue;}
+        if(p.material==Material::ClearPlastic){
+#ifdef PS3_GAME_ORBIT_FIX41
+            merge(closed[p.external_plastic?0:5],p);
+#else
+            merge(closed[0],p);
+#endif
+            continue;
+        }
         if(p.texture_role!=Role::Cover)continue;
         const unsigned i=p.surface==V14Surface::CoverFront?1:p.surface==V14Surface::CoverBack?2:p.surface==V14Surface::CoverSpine?3:4;
         closed[i]=p;closed[i].joint=Joint::Closed;

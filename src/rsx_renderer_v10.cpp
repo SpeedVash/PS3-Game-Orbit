@@ -60,7 +60,11 @@ V10FramePlan build_v10_frame_plan(const std::vector<CasePose>& poses,
         for(std::size_t part_i=0;part_i<mesh.parts.size();++part_i){
             const auto& part=mesh.parts[part_i];
 #ifdef PS3_GAME_ORBIT_FIX32
+#ifdef PS3_GAME_ORBIT_FIX40
+            const bool opened=pose.selected; // One articulated assembly, including phase zero.
+#else
             const bool opened=pose.selected && pose.inspection_phase>.20f;
+#endif
             if((part.joint==V14MeshPart::Joint::Closed)==opened) continue;
 #ifdef PS3_GAME_ORBIT_FIX37
             const auto joint=opened ? CaseModelFix37::joint_transform(part.joint,pose.inspection_phase) : mat4_identity();
@@ -114,6 +118,17 @@ bool RsxRendererV10::sync_case_animation(V14CaseMesh& mesh,float phase){
 }
 #endif
 
+#ifdef PS3_GAME_ORBIT_FIX41
+void apply_case_styles_fix41(V10FramePlan& plan,const CoverflowState& state,const V14CaseMesh& mesh){
+    for(auto& packet:plan.packets){
+        if(packet.game_index<0||packet.game_index>=int(state.games.size())||packet.mesh_part>=mesh.parts.size())continue;
+        const auto style=state.games[std::size_t(packet.game_index)].case_style;
+        packet.colored_outer=CaseStyleFix41::applies(mesh.parts[packet.mesh_part],style,packet.plastic_pass);
+        if(packet.colored_outer)packet.outer_color=CaseStyleFix41::color(style);
+    }
+}
+#endif
+
 std::size_t native_packet_part(const V10DrawPacket& packet,std::size_t i,const V14CaseMesh& mesh){
     return packet.mesh_part==static_cast<std::size_t>(-1) ? i%mesh.parts.size() : packet.mesh_part;
 }
@@ -138,8 +153,16 @@ std::vector<std::size_t> native_submission_order(const V10FramePlan& plan,const 
         const auto& pa=plan.packets[a];const auto& pb=plan.packets[b];
 #ifdef PS3_GAME_ORBIT_FIX31
         const bool fade_a=pa.visibility<.99999f,fade_b=pb.visibility<.99999f;
-        const bool transparent_a=pa.plastic_pass!=0 || fade_a;
-        const bool transparent_b=pb.plastic_pass!=0 || fade_b;
+        const bool transparent_a=(pa.plastic_pass!=0
+#ifdef PS3_GAME_ORBIT_FIX41
+            && !pa.colored_outer
+#endif
+        ) || fade_a;
+        const bool transparent_b=(pb.plastic_pass!=0
+#ifdef PS3_GAME_ORBIT_FIX41
+            && !pb.colored_outer
+#endif
+        ) || fade_b;
         if(transparent_a!=transparent_b) return !transparent_a;
         if(!transparent_a) return false;
         const float da=pa.mvp.m[14]/pa.mvp.m[15],db=pb.mvp.m[14]/pb.mvp.m[15];
@@ -300,6 +323,9 @@ void RsxRendererV10::shutdown(){
     hud_lines_={};
 #ifdef PS3_GAME_ORBIT_FIX35
     hud_cache_.clear();hud_menu_={};
+#ifdef PS3_GAME_ORBIT_FIX40
+    file_hud_active_=false;file_hud_revision_=0;
+#endif
 #endif
 #ifdef PS3_GAME_ORBIT_FIX32
     if(stage1_){stage1_->release_cover(disc_label_texture_);stage1_->release_cover(disc_back_texture_);}
@@ -424,9 +450,15 @@ bool RsxRendererV10::render(const CoverflowState& state,const V14CaseMesh& mesh,
     for(auto& pose:poses) if(pose.selected) pose.scale=selected_scale;
 #endif
 #ifdef __PSL1GHT__
+#if defined(PS3_GAME_ORBIT_FIX40) && defined(__PSL1GHT__)
+    if(diagnostic_view_label_=="CULL_FRONT")for(auto& pose:poses)pose.selected=false;
+#endif
     last_plan_=build_v10_frame_plan(poses,mesh,width_,height_);
 #else
     last_plan_=build_v10_frame_plan(poses,mesh,1280,720);
+#endif
+#ifdef PS3_GAME_ORBIT_FIX41
+    apply_case_styles_fix41(last_plan_,state,mesh);
 #endif
     last_stats_=summarize_v10_submission(last_plan_,mesh);
     last_stats_.hud_draw_calls=hud_texture_.uploaded ? 1 : 0;
@@ -447,6 +479,9 @@ bool RsxRendererV10::set_library_hud(const LibraryHudLinesFix28& lines
 #endif
 ){
     if(!ready_ || !stage1_){last_error_="Renderer not ready for HUD";return false;}
+#ifdef PS3_GAME_ORBIT_FIX40
+    if(file_hud_active_){file_hud_active_=false;hud_cache_.clear();hud_lines_={};hud_rows_.clear();hud_menu_={};hud_active_row_=-1;}
+#endif
 #ifdef PS3_GAME_ORBIT_FIX32
     std::vector<std::string> rows;int active=-1;
     if(state && state->layout==OrbitLayout::List && !state->inspection_target && state->inspection_phase==0) {
@@ -1201,8 +1236,15 @@ unsigned RsxRendererV10::front_green_samples(const V14CaseMesh& mesh) const {
 #else
     const int sample_buffer=current_buffer_^1;
 #endif
+#ifdef PS3_GAME_ORBIT_FIX41
+    if(!color_buffer_[sample_buffer])return 0;
+    const auto front=std::find_if(last_plan_.packets.begin(),last_plan_.packets.end(),[](const V10DrawPacket& p){return p.surface==V14Surface::CoverFront;});
+    if(front==last_plan_.packets.end())return 0;
+    const std::size_t packet_i=std::size_t(front-last_plan_.packets.begin()),part_i=front->mesh_part;
+#else
     if(last_plan_.packets.size()!=6 || !color_buffer_[sample_buffer]) return 0;
     const std::size_t part_i=mesh.jfx ? 1 : 3,packet_i=mesh.jfx ? 2 : 3;
+#endif
     if(part_i>=mesh.parts.size()) return 0;
     const auto& part=mesh.parts[part_i];
     if(part.surface!=V14Surface::CoverFront || part.vertices.size()<4) return 0;
@@ -1486,7 +1528,11 @@ bool RsxRendererV10::draw_frame_ps3(const V10FramePlan& plan,const V14CaseMesh& 
 #endif
         ) : !packet.mesh_textured;
 #ifdef PS3_GAME_ORBIT_FIX31
-        const bool translucent=shell || packet.visibility<.99999f;
+        const bool translucent=(shell
+#ifdef PS3_GAME_ORBIT_FIX41
+            && !packet.colored_outer
+#endif
+        ) || packet.visibility<.99999f;
 #else
         const bool translucent=shell;
 #endif
@@ -1496,12 +1542,19 @@ bool RsxRendererV10::draw_frame_ps3(const V10FramePlan& plan,const V14CaseMesh& 
         const float use_texture[4]={use_tex?1.0f:0.0f,0,0,0};
         const float alpha[4]={
 #ifdef PS3_GAME_ORBIT_FIX31
-            (shell ? packet.alpha : 1.0f)*packet.visibility,
+            (shell
+#ifdef PS3_GAME_ORBIT_FIX41
+             && !packet.colored_outer
+#endif
+             ? packet.alpha : 1.0f)*packet.visibility,
 #else
             packet.alpha,
 #endif
             0,0,0};
         const float* base_color=mesh.jfx ? part.color.data() : shell_color;
+#ifdef PS3_GAME_ORBIT_FIX41
+        if(packet.colored_outer)base_color=packet.outer_color.data();
+#endif
 #ifdef PS3_GAME_ORBIT_FIX33
         const float artwork_color[4]={1,1,1,1};
         if(use_tex && part.texture_role==V14MeshPart::TextureRole::Inside) base_color=artwork_color;
@@ -1613,5 +1666,18 @@ bool RsxRendererV10::draw_frame_ps3(const V10FramePlan& plan,const V14CaseMesh& 
 #endif
     current_buffer_^=1;
     return true;
+}
+#endif
+
+#ifdef PS3_GAME_ORBIT_FIX40
+bool RsxRendererV10::set_file_manager_hud(const FileManagerFix40::View& view){
+    if(!ready_ || !stage1_)return false;
+    if(file_hud_active_ && file_hud_revision_==view.revision)return true;
+    const bool full=!file_hud_active_;
+    if(!hud_texture_.uploaded && !set_library_hud(LibraryHudLinesFix28{}))return false;
+    const auto image=OrbitUiFix30::file_manager_hud(view);
+    const std::vector<HudRectFix35> regions=full?std::vector<HudRectFix35>{{0,0,1280,512}}:std::vector<HudRectFix35>{{0,64,1280,112},{0,176,1280,336}};
+    if(!stage1_->update_overlay_regions(image,hud_texture_,regions)){last_error_=stage1_->last_error();return false;}
+    file_hud_active_=true;file_hud_revision_=view.revision;return true;
 }
 #endif

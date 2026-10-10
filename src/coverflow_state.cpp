@@ -14,6 +14,10 @@ void rebuild_visible(CoverflowState& s) {
         }
         if (ok) s.visible.push_back(i);
     }
+#ifdef PS3_GAME_ORBIT_FIX40
+    GameOrderFix40::reconcile(s.custom_order,s.games);
+    GameOrderFix40::sort_visible(s.visible,s.games,s.sort_mode,s.custom_order);
+#endif
     if (s.visible.empty()) s.selected = 0;
     else s.selected = std::clamp(s.selected, 0, (int)s.visible.size()-1);
     s.center_yaw_deg = 0.0f;

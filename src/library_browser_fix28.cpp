@@ -54,7 +54,16 @@ AppCommands LibraryBrowserFix28::update(const InputFrame& raw_input,float dt){
 #ifdef PS3_GAME_ORBIT_FIX35
     AppCommands menu_command;
 #ifdef PS3_GAME_ORBIT_FIX37
+#ifdef PS3_GAME_ORBIT_FIX40
+    state_.menu.sort_mode=int(state_.sort_mode);
+    #ifdef PS3_GAME_ORBIT_FIX41
+    const int MenuItems=state_.menu.homebrew?6:state_.sort_mode==GameSortFix40::Custom?6:5;
+#else
+    const int MenuItems=state_.menu.homebrew?6:state_.sort_mode==GameSortFix40::Custom?5:4;
+#endif
+#else
     constexpr int MenuItems=4;
+#endif
     const bool menu_was_open=state_.menu.open;
     bool toggled=false;
     if(input.connected && !mount_busy_ && !state_.menu.busy &&
@@ -62,11 +71,30 @@ AppCommands LibraryBrowserFix28::update(const InputFrame& raw_input,float dt){
         const bool home=input.start.pressed;
         state_.menu.open=!(state_.menu.open && state_.menu.homebrew==home);
         state_.menu.homebrew=home;help_open_=false;toggled=true;
+#ifdef PS3_GAME_ORBIT_FIX40
+        state_.menu.reorder=false;
+#endif
         if(state_.menu.open){state_.menu.selected=0;state_.menu.status.clear();pending_path_.clear();pending_layout_=-1;}
     }
     input.start.pressed=input.triangle.pressed=false;
     if(menu_was_open || state_.menu.open){
         if(!toggled && !state_.menu.busy && menu_was_open && input.connected){
+#ifdef PS3_GAME_ORBIT_FIX40
+            if(state_.menu.reorder){
+                int delta=input.down.pressed||input.right.pressed?1:input.up.pressed||input.left.pressed?-1:0;
+                if(input.l1.pressed)delta=-10;
+                if(input.r1.pressed)delta=10;
+                state_.menu.reorder_position=std::clamp(state_.menu.reorder_position+delta,0,std::max(0,state_.menu.reorder_count-1));
+                if(input.circle.pressed)state_.menu.reorder=false;
+                else if(input.cross.pressed){
+                    if(GameOrderFix40::move_visible(state_.custom_order,state_.games,state_.visible,state_.selected,state_.menu.reorder_position)){
+                        refresh_order();state_.menu.status="Posição salva na ordem Custom.";
+                    }
+                    state_.menu.reorder=false;
+                }
+                input=InputFrame{};
+            }
+#endif
             if(input.circle.pressed)state_.menu.open=false;
             if(input.up.pressed)state_.menu.selected=(state_.menu.selected+MenuItems-1)%MenuItems;
             if(input.down.pressed)state_.menu.selected=(state_.menu.selected+1)%MenuItems;
@@ -77,6 +105,10 @@ AppCommands LibraryBrowserFix28::update(const InputFrame& raw_input,float dt){
                     case 1:state_.menu.animated_background=!state_.menu.animated_background;preferences_changed_=true;break;
                     case 2:menu_command.import_all_usb=true;break;
                     case 3:state_.menu.remember_last_game=!state_.menu.remember_last_game;preferences_changed_=true;break;
+#ifdef PS3_GAME_ORBIT_FIX40
+                    case 4:state_.sort_mode=static_cast<GameSortFix40>((int(state_.sort_mode)+1)%3);refresh_order();break;
+                    case 5:menu_command.open_file_manager=true;state_.menu.open=false;break;
+#endif
                     }
                 }else{
                     switch(state_.menu.selected){
@@ -90,6 +122,18 @@ AppCommands LibraryBrowserFix28::update(const InputFrame& raw_input,float dt){
                             state_.menu.open=false;
                         }
                         break;
+#ifdef PS3_GAME_ORBIT_FIX40
+#ifdef PS3_GAME_ORBIT_FIX41
+                    case 4:
+                        if(auto* game=current_game(state_)){game->case_style=static_cast<GameCaseStyleFix41>((int(game->case_style)+1)%3);preferences_changed_=true;}
+                        break;
+                    case 5:
+#else
+                    case 4:
+#endif
+                        if(state_.sort_mode==GameSortFix40::Custom){state_.menu.reorder=true;state_.menu.reorder_position=state_.selected;state_.menu.reorder_count=int(state_.visible.size());}
+                        break;
+#endif
                     }
                 }
             }
@@ -215,6 +259,9 @@ AppCommands LibraryBrowserFix28::update(const InputFrame& raw_input,float dt){
     commands.rescan_library=commands.rescan_library || menu_command.rescan_library;
 #ifdef PS3_GAME_ORBIT_FIX37
     commands.import_all_usb=menu_command.import_all_usb;
+#ifdef PS3_GAME_ORBIT_FIX40
+    commands.open_file_manager=menu_command.open_file_manager;
+#endif
 #endif
 #endif
 #ifdef PS3_GAME_ORBIT_FIX31
@@ -266,6 +313,9 @@ AppCommands LibraryBrowserFix28::update(const InputFrame& raw_input,float dt){
     if(input.connected && (input.l2.held || input.r2.held || input.r3.pressed || input.up.pressed ||
        std::fabs(input.right_x)>.18f || std::fabs(input.right_y)>.18f))preferences_changed_=true;
     state_.menu.selected_favorite=current_game(state_) && current_game(state_)->favorite;
+#ifdef PS3_GAME_ORBIT_FIX41
+    state_.menu.case_style=current_game(state_)?int(current_game(state_)->case_style):0;
+#endif
     if(state_.visible.empty()){
         state_.inspection_target=false;state_.inspection_phase=0;
         if(!state_.menu.homebrew)state_.menu.open=false;
@@ -284,6 +334,9 @@ AppCommands LibraryBrowserFix28::update(const InputFrame& raw_input,float dt){
     return commands;
 }
 void LibraryBrowserFix28::restore_selection(FilterMode filter,const std::string& path){
+#ifdef PS3_GAME_ORBIT_FIX40
+    state_.selected=0;
+#endif
     state_.filter=filter;rebuild_visible(state_);
     for(std::size_t i=0;i<state_.visible.size();++i) if(state_.games[state_.visible[i]].path==path){state_.selected=int(i);break;}
     state_.transition=1;front_pose();preferences_changed_=false;
@@ -379,3 +432,15 @@ LibraryHudLinesFix28 LibraryBrowserFix28::hud_lines(const std::string& cover_sta
     return lines;
 #endif
 }
+
+#ifdef PS3_GAME_ORBIT_FIX40
+void LibraryBrowserFix28::refresh_order(){
+    const auto path=selected_path();const auto yaw=state_.center_yaw_deg,pitch=state_.center_pitch_deg;
+    rebuild_visible(state_);
+    for(std::size_t i=0;i<state_.visible.size();++i)if(state_.games[state_.visible[i]].path==path){state_.selected=int(i);break;}
+    state_.center_yaw_deg=yaw;state_.center_pitch_deg=pitch;
+    state_.menu.sort_mode=int(state_.sort_mode);preferences_changed_=true;
+    pending_path_.clear();pending_layout_=-1;OrbitFlowFix31::reset(state_);
+}
+void LibraryBrowserFix28::restore_order(const GameOrderFix40::Saved& o){state_.sort_mode=o.mode;state_.custom_order=o.paths;refresh_order();preferences_changed_=false;}
+#endif

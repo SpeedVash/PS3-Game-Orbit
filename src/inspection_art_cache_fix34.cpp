@@ -82,10 +82,18 @@ bool RsxRendererV10::load_cached_inspection_art(InspectionArtCache& cache,int gi
     return true;
 }
 
-bool RsxRendererV10::sync_inspection_art(const CoverflowState& state) {
+bool RsxRendererV10::sync_inspection_art(const CoverflowState& state
+#ifdef PS3_GAME_ORBIT_FIX40
+    ,bool prepare_closed
+#endif
+) {
     if(!ready_ || !stage1_) {last_error_="Renderer not ready for inspection artwork";return false;}
     const auto* game=current_game(state);
-    if(!game || (!state.inspection_target && state.inspection_phase==0)) return true;
+    if(!game || (!state.inspection_target && state.inspection_phase==0
+#ifdef PS3_GAME_ORBIT_FIX40
+        && !prepare_closed
+#endif
+    )) return true;
 #ifdef PS3_GAME_ORBIT_FIX38
     // Resolve both selected textures before showing the inspection. Idle
     // prefetch stays one image per slice; an opening cannot wait behind it.

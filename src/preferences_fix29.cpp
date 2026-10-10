@@ -42,7 +42,11 @@ std::fopen(path.c_str(),"rb")
     const bool read_ok=!std::ferror(file);std::fclose(file);if(!read_ok) return false;
     const auto newline=data.find('\n');if(newline==std::string::npos) return false;
     std::istringstream header(data.substr(0,newline));std::string magic,extra;std::uint32_t digest;
-    if(!(header>>magic>>digest) || magic!="PS3_SP_PREFS29_V1" || (header>>extra)) return false;
+    if(!(header>>magic>>digest) || (magic!="PS3_SP_PREFS29_V1"
+#ifdef PS3_GAME_ORBIT_FIX41
+        && magic!="PS3_GO_PREFS41_V2"
+#endif
+        ) || (header>>extra)) return false;
     const auto payload=data.substr(newline+1);if(checksum(payload)!=digest) return false;
     std::istringstream lines(payload);std::string line;
     std::unordered_map<std::string,Record> records;FilterMode filter=FilterMode::All;std::string selected;
@@ -59,8 +63,19 @@ std::fopen(path.c_str(),"rb")
             if(p!="-" && (!unhex(p,selected) || !valid_path(selected))) return false;
         }else if(tag=="game"){
             std::string decoded;
-            if(!(row>>a>>b>>p) || a>1 || b<1 || b>8 || (row>>tail) || !unhex(p,decoded) || !valid_path(decoded) || records.size()>=MaxRecords) return false;
-            if(!records.emplace(decoded,Record{a!=0,b}).second) return false;
+            unsigned style=0;
+            if(!(row>>a>>b))return false;
+#ifdef PS3_GAME_ORBIT_FIX41
+            if(magic=="PS3_GO_PREFS41_V2" && (!(row>>style)||style>2))return false;
+#endif
+            if(!(row>>p) || a>1 || b<1 || b>8 || (row>>tail) || !unhex(p,decoded) || !valid_path(decoded) || records.size()>=MaxRecords) return false;
+            Record record{a!=0,b};
+#ifdef PS3_GAME_ORBIT_FIX41
+            record.case_style=static_cast<GameCaseStyleFix41>(style);
+#else
+            (void)style;
+#endif
+            if(!records.emplace(decoded,record).second) return false;
         }else return false;
     }
     if(!filter_seen || !selection_seen) return false;
@@ -70,9 +85,19 @@ bool PreferencesFix29::save(const std::string& path) const {
     std::vector<std::string> keys;for(const auto& entry:records_) keys.push_back(entry.first);std::sort(keys.begin(),keys.end());
     std::string payload="filter "+std::to_string(static_cast<unsigned>(filter_))+"\nselected "+(selected_.empty() ? "-" : hex(selected_))+"\n";
     for(const auto& key:keys){
-        const auto& r=records_.at(key);payload+="game "+std::to_string(unsigned(r.favorite))+" "+std::to_string(r.orientation)+" "+hex(key)+"\n";
+        const auto& r=records_.at(key);payload+="game "+std::to_string(unsigned(r.favorite))+" "+std::to_string(r.orientation)+" "+
+#ifdef PS3_GAME_ORBIT_FIX41
+        std::to_string(unsigned(r.case_style))+" "+
+#endif
+        hex(key)+"\n";
     }
-    const std::string data="PS3_SP_PREFS29_V1 "+std::to_string(checksum(payload))+"\n"+payload;
+    const std::string data=
+#ifdef PS3_GAME_ORBIT_FIX41
+        "PS3_GO_PREFS41_V2 "+
+#else
+        "PS3_SP_PREFS29_V1 "+
+#endif
+        std::to_string(checksum(payload))+"\n"+payload;
     if(data.size()>MaxBytes || records_.size()>MaxRecords) return false;
     const auto temporary=path+".tmp";FILE* file=std::fopen(temporary.c_str(),"wb");if(!file) return false;
     bool ok=std::fwrite(data.data(),1,data.size(),file)==data.size() && std::fflush(file)==0;
@@ -89,12 +114,20 @@ std::rename(temporary.c_str(),path.c_str())==0
     return ok;
 }
 void PreferencesFix29::apply(std::vector<GameEntry>& games) const {
-    for(auto& g:games){const auto it=records_.find(g.path);if(it!=records_.end()){g.favorite=it->second.favorite;g.cover_orientation=it->second.orientation;}}
+    for(auto& g:games){const auto it=records_.find(g.path);if(it!=records_.end()){g.favorite=it->second.favorite;g.cover_orientation=it->second.orientation;
+#ifdef PS3_GAME_ORBIT_FIX41
+        g.case_style=it->second.case_style;
+#endif
+}}
 }
 void PreferencesFix29::capture(const CoverflowState& state){
     filter_=state.filter;if(const auto* game=current_game(state)) selected_=game->path;
     for(const auto& g:state.games) if(valid_path(g.path)){
         if(!records_.count(g.path) && records_.size()>=MaxRecords) continue;
-        records_[g.path]={g.favorite,g.cover_orientation};
+        records_[g.path]={g.favorite,g.cover_orientation
+#ifdef PS3_GAME_ORBIT_FIX41
+            ,g.case_style
+#endif
+        };
     }
 }
