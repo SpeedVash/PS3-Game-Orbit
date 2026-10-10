@@ -1,3 +1,31 @@
+# Histórico de mudanças
+
+## 1.5.1 — 2026-10-10 (FIX41)
+
+- Gerenciador de dois painéis independentes para HD e USB, com posições preservadas ao trocar de painel e seleção de dispositivos.
+- Seleção múltipla por arquivo ou pasta atual; arquivos marcados em azul e cópias concluídas em verde na origem e no destino.
+- Cópia para o outro painel com progresso, cancelamento e confirmação individual ou para todo o lote: sobrescrever, ignorar ou cancelar.
+- API nativa de arquivos unificada; dados do caminho e do descritor verificados separadamente, espaço livre consultado no dispositivo de destino e erros por etapa/código.
+- Temporário por arquivo, rollback na falha de conclusão, manutenção de cópias já concluídas e verificação do limite FAT32 por arquivo.
+- Triângulo → Tipo de caixa: transparente, Platinum cinza opaco e Greatest Hits vermelha; plástico externo colorido e interior transparente, com escolha persistida por jogo.
+- Mesmo modelo fechado/aberto; separação dos materiais externos/internos sem mudar a geometria ou as artes.
+- Trabalho opcional de pré-carga, logs e gravações adiado durante comandos manuais e por 650 ms após o último comando; pré-carga também aguarda as transições.
+- Caches por layout preservados: Clássico 7/7/7, Spine 15/15/15 e Lista 5/5/5.
+- Versão 1.5.1 no início, cabeçalho e menus; PGORBT301 mantido e APP_VER/VERSION 01.11.
+- Testes de cópia, persistência, loop, renderização e memória aprovados no computador; compilação nativa verificada. Teste físico no PS3 pendente.
+
+## 1.5
+
+- Ordenação A-Z, Z-A e Custom, com posições persistidas por caminho do jogo.
+- Triângulo → Alterar posição no modo Custom; seleção preservada na mudança de ordem.
+- START → Gerenciador de arquivos do HD: navegação, copiar/colar, progresso, cancelamento e confirmação de substituição.
+- Cópia por blocos com tamanho de 64 bits, temporário e restauração do destino anterior em falha de conclusão.
+- Aviso de entrada e pausa temporária do fundo, com retorno à preferência anterior ao sair.
+- Caixa selecionada articula o mesmo conjunto completo em todas as fases, incluindo fechada; interior e disco preparados na entrada e durante a espera.
+- Interface do gerenciador e retorno à biblioteca usam atualização controlada da textura de HUD.
+- Identidade PGORBT301 preservada; versão pública 1.5 e APP_VER/VERSION 01.10.
+- Configurações, USB/PS3COVERS parcial/em lote, arte normalizada e caches 7/7/7, 15/15/15 e 5/5/5 mantidos.
+
 # Histórico de versões
 
 ## 1.4.2 — 2026-10-06 (FIX39)

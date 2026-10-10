@@ -60,3 +60,11 @@ O fechamento usa a mesma malha aprovada em repouso, agrupada para o RSX. A borda
 ## Acabamento da v1.4.2
 
 A lombada usa as bordas curvas do mesmo exterior JFX, preparadas localmente, junto ao interior procedural aprovado. A união é recortada no mesmo plano das laterais e transportada pelas duas articulações. Os relevos usam plástico neutro; as normais suavizadas reutilizam buffers. Os termos do modelo de terceiros continuam os mesmos.
+
+## v1.5
+
+A ordenação persistente, gerenciador de arquivos e integração do conjunto articulado fechado/aberto são código do projeto. O gerenciador reutiliza a fonte Noto rasterizada e o renderizador existente. Mantêm-se os termos e créditos de todos os ativos anteriores.
+
+## v1.5.1
+
+O gerenciador de dois painéis, a seleção múltipla, o tratamento dos lotes, os materiais coloridos por jogo e o controle de pré-carga durante a interação são código do projeto. A aparência de dois painéis usa o Aurora como referência funcional, sem incorporar seus fontes ou ativos. A geometria licenciada mantém os termos anteriores; as cores não adicionam modelos de terceiros.
