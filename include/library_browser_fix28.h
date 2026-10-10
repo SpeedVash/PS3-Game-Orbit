@@ -35,6 +35,10 @@ public:
     GameEntry* selected_entry(){return current_game(state_);}
     void menu_status(std::string status,bool busy=false){state_.menu.status=std::move(status);state_.menu.busy=busy;}
 #endif
+#ifdef PS3_GAME_ORBIT_FIX40
+    void restore_order(const GameOrderFix40::Saved& order);
+    void refresh_order();
+#endif
     void restore_selection(FilterMode filter,const std::string& path);
 #ifdef PS3_GAME_ORBIT_FIX31
     void restore_layout(OrbitLayout layout);

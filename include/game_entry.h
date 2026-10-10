@@ -1,5 +1,8 @@
 #pragma once
 #include <string>
+#ifdef PS3_GAME_ORBIT_FIX41
+#include "case_style_fix41.h"
+#endif
 
 enum class GameSource { HDD, USB };
 enum class GameFormat { ISO, Folder };
@@ -23,4 +26,7 @@ struct GameEntry {
     GameSource source = GameSource::HDD;
     GameFormat format = GameFormat::ISO;
     bool favorite = false;
+#ifdef PS3_GAME_ORBIT_FIX41
+    GameCaseStyleFix41 case_style=GameCaseStyleFix41::Clear;
+#endif
 };

@@ -1,4 +1,7 @@
 #pragma once
+#ifdef PS3_GAME_ORBIT_FIX40
+#include "file_manager_fix40.h"
+#endif
 #include <cstdint>
 #include <string>
 #include <unordered_map>
@@ -16,6 +19,9 @@
 #endif
 
 struct V10DrawPacket {
+#ifdef PS3_GAME_ORBIT_FIX41
+    bool colored_outer=false;std::array<float,4> outer_color{{1,1,1,1}};
+#endif
     int game_index=-1;
     int relative_slot=0;
     V14Surface surface=V14Surface::ShellEdge;
@@ -36,6 +42,9 @@ struct V10FramePlan {
     int screen_width=1280;
     int screen_height=720;
 };
+#ifdef PS3_GAME_ORBIT_FIX41
+void apply_case_styles_fix41(V10FramePlan& plan,const CoverflowState& state,const V14CaseMesh& mesh);
+#endif
 
 struct V10UvTransform {
     float scale_u=1.0f;
@@ -105,7 +114,11 @@ public:
     std::uint64_t gpu_cache_misses() const {return gpu_cache_misses_;}
     std::uint64_t gpu_cache_evictions() const {return gpu_cache_evictions_;}
 #ifdef PS3_GAME_ORBIT_FIX33
-    bool sync_inspection_art(const CoverflowState& state);
+    bool sync_inspection_art(const CoverflowState& state
+#ifdef PS3_GAME_ORBIT_FIX40
+        ,bool prepare_closed=false
+#endif
+    );
 #ifdef PS3_GAME_ORBIT_FIX36
     bool prefetch_inspection_art(const CoverflowState& state);
 #endif
@@ -142,6 +155,9 @@ public:
         ,const CoverflowState* state=nullptr
 #endif
     );
+#ifdef PS3_GAME_ORBIT_FIX40
+    bool set_file_manager_hud(const FileManagerFix40::View& view);
+#endif
     bool prepare_orbit_background();
 #ifdef PS3_GAME_ORBIT_FIX36
     bool update_orbit_background(bool animated,float dt);
@@ -197,6 +213,9 @@ private:
     std::string last_error_;
     GpuTextureStage1 hud_texture_{};
 #ifdef PS3_GAME_ORBIT_FIX35
+#ifdef PS3_GAME_ORBIT_FIX40
+    bool file_hud_active_=false;std::uint64_t file_hud_revision_=0;
+#endif
     HudCacheFix35 hud_cache_;
     GameMenuStateFix35 hud_menu_;
 #endif

@@ -2,6 +2,9 @@
 #include <vector>
 #include "game_entry.h"
 #include "case_pose.h"
+#ifdef PS3_GAME_ORBIT_FIX40
+#include "game_order_fix40.h"
+#endif
 #ifdef PS3_GAME_ORBIT_FIX35
 #include "game_menu_fix35.h"
 #endif
@@ -18,6 +21,10 @@ struct CoverflowState {
     std::vector<int> visible;
     int selected = 0;
     FilterMode filter = FilterMode::All;
+#ifdef PS3_GAME_ORBIT_FIX40
+    GameSortFix40 sort_mode=GameSortFix40::Alphabetical;
+    std::vector<std::string> custom_order;
+#endif
 #ifdef PS3_GAME_ORBIT_FIX35
     GameMenuStateFix35 menu;
 #endif

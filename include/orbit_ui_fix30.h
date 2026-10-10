@@ -5,7 +5,14 @@
 #include "image_decode.h"
 #include "v14_case_mesh.h"
 
+#ifdef PS3_GAME_ORBIT_FIX40
+#include "file_manager_fix40.h"
+#include "game_order_fix40.h"
+#endif
 namespace OrbitUiFix30 {
+#ifdef PS3_GAME_ORBIT_FIX40
+DecodedImageRGBA file_manager_hud(const FileManagerFix40::View& view);
+#endif
 inline constexpr int Width=1280, BackgroundHeight=360,
 #ifdef PS3_GAME_ORBIT_FIX32
 HudHeight=512;

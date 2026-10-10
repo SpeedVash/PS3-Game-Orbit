@@ -60,6 +60,9 @@ struct V14MeshPart {
 #endif
 #endif
     Material material = Material::Legacy;
+#ifdef PS3_GAME_ORBIT_FIX41
+    bool external_plastic=false; // Material selection only; vertices remain unchanged.
+#endif
     std::array<float,4> color{{0.773f,0.788f,0.804f,0.72f}};
 };
 

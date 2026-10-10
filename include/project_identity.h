@@ -6,7 +6,11 @@ inline constexpr const char* Name = "PS3 Game Orbit";
 #ifdef PS3_GAME_ORBIT_FIX31
 #ifdef PS3_GAME_ORBIT_FIX32
 #ifdef PS3_GAME_ORBIT_FIX33
-#ifdef PS3_GAME_ORBIT_FIX39
+#ifdef PS3_GAME_ORBIT_FIX41
+inline constexpr const char* Version = "1.5.1";
+#elif defined(PS3_GAME_ORBIT_FIX40)
+inline constexpr const char* Version = "1.5";
+#elif defined(PS3_GAME_ORBIT_FIX39)
 inline constexpr const char* Version = "1.4.2";
 #elif defined(PS3_GAME_ORBIT_FIX38)
 inline constexpr const char* Version = "1.4.1 TESTE";
@@ -91,6 +95,10 @@ inline constexpr const char* BackgroundPath = "/dev_hdd0/tmp/PS3_GAME_ORBIT_BACK
 inline constexpr const char* FallbackBackgroundPath = "/dev_hdd0/game/PGORBT301/USRDIR/PS3_GAME_ORBIT_BACKGROUND.dat";
 #endif
 #endif
+#ifdef PS3_GAME_ORBIT_FIX40
+inline constexpr const char* OrderPath="/dev_hdd0/game/PGORBT301/USRDIR/PS3_GAME_ORBIT_ORDER.dat";
+inline constexpr const char* FallbackOrderPath="/dev_hdd0/tmp/PS3_GAME_ORBIT_ORDER.dat";
+#endif
 inline constexpr const char* CoverDirectory = "/dev_hdd0/PS3COVERS";
 #ifdef PS3_GAME_ORBIT_FIX37
 #ifdef PS3_GAME_ORBIT_FIX38
@@ -105,7 +113,13 @@ inline constexpr const char* FallbackSettingsPath="/dev_hdd0/game/PGORBT301/USRD
 #ifdef PS3_GAME_ORBIT_FIX31
 #ifdef PS3_GAME_ORBIT_FIX32
 #ifdef PS3_GAME_ORBIT_FIX33
-#ifdef PS3_GAME_ORBIT_FIX39
+#ifdef PS3_GAME_ORBIT_FIX41
+inline constexpr const char* LogPath = "/dev_hdd0/tmp/PS3_GAME_ORBIT_FIX41.log";
+inline constexpr const char* FallbackLogPath = "/dev_hdd0/game/PGORBT301/USRDIR/PS3_GAME_ORBIT_FIX41.log";
+#elif defined(PS3_GAME_ORBIT_FIX40)
+inline constexpr const char* LogPath = "/dev_hdd0/tmp/PS3_GAME_ORBIT_FIX40.log";
+inline constexpr const char* FallbackLogPath = "/dev_hdd0/game/PGORBT301/USRDIR/PS3_GAME_ORBIT_FIX40.log";
+#elif defined(PS3_GAME_ORBIT_FIX39)
 inline constexpr const char* LogPath = "/dev_hdd0/tmp/PS3_GAME_ORBIT_FIX39.log";
 inline constexpr const char* FallbackLogPath = "/dev_hdd0/game/PGORBT301/USRDIR/PS3_GAME_ORBIT_FIX39.log";
 #elif defined(PS3_GAME_ORBIT_FIX38)
@@ -161,7 +175,11 @@ inline constexpr const char* LogPath = "/dev_hdd0/tmp/PS3_SP_LOADER_V13.log";
 inline constexpr const char* SafeBootCoverPath = "/dev_hdd0/game/PSSP00001/USRDIR/FULL_COVER_TEST_275x147.png";
 #else
 #ifdef PS3_GAME_ORBIT_FIX30
-#ifdef PS3_GAME_ORBIT_FIX39
+#ifdef PS3_GAME_ORBIT_FIX41
+inline constexpr const char* LogPath = "/tmp/PS3_GAME_ORBIT_FIX41.log";
+#elif defined(PS3_GAME_ORBIT_FIX40)
+inline constexpr const char* LogPath = "/tmp/PS3_GAME_ORBIT_FIX40.log";
+#elif defined(PS3_GAME_ORBIT_FIX39)
 inline constexpr const char* LogPath = "/tmp/PS3_GAME_ORBIT_FIX39.log";
 #elif defined(PS3_GAME_ORBIT_FIX38)
 inline constexpr const char* LogPath = "/tmp/PS3_GAME_ORBIT_FIX38.log";

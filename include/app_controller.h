@@ -11,6 +11,9 @@ struct AppCommands {
 #ifdef PS3_GAME_ORBIT_FIX37
     bool import_all_usb=false;
 #endif
+#ifdef PS3_GAME_ORBIT_FIX40
+    bool open_file_manager=false;
+#endif
     bool request_exit = false;
 };
 

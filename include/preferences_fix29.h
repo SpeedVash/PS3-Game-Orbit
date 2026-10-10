@@ -12,7 +12,11 @@ public:
     FilterMode filter() const {return filter_;}
     const std::string& selected_path() const {return selected_;}
 private:
-    struct Record {bool favorite=false;unsigned orientation=1;};
+    struct Record {bool favorite=false;unsigned orientation=1;
+#ifdef PS3_GAME_ORBIT_FIX41
+        GameCaseStyleFix41 case_style=GameCaseStyleFix41::Clear;
+#endif
+    };
     std::unordered_map<std::string,Record> records_;
     FilterMode filter_=FilterMode::All;
     std::string selected_;
