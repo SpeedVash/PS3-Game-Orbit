@@ -6,7 +6,9 @@ inline constexpr const char* Name = "PS3 Game Orbit";
 #ifdef PS3_GAME_ORBIT_FIX31
 #ifdef PS3_GAME_ORBIT_FIX32
 #ifdef PS3_GAME_ORBIT_FIX33
-#ifdef PS3_GAME_ORBIT_FIX42
+#ifdef PS3_GAME_ORBIT_FIX43
+inline constexpr const char* Version = "1.5.3";
+#elif defined(PS3_GAME_ORBIT_FIX42)
 inline constexpr const char* Version = "1.5.2";
 #elif defined(PS3_GAME_ORBIT_FIX41)
 inline constexpr const char* Version = "1.5.1";

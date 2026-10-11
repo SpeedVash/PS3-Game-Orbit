@@ -287,6 +287,9 @@ private:
     bool upload_geometry_ps3(const V14CaseMesh& mesh);
     bool draw_frame_ps3(const V10FramePlan& plan,const V14CaseMesh& mesh);
     bool draw_library_hud_ps3();
+#ifdef PS3_GAME_ORBIT_FIX43
+    bool prepare_file_manager_geometry_ps3();
+#endif
     bool draw_orbit_background_ps3();
 #ifdef PS3_GAME_ORBIT_FIX36
     bool draw_orbit_waves_ps3();
@@ -324,6 +327,9 @@ private:
 
     std::vector<GpuMeshPart> gpu_mesh_;
     GpuMeshPart hud_mesh_{};
+#ifdef PS3_GAME_ORBIT_FIX43
+    GpuMeshPart file_hud_mesh_{};
+#endif
     GpuMeshPart background_mesh_{};
 #ifdef PS3_GAME_ORBIT_FIX36
     GpuMeshPart wave_mesh_{};

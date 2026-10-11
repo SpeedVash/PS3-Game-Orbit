@@ -29,6 +29,9 @@ DecodedImageRGBA hud(const std::array<std::string,6>& lines
 );
 DecodedImageRGBA splash(const DecodedImageRGBA* artwork=nullptr);
 std::array<V14Vertex,12> hud_vertices();
+#ifdef PS3_GAME_ORBIT_FIX43
+std::array<V14Vertex,4> file_manager_vertices();
+#endif
 std::array<V14Vertex,4> background_vertices();
 inline constexpr std::array<std::uint16_t,18> HudIndices{{0,1,2,0,2,3,4,5,6,4,6,7,8,9,10,8,10,11}};
 inline constexpr std::array<std::uint16_t,6> BackgroundIndices{{0,1,2,0,2,3}};

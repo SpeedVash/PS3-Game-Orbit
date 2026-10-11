@@ -41,3 +41,6 @@ FIX42_PUBLIC_ONLY=1 bash tests/run_fix42_tests.sh
 bash tests/run_manager_fix42.sh
 python3 scripts/check-file-manager-native-fix42.py
 python3 scripts/check-library-loop-fix42.py
+
+FIX43_PUBLIC_ONLY=1 bash tests/run_fix43_tests.sh
+python3 scripts/check-manager-hud-fix43.py

@@ -335,6 +335,11 @@ void RsxRendererV10::shutdown(){
     if(hud_mesh_.vertices) rsxFree(hud_mesh_.vertices);
     if(hud_mesh_.indices) rsxFree(hud_mesh_.indices);
     hud_mesh_={};
+#ifdef PS3_GAME_ORBIT_FIX43
+    if(file_hud_mesh_.vertices) rsxFree(file_hud_mesh_.vertices);
+    if(file_hud_mesh_.indices) rsxFree(file_hud_mesh_.indices);
+    file_hud_mesh_={};
+#endif
     if(background_mesh_.vertices) rsxFree(background_mesh_.vertices);
     if(background_mesh_.indices) rsxFree(background_mesh_.indices);
     background_mesh_={};
@@ -1315,9 +1320,14 @@ bool RsxRendererV10::draw_orbit_background_ps3(){
 bool RsxRendererV10::draw_library_hud_ps3(){
     auto* ctx=static_cast<gcmContextData*>(stage1_->native_context());
     if(!hud_texture_.uploaded) return true;
+#ifdef PS3_GAME_ORBIT_FIX43
+    const auto& hud=file_hud_active_ ? file_hud_mesh_ : hud_mesh_;
+#else
+    const auto& hud=hud_mesh_;
+#endif
     const auto current=reinterpret_cast<std::uintptr_t>(static_cast<void*>(ctx->current));
     const auto end=reinterpret_cast<std::uintptr_t>(static_cast<void*>(ctx->end));
-    if(current>end || end-current<2048u || !hud_mesh_.vertices || !hud_mesh_.indices){
+    if(current>end || end-current<2048u || !hud.vertices || !hud.indices){
         last_error_="HUD command room or geometry unavailable";return false;
     }
     auto* vp=static_cast<const rsxVertexProgram*>(vertex_program_);
@@ -1335,10 +1345,10 @@ bool RsxRendererV10::draw_library_hud_ps3(){
     rsxLoadFragmentProgramLocation(ctx,fp,fragment_offset_,GCM_LOCATION_RSX);
     setup_texture_ps3(hud_texture_);
     const u8 stride=sizeof(V14Vertex);
-    rsxBindVertexArrayAttrib(ctx,attr_position_,0,hud_mesh_.vertex_offset+offsetof(V14Vertex,x),stride,3,GCM_VERTEX_DATA_TYPE_F32,GCM_LOCATION_RSX);
-    rsxBindVertexArrayAttrib(ctx,attr_normal_,0,hud_mesh_.vertex_offset+offsetof(V14Vertex,nx),stride,3,GCM_VERTEX_DATA_TYPE_F32,GCM_LOCATION_RSX);
-    rsxBindVertexArrayAttrib(ctx,attr_uv_,0,hud_mesh_.vertex_offset+offsetof(V14Vertex,u),stride,2,GCM_VERTEX_DATA_TYPE_F32,GCM_LOCATION_RSX);
-    rsxDrawIndexArray(ctx,GCM_TYPE_TRIANGLES,hud_mesh_.index_offset,hud_mesh_.index_count,GCM_INDEX_TYPE_16B,GCM_LOCATION_RSX);
+    rsxBindVertexArrayAttrib(ctx,attr_position_,0,hud.vertex_offset+offsetof(V14Vertex,x),stride,3,GCM_VERTEX_DATA_TYPE_F32,GCM_LOCATION_RSX);
+    rsxBindVertexArrayAttrib(ctx,attr_normal_,0,hud.vertex_offset+offsetof(V14Vertex,nx),stride,3,GCM_VERTEX_DATA_TYPE_F32,GCM_LOCATION_RSX);
+    rsxBindVertexArrayAttrib(ctx,attr_uv_,0,hud.vertex_offset+offsetof(V14Vertex,u),stride,2,GCM_VERTEX_DATA_TYPE_F32,GCM_LOCATION_RSX);
+    rsxDrawIndexArray(ctx,GCM_TYPE_TRIANGLES,hud.index_offset,hud.index_count,GCM_INDEX_TYPE_16B,GCM_LOCATION_RSX);
     return true;
 }
 
@@ -1585,7 +1595,14 @@ bool RsxRendererV10::draw_frame_ps3(const V10FramePlan& plan,const V14CaseMesh& 
     last_stats_.hud_draw_calls=0;
     if(!draw_library_hud_ps3()) return false;
     last_stats_.hud_draw_calls=hud_texture_.uploaded ? 1 : 0;
-    if(verbose && hud_texture_.uploaded) RuntimeDiag::log("HUD: one indexed draw; texture=%dx%d indices=%u",hud_texture_.width,hud_texture_.height,unsigned(hud_mesh_.index_count));
+    if(verbose && hud_texture_.uploaded){
+#ifdef PS3_GAME_ORBIT_FIX43
+        const auto& hud=file_hud_active_ ? file_hud_mesh_ : hud_mesh_;
+#else
+        const auto& hud=hud_mesh_;
+#endif
+        RuntimeDiag::log("HUD: one indexed draw; texture=%dx%d indices=%u",hud_texture_.width,hud_texture_.height,unsigned(hud.index_count));
+    }
     const auto before_flip=reinterpret_cast<std::uintptr_t>(static_cast<void*>(ctx->current));
     if(before_flip>command_end || command_end-before_flip<128u){ last_error_="FIX28 flip has insufficient command space"; return false; }
     if(before_flip-command_start+128u>LibraryPairFix28::FrameCommandBudgetBytes){
@@ -1670,11 +1687,38 @@ bool RsxRendererV10::draw_frame_ps3(const V10FramePlan& plan,const V14CaseMesh& 
 #endif
 
 #ifdef PS3_GAME_ORBIT_FIX40
+#if defined(PS3_GAME_ORBIT_FIX43) && defined(__PSL1GHT__)
+bool RsxRendererV10::prepare_file_manager_geometry_ps3(){
+    if(file_hud_mesh_.vertices && file_hud_mesh_.indices)return true;
+    const auto vertices=OrbitUiFix30::file_manager_vertices();
+    GpuMeshPart fresh{};
+    fresh.vertices=rsxMemalign(128,sizeof(vertices));
+    fresh.indices=rsxMemalign(128,sizeof(OrbitUiFix30::BackgroundIndices));
+    if(!fresh.vertices || !fresh.indices ||
+       rsxAddressToOffset(fresh.vertices,&fresh.vertex_offset)!=0 ||
+       rsxAddressToOffset(fresh.indices,&fresh.index_offset)!=0){
+        if(fresh.vertices)rsxFree(fresh.vertices);
+        if(fresh.indices)rsxFree(fresh.indices);
+        last_error_="File manager HUD geometry allocation or mapping failed";
+        return false;
+    }
+    std::memcpy(fresh.vertices,vertices.data(),sizeof(vertices));
+    std::memcpy(fresh.indices,OrbitUiFix30::BackgroundIndices.data(),sizeof(OrbitUiFix30::BackgroundIndices));
+    fresh.vertex_count=vertices.size();
+    fresh.index_count=OrbitUiFix30::BackgroundIndices.size();
+    __asm__ volatile("sync" ::: "memory");
+    file_hud_mesh_=fresh;
+    return true;
+}
+#endif
 bool RsxRendererV10::set_file_manager_hud(const FileManagerFix40::View& view){
     if(!ready_ || !stage1_)return false;
     if(file_hud_active_ && file_hud_revision_==view.revision)return true;
     const bool full=!file_hud_active_;
     if(!hud_texture_.uploaded && !set_library_hud(LibraryHudLinesFix28{}))return false;
+#if defined(PS3_GAME_ORBIT_FIX43) && defined(__PSL1GHT__)
+    if(!prepare_file_manager_geometry_ps3())return false;
+#endif
     const auto image=OrbitUiFix30::file_manager_hud(view);
     const std::vector<HudRectFix35> regions=full?std::vector<HudRectFix35>{{0,0,1280,512}}:
 #ifdef PS3_GAME_ORBIT_FIX42

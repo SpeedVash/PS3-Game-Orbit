@@ -1,0 +1,41 @@
+{
+  "version": "1.5.3",
+  "public_version": "1.5.3",
+  "build": "FIX43",
+  "creator": "SpeedVash",
+  "title_id": "PGORBT301",
+  "app_ver": "01.13",
+  "package": "PS3_GAME_ORBIT_v1.5.3.gnpdrm.pkg",
+  "package_bytes": 2558512,
+  "package_sha256": "e94f209c003698841ea1a315b045bbafae6b1dc984cfa2c500afbd140d85cfd2",
+  "fix": "Continuous file-manager bitmap uses its own native quad instead of the three-band library atlas",
+  "manager_bitmap": [
+    1280,
+    512
+  ],
+  "reference_viewport": [
+    1280,
+    720
+  ],
+  "manager_rectangle": [
+    0,
+    104,
+    1280,
+    616
+  ],
+  "manager_index_count": 6,
+  "library_index_count": 18,
+  "native_hud_modes_tested": 11,
+  "native_hud_api_simulation": "passed",
+  "public_host_suite": "passed",
+  "native_file_api_simulation": "passed",
+  "main_loop_regression_scenarios": 22,
+  "file_manager_copy_regression": "passed",
+  "native_compilation": "passed",
+  "native_package_checks": 8,
+  "compiled_inputs_unchanged_count": 151,
+  "ps3_hardware_test": "pending",
+  "preview": "assets/previews/GERENCIADOR_1_5_3.png; computer projection using actual uploaded pixels/geometry/UVs",
+  "ps1_visualization": "reserved for next update after hardware test",
+  "validation_date_utc": "2026-10-11"
+}

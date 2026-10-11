@@ -2,9 +2,15 @@
 
 ![PS3 Game Orbit](pkgfiles/ICON0.PNG)
 
-**v1.5.2 — criado por SpeedVash.** Biblioteca de jogos PS3 com capas completas, caixas articuladas, layouts Clássico, Spine e Lista, favoritos e montagem pelo webMAN MOD.
+**v1.5.3 — criado por SpeedVash.** Biblioteca de jogos PS3 com capas completas, caixas articuladas, layouts Clássico, Spine e Lista, favoritos e montagem pelo webMAN MOD.
 
-## Novidades da v1.5.2
+## Correção da v1.5.3
+
+Corrige a tela dividida ao abrir o gerenciador de arquivos na v1.5.2. A imagem contínua do gerenciador agora é desenhada em um retângulo próprio, centralizado e com proporções preservadas. A biblioteca recupera seu desenho normal ao sair.
+
+O teste no computador usa as funções nativas de envio e desenho do HUD, verifica todas as telas do gerenciador e a volta à biblioteca. A validação física no PS3 permanece pendente. A visualização de jogos PS1 fica para a próxima etapa, depois deste teste.
+
+## Recursos do gerenciador
 
 - **Controles mais claros:** L1/R1 escolhem o painel, Triângulo abre as ações e R3 escolhe HD ou USB.
 - **Origem fixa:** marcar arquivos ou pastas vincula a seleção ao painel e à pasta de origem. Abrir o destino no outro painel preserva a direção da cópia.
@@ -13,20 +19,20 @@
 - **Listagem mais legível:** nomes maiores, borda para o item em foco, caixas de seleção azuis e indicação verde de cópia concluída. SELECT mostra o caminho completo.
 - **Progresso e resumo:** arquivo atual, lote inteiro, arquivos copiados, ignorados e erros. START pede confirmação antes de cancelar uma operação em andamento.
 - Mantidos estilos de caixa por jogo, A-Z/Z-A/Custom, configurações, webMAN, artes via USB, caches e pausa temporária do fundo.
-- Versão **1.5.2** no início, cabeçalho e menu, com crédito a **SpeedVash**. Identidade PGORBT301 preservada.
+- Versão **1.5.3** no início, cabeçalho e menu, com crédito a **SpeedVash**. Identidade PGORBT301 preservada.
 
 Compilação nativa e testes no computador concluídos. **Teste desta versão no PS3 pendente.** A primeira carga das imagens necessárias ao desenho ainda é síncrona; as simulações não medem a fluidez real no console. A iluminação usa os shaders aprovados.
 
 ## Instalação
 
-1. Copie `PS3_GAME_ORBIT_v1.5.2.gnpdrm.pkg` para a raiz de um pendrive FAT32.
-2. Instale pelo gerenciador de pacotes do XMB, por cima da versão anterior. Identidade **PGORBT301**, `APP_VER 01.12`; preserve os arquivos de configuração existentes.
+1. Copie `PS3_GAME_ORBIT_v1.5.3.gnpdrm.pkg` para a raiz de um pendrive FAT32.
+2. Instale pelo gerenciador de pacotes do XMB, por cima da versão anterior. Identidade **PGORBT301**, `APP_VER 01.13`; preserve os arquivos de configuração existentes.
 3. No Super Slim, habilite HEN antes de abrir. Para montar jogos, mantenha webMAN MOD ativo.
 4. X monta o jogo com caixa aberta ou fechada. Após a confirmação, o app volta ao XMB; inicie pelo ícone do disco.
 
 ## Menus e ordenação
 
-Prévias geradas da interface real no computador: [tela inicial](assets/previews/TELA_INICIAL_1_5_2.png), [opções](assets/previews/MENU_HOME_1_5_2.png), [jogo](assets/previews/MENU_JOGO_1_5_2.png) e [gerenciador](assets/previews/GERENCIADOR_1_5_2.png). Não são capturas de um PS3.
+Prévia do [gerenciador corrigido](assets/previews/GERENCIADOR_1_5_3.png), calculada com os pixels e o mapeamento de tela usados pelo desenho nativo. É uma simulação no computador, não uma captura do PS3.
 
 | Botão | Opções |
 | --- | --- |
@@ -142,14 +148,15 @@ Preferências unificadas: `/dev_hdd0/game/PGORBT301/USRDIR/PS3_GAME_ORBIT_SETTIN
 
 “Salvar último jogo visto” vem ligado para preservar o comportamento anterior. Desligado, o app começa no primeiro jogo do filtro salvo. Se o último jogo não estiver disponível, começa no primeiro disponível. Alterações são gravadas após um breve intervalo e ao sair normalmente.
 
-Diagnóstico: `/dev_hdd0/tmp/PS3_GAME_ORBIT_FIX42.log`; alternativa em `USRDIR`. Consulte [o roteiro de teste](docs/TESTE_1.5.2.md) ao reportar um problema.
+Diagnóstico: `/dev_hdd0/tmp/PS3_GAME_ORBIT_FIX42.log`; alternativa em `USRDIR`. Consulte [o roteiro de teste](docs/TESTE_1.5.3.md) ao reportar um problema.
 
 ## Fontes, compilação e publicação
 
 - [Compilar e executar os testes](docs/BUILD.md)
-- [Guia para postar no GitHub](docs/GITHUB_1.5.2.md)
-- [Notas prontas para o release](docs/RELEASE_NOTES_1.5.2.md)
-- [Validação e teste no PS3](docs/TESTE_1.5.2.md)
+- [Guia para postar no GitHub](docs/GITHUB_1.5.3.md)
+- [Notas prontas para o release](docs/RELEASE_NOTES_1.5.3.md)
+- [Teste no PS3](docs/TESTE_1.5.3.md)
+- [Registro de validação](docs/VALIDACAO_1.5.3.md)
 - [Histórico](CHANGELOG.md) e [créditos/licenças](CREDITS.md)
 
 O PKG já está compilado. O ZIP público contém código, shaders arquivados, ativos próprios e relatórios. A malha JFX licenciada e sua representação editável não são redistribuídas. Para compilar, obtenha sua cópia na fonte indicada em `assets/jfx_bluray/README.md` e execute `scripts/prepare-jfx.py`. O código procedural do interior e das articulações acompanha o projeto. Prévias de versões anteriores mantidas em `assets/previews` são imagens de referência geradas no computador, não capturas desta versão no console.

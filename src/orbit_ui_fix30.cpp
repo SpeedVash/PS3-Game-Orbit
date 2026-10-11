@@ -635,6 +635,14 @@ std::array<V14Vertex,12> hud_vertices(){
              vertex(0,180,0,176.0f/384),vertex(1280,180,1,176.0f/384),vertex(1280,388,1,1),vertex(0,388,0,1)}};
 #endif
 }
+#ifdef PS3_GAME_ORBIT_FIX43
+std::array<V14Vertex,4> file_manager_vertices(){
+    // The manager paints one continuous 1280x512 image, unlike the library atlas.
+    // Preserve its pixel proportions inside the reference 1280x720 viewport.
+    return {{vertex(0,104,0,0),vertex(1280,104,1,0),
+             vertex(1280,616,1,1),vertex(0,616,0,1)}};
+}
+#endif
 std::array<V14Vertex,4> background_vertices(){return {{vertex(0,0,0,0),vertex(1280,0,1,0),vertex(1280,720,1,1),vertex(0,720,0,1)}};}
 }
 

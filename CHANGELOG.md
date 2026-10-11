@@ -1,5 +1,15 @@
 # Histórico de mudanças
 
+## 1.5.3 — 2026-10-11 (FIX43)
+
+- Corrige o gerenciador dividido entre o topo e o rodapé da tela na v1.5.2.
+- A imagem contínua 1280×512 usa uma geometria própria, centralizada no quadro 1280×720, com UVs contínuos e proporções preservadas.
+- Retorno à biblioteca restaura a textura e seleciona novamente a geometria original.
+- Regressão com as funções nativas reais: 11 telas do gerenciador, transições repetidas, falhas de alocação/mapeamento/upload e liberação da geometria ao encerrar.
+- Prévia considera os vértices e UVs enviados ao desenho, além do bitmap.
+- Versão pública 1.5.3 e APP_VER/VERSION 01.13; identidade PGORBT301 preservada.
+- Teste físico no PS3 pendente; visualização de PS1 continua reservada para a próxima etapa.
+
 ## 1.5.2 — 2026-10-11 (FIX42)
 
 - L1/R1 escolhem painéis; Triângulo abre ações; R3 escolhe dispositivo; SELECT mostra caminho completo.
