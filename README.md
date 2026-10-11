@@ -10,10 +10,6 @@ As capas e artes recentes permanecem em memória enquanto houver espaço. Ao mud
 
 Mantidos os limites Clássico 7/7/7, Spine 15/15/15 e Lista 5/5/5. A preparação de imagens novas continua a consumir leitura, decodificação e upload. Veja [validação](docs/VALIDACAO_1.5.4.md) e [teste no PS3](docs/TESTE_1.5.4.md).
 
-## Prévia do modelo PS1
-
-Preparada uma caixa de CD com tampa articulada e disco saindo, baseada no modelo CC0 enviado pelo usuário. Há arquivos Blender/GLB e uma [prévia do modelo](docs/PS1_MODELO_PREVIEW.md). A integração dos jogos PS1 ao desenho nativo será a próxima etapa.
-
 ## Gerenciador corrigido
 
 A geometria própria introduzida na v1.5.3 conserva a tela inteira do gerenciador. O usuário confirmou que ela funcionou bem no PS3. A biblioteca recupera seu desenho normal ao sair.
