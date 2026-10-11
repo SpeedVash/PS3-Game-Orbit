@@ -157,7 +157,6 @@ Diagnóstico: `/dev_hdd0/tmp/PS3_GAME_ORBIT_FIX42.log`; alternativa em `USRDIR`.
 ## Fontes, compilação e publicação
 
 - [Compilar e executar os testes](docs/BUILD.md)
-- [Guia para postar no GitHub](docs/GITHUB_1.5.3.md)
 - [Notas prontas para o release](docs/RELEASE_NOTES_1.5.3.md)
 - [Teste no PS3](docs/TESTE_1.5.3.md)
 - [Registro de validação](docs/VALIDACAO_1.5.3.md)
