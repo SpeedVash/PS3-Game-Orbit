@@ -101,7 +101,9 @@ V14Vertex vertex(int x,int y,float u,float v){return {2.0f*x/1280-1,1-2.0f*y/720
 
 namespace OrbitUiFix30 {
 #ifdef PS3_GAME_ORBIT_FIX40
-#ifdef PS3_GAME_ORBIT_FIX41
+#ifdef PS3_GAME_ORBIT_FIX42
+#include "file_manager_ui_fix42.inc"
+#elif defined(PS3_GAME_ORBIT_FIX41)
 DecodedImageRGBA file_manager_hud(const FileManagerFix40::View& v){
     auto p=bitmap(Width,HudHeight);
     text(p,ProjectIdentity::Name,64,13,28,White,760);

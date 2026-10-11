@@ -1,0 +1,130 @@
+{
+  "version": "1.5.2",
+  "public_version": "1.5.2",
+  "build": "FIX42",
+  "creator": "SpeedVash",
+  "title_id": "PGORBT301",
+  "app_ver": "01.12",
+  "package": "PS3_GAME_ORBIT_v1.5.2.gnpdrm.pkg",
+  "package_bytes": 2558000,
+  "package_sha256": "656715b00c18bc4ceb8b160c130845bab73bb8fac685c074384083696a5fe214",
+  "native_compilation": "passed",
+  "host_validation": "passed",
+  "ps3_hardware_test": "pending",
+  "public_distribution_host_suite": "passed",
+  "legacy_fix41_public_regression": "passed",
+  "file_manager": {
+    "panels": 2,
+    "independent_navigation": true,
+    "devices": [
+      "/dev_hdd0",
+      "/dev_usb000../dev_usb127"
+    ],
+    "multi_file_selection": true,
+    "selected_and_copied_highlights": true,
+    "max_marked_files": 4096,
+    "directions": [
+      "HD-HD",
+      "HD-USB",
+      "USB-HD",
+      "USB-USB"
+    ],
+    "recursive_directory_copy": true,
+    "empty_directories_copied": true,
+    "source_selection_anchored": true,
+    "pre_copy_confirmation": true,
+    "planning_writes_nothing": true,
+    "max_planned_items": 16384,
+    "max_plan_path_bytes": 8388608,
+    "max_path_bytes": 1023,
+    "additional_ntfs_exfat_support": false,
+    "copy_slice_bytes": 262144,
+    "file_sizes_64_bit": true,
+    "usb_fat32_file_limit_bytes": 4294967295,
+    "overwrite_actions": [
+      "overwrite-one",
+      "skip-one",
+      "overwrite-all",
+      "skip-all",
+      "cancel"
+    ],
+    "cancellation_preserves_completed_files": true,
+    "temporary_file_and_rollback": true,
+    "destination_volume_free_space": true,
+    "native_api": "sysFs",
+    "separate_path_and_fd_stat_baselines": true,
+    "error_stage_and_code": true
+  },
+  "case_styles": [
+    "clear",
+    "platinum-opaque-gray",
+    "greatest-hits-red"
+  ],
+  "per_game_case_style_saved": true,
+  "preference_v1_to_v2_migration": true,
+  "only_external_plastic_colored": true,
+  "clear_interior_preserved": true,
+  "case_geometry_preserved": true,
+  "manual_interaction_settle_ms": 650,
+  "optional_prefetch_waits_for_transitions": true,
+  "required_visible_image_loading": "synchronous",
+  "sort_modes": [
+    "A-Z",
+    "Z-A",
+    "Custom"
+  ],
+  "custom_order_persistent": true,
+  "animated_background_temporarily_paused_in_file_manager": true,
+  "background_preference_restored": true,
+  "selected_case_complete_when_closed": true,
+  "opening_degrees": 160,
+  "disc_clear_inner_outer_rim_mm": 0.5,
+  "disc_back": "silver",
+  "cache_limits": {
+    "Classic": {
+      "cover": 7,
+      "inside": 7,
+      "disc": 7
+    },
+    "Spine": {
+      "cover": 15,
+      "inside": 15,
+      "disc": 15
+    },
+    "List": {
+      "cover": 5,
+      "inside": 5,
+      "disc": 5
+    }
+  },
+  "artwork_sizes": {
+    "cover": [
+      1000,
+      550
+    ],
+    "inside": [
+      1000,
+      550
+    ],
+    "disc": [
+      500,
+      500
+    ]
+  },
+  "main_loop_scenarios": 22,
+  "native_draw_phases": [
+    0,
+    0.1,
+    0.2,
+    0.25,
+    0.5,
+    0.65,
+    0.76,
+    1
+  ],
+  "asan_ubsan": "passed; leak detection disabled",
+  "compiled_inputs_unchanged_count": 151,
+  "native_build_checks": 8,
+  "validation_date_utc": "2026-10-11",
+  "ps1_visualization": "reserved for next update after hardware test"
+}

@@ -1,5 +1,8 @@
 #pragma once
-#ifdef PS3_GAME_ORBIT_FIX41
+#ifdef PS3_GAME_ORBIT_FIX42
+#include "file_manager_fix42.h"
+using FileManagerFix40=FileManagerFix42;
+#elif defined(PS3_GAME_ORBIT_FIX41)
 #include "file_manager_fix41.h"
 using FileManagerFix40=FileManagerFix41;
 #else

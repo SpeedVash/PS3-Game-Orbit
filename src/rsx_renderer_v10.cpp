@@ -1676,7 +1676,12 @@ bool RsxRendererV10::set_file_manager_hud(const FileManagerFix40::View& view){
     const bool full=!file_hud_active_;
     if(!hud_texture_.uploaded && !set_library_hud(LibraryHudLinesFix28{}))return false;
     const auto image=OrbitUiFix30::file_manager_hud(view);
-    const std::vector<HudRectFix35> regions=full?std::vector<HudRectFix35>{{0,0,1280,512}}:std::vector<HudRectFix35>{{0,64,1280,112},{0,176,1280,336}};
+    const std::vector<HudRectFix35> regions=full?std::vector<HudRectFix35>{{0,0,1280,512}}:
+#ifdef PS3_GAME_ORBIT_FIX42
+        std::vector<HudRectFix35>{{0,48,1280,464}};
+#else
+        std::vector<HudRectFix35>{{0,64,1280,112},{0,176,1280,336}};
+#endif
     if(!stage1_->update_overlay_regions(image,hud_texture_,regions)){last_error_=stage1_->last_error();return false;}
     file_hud_active_=true;file_hud_revision_=view.revision;return true;
 }

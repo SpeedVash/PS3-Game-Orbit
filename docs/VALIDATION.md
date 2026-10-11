@@ -1,34 +1,29 @@
-# Validação — v1.3.3-rc.1 / FIX36
+# Validação — v1.5.2 / FIX42
 
-Compilação e testes no computador. **Teste físico desta versão no PS3 pendente.**
+Compilação e testes no computador aprovados. **Teste físico desta versão no PS3 pendente.**
 
-## Funcionalidades novas
+## Gerenciador
 
-- Importação real em diretórios temporários: somente USB/PS3COVERS, sem raiz/subpastas; imagem isolada ou conjunto, segundo USB, extensões maiúsculas, arquivo corrompido preservando o tipo anterior e conflito de backup com restauração.
-- ISO pelo nome exato sem extensão, espaços e .ISO maiúsculo; com/sem ID, prioridade da ID e resolução das três artes após cópia.
-- Pré-carga por layout com contagens 3/5/14, direção, wrap, candidatos únicos e catálogos vazios/curtos. Capas de Spine visíveis protegidas e convergência sem descarte/releitura contínuos.
-- Interior antes do disco, no máximo uma tentativa de leitura/decode/upload por chamada de pré-carga; abertura de artes prontas sem nova decodificação; falhas suprimidas até recarga e invalidação seletiva por tipo.
-- Três caches limitados a quinze entradas e ao orçamento de cada tipo em uma biblioteca de 57 jogos, com LRU atualizado em revisitas.
-- Reutilização real de ponteiros de texturas e buffers, limite de 8 MiB/três blocos livres, tamanho real da alocação contado nos caches e liberação ao encerrar.
-- Menu START com cinco linhas, mapeamento da releitura da biblioteca, on/off persistido e opções com catálogo vazio; atualização parcial da interface preservando o cabeçalho.
-- Malha animada de 582 vértices/576 triângulos, índices válidos, coordenadas finitas e atualização sem realocar vetores. Modo desligado pausa o movimento e preserva a textura estática anterior.
-- Funções atuais de desenho nativo do fundo com APIs simuladas: matrizes identidade, estados de profundidade/culling, texturas estática/animada corretas, três faixas com alpha e ordem corretos, reativação do fragment program, limite de comandos e geometria ausente.
-- Bloco atual do main FIX36 em onze cenários: montagem, falha, confirmação, cancelamento, nomes, recarga, importação parcial, rescan e configuração do fundo. Preparações de arte, atualização de ondas, invalidações e gravações ocorrem apenas entre quadros confirmados.
+Os testes usam arquivos reais em diretórios temporários representando HD e USB: origem fixa ao navegar no destino, confirmação sem gravações, cópia nas duas direções, arquivos vazios, seleção por painel/pasta, dispositivos e caminho completo.
 
-AddressSanitizer e UndefinedBehaviorSanitizer também passaram na suíte pública FIX36, incluindo os novos buffers, pool, importação, caches e fundo. LeakSanitizer não foi executado (detect_leaks=0).
+A cópia recursiva foi verificada com arquivos, subpastas, pastas vazias e combinação com uma pasta existente. Decisões de sobrescrever/pular por arquivo ou por lote preservam os arquivos não relacionados e são reinicializadas a cada lote.
 
-## Base preservada
+Os testes de falha cobrem destino dentro da origem, conflito arquivo/pasta, item não suportado, limite de preparação, cancelamento, pausa e confirmação de saída, falha na troca final, mudanças na origem/destino, tamanhos de 64 bits e limite FAT32. O arquivo anterior e as cópias concluídas são conferidos após falhas e cancelamentos.
 
-Os testes herdados foram executados para geometria JFX, UVs da capa/interior, disco de 1.056 triângulos com furo físico de 15 mm, plástico neutro, layouts, nomes/teclado, interface parcial, decodificadores, log em lotes, montagem webMAN, apresentação e controlador FIFO. Simulações da base continuam identificadas como FIX35 nos relatórios; as novas funções têm relatórios FIX36 próprios.
+O ramo nativo foi executado com funções sysFs simuladas, incluindo mkdir, baselines independentes do caminho/descritor, espaço livre no dispositivo de destino, limpeza de descritores e erro 0x80010009.
 
-Os hashes dos shaders arquivados, da capa FIX26 e do controlador de comandos permanecem verificados. O modelo editável JFX continua excluído dos fontes públicos.
+## Integração
 
-## Compilação e pacote
+O corpo real do loop passou em 22 cenários. Durante o gerenciador não ocorre desenho de caixas, decodificação de capas ou pré-carga; o fundo fica pausado e volta à preferência anterior ao sair.
 
-GCC PPU 7.5.0 e SDK ps3aqua fixado. ELF PowerPC64 big endian, SELF/EBOOT e cabeçalhos do PKG verificados; PKG finalizado com identidade PGORBT301, APP_VER 01.06. Ativos do instalador e arquivos de shader correspondem aos fontes. Nenhuma chamada proibida de espera RSX foi introduzida.
+A suíte completa verifica menus, ordenação, configurações, estilos de caixa, artes via USB, caches por layout, interface real, geometria e restauração do HUD. A suíte pública passa sem o modelo licenciado. Os testes de desenho simulado cobrem três estilos, fases da abertura, texturas e transparência. Hashes da geometria aprovada, shaders e controlador FIFO permanecem preservados.
 
-Relatórios atuais ficam em validacao/ no ZIP completo. O SHA-256 do instalador fica em release/SHA256SUMS.txt e docs/RELEASE_1.3.3_TESTE.json. docs/SOURCE_SHA256.txt lista os arquivos públicos desta entrega, sem a própria lista.
+AddressSanitizer e UndefinedBehaviorSanitizer passaram no gerenciador e na suíte completa, com detecção de vazamentos desativada.
 
-## Limites da validação
+## Compilação e limites
 
-Simulações de APIs não reproduzem GPU, driver, coerência de caches, contagem exata de palavras de comandos ou saída de TV. Testes de arquivos no computador não medem o HD do PS3. A pré-carga continua síncrona e não cria uma thread de carregamento. Não foi medida uma melhora percentual de desempenho no console. Veja [TESTE_1.3.3.md](TESTE_1.3.3.md).
+ELF PowerPC64 big endian, SELF/EBOOT e cabeçalhos do PKG foram verificados. Identidade PGORBT301; versão pública 1.5.2; APP_VER/VERSION 01.12. Os ativos do instalador correspondem aos fontes. Nenhuma chamada proibida de espera RSX foi introduzida.
+
+Relatórios ficam em validacao/ no ZIP completo. BUILD_INPUT_SHA256.txt registra o inventário da compilação; COMPILED_CODE_SHA256.txt confere código e ativos usados; PUBLIC_SOURCE_SHA256.txt lista os fontes distribuídos. O hash do instalador fica em instalar/SHA256SUMS.txt e docs/RELEASE_1.5.2.json.
+
+Simulações não reproduzem driver RSX, TV, acesso ao HD/USB ou desempenho do console. A primeira carga de imagens necessárias ao desenho ainda é síncrona. Siga [TESTE_1.5.2.md](TESTE_1.5.2.md) para a verificação física.

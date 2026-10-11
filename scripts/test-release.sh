@@ -36,3 +36,8 @@ FIX41_PUBLIC_ONLY=1 bash tests/run_fix41_tests.sh
 bash tests/run_features_fix41.sh
 python3 scripts/check-file-manager-native-fix41.py
 python3 scripts/check-library-loop-fix41.py
+
+FIX42_PUBLIC_ONLY=1 bash tests/run_fix42_tests.sh
+bash tests/run_manager_fix42.sh
+python3 scripts/check-file-manager-native-fix42.py
+python3 scripts/check-library-loop-fix42.py

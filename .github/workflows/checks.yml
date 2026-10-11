@@ -1,0 +1,49 @@
+name: PS3 Game Orbit checks
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  host:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install host dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y g++ python3 python3-pil libpng-dev libjpeg-dev
+      - name: Layouts, UI and native presentation checks
+        run: |
+          set -euo pipefail
+          bash tests/run_flow_fix31_tests.sh
+          FIX35_PUBLIC_ONLY=1 bash tests/run_fix35_tests.sh
+          FIX36_PUBLIC_ONLY=1 bash tests/run_fix36_tests.sh
+          FIX37_PUBLIC_ONLY=1 bash tests/run_fix37_tests.sh
+          FIX38_PUBLIC_ONLY=1 bash tests/run_fix38_tests.sh
+          FIX40_PUBLIC_ONLY=1 bash tests/run_fix40_tests.sh
+          bash tests/run_features_fix40.sh
+          FIX41_PUBLIC_ONLY=1 bash tests/run_fix41_tests.sh
+          bash tests/run_features_fix41.sh
+          python3 scripts/check-file-manager-native-fix41.py
+          python3 scripts/check-library-loop-fix41.py
+          python3 scripts/check-library-loop-fix36.py
+          python3 scripts/check-library-loop-fix37.py
+          python3 scripts/check-library-loop-fix38.py
+          python3 scripts/check-library-loop-fix40.py
+          python3 scripts/check-background-fix36.py
+          python3 scripts/check-services-fix35.py
+          bash tests/run_fix30_tests.sh
+          python3 scripts/check-presentation-fix20.py
+          python3 scripts/check-command-stream-fix25.py
+          bash scripts/verify_v14_frozen_v13.sh
+          sha256sum -c shaders/FROZEN_SHADER_SHA256.txt
+          FIX42_PUBLIC_ONLY=1 bash tests/run_fix42_tests.sh
+          bash tests/run_manager_fix42.sh
+          python3 scripts/check-file-manager-native-fix42.py
+          python3 scripts/check-library-loop-fix42.py

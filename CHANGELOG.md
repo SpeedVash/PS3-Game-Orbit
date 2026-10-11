@@ -1,5 +1,20 @@
 # Histórico de mudanças
 
+## 1.5.2 — 2026-10-11 (FIX42)
+
+- L1/R1 escolhem painéis; Triângulo abre ações; R3 escolhe dispositivo; SELECT mostra caminho completo.
+- Marcações vinculadas a um painel e uma pasta de origem; navegação no destino não inverte a cópia.
+- Menu para copiar, marcar todos, limpar seleção e atualizar dispositivos/pastas.
+- Preparação por etapas, cancelável e sem gravações; confirmação com arquivos, pastas, tamanho total, origem e destino.
+- Cópia recursiva de pastas e pastas vazias; combinação de pastas existentes com confirmação dos arquivos.
+- Nomes maiores, foco por borda, seleção com caixas azuis e cópias concluídas com sinal verde.
+- Progresso do arquivo e do lote, resumo de copiados/ignorados/erros e confirmação de saída durante operações.
+- Temporários, preservação do destino anterior, rollback e cópias concluídas mantidos.
+- Limites de preparação por lote e rejeição de destino dentro da origem ou conflito arquivo/pasta.
+- Versão pública 1.5.2 e SFO APP_VER/VERSION 01.12; PGORBT301 mantido.
+- Estilos de caixa, caches, ordenação, preferências e pausa/restauração do fundo preservados.
+- Visualização de jogos PS1 reservada para a próxima etapa, após teste desta versão no PS3.
+
 ## 1.5.1 — 2026-10-10 (FIX41)
 
 - Gerenciador de dois painéis independentes para HD e USB, com posições preservadas ao trocar de painel e seleção de dispositivos.

@@ -2,31 +2,31 @@
 
 ![PS3 Game Orbit](pkgfiles/ICON0.PNG)
 
-**v1.5.1 — criado por SpeedVash.** Biblioteca de jogos PS3 com capas completas, caixas articuladas, layouts Clássico, Spine e Lista, favoritos e montagem pelo webMAN MOD.
+**v1.5.2 — criado por SpeedVash.** Biblioteca de jogos PS3 com capas completas, caixas articuladas, layouts Clássico, Spine e Lista, favoritos e montagem pelo webMAN MOD.
 
-## Novidades da v1.5.1
+## Novidades da v1.5.2
 
-- **Gerenciador com dois painéis independentes**, para HD interno e USB. Escolha a origem em um painel e o destino no outro; copie um ou vários arquivos, com progresso e cancelamento.
-- **Seleção múltipla e destaques**: Quadrado marca arquivos, SELECT marca/desmarca todos na pasta. Marcados aparecem em azul; cópias concluídas ficam em verde na origem e no destino.
-- **Substituição confirmada**, com opções para sobrescrever ou ignorar um arquivo, aplicar a decisão ao lote inteiro ou cancelar.
-- **Acesso aos arquivos revisado**: abertura, leitura e consulta do arquivo usam a mesma API nativa. A verificação separa os dados do caminho dos dados do descritor; erros mostram a etapa e o código retornado pelo sistema.
-- **Tipo de caixa por jogo**, em Triângulo: padrão transparente, Platinum cinza opaco ou Greatest Hits vermelha. A cor muda o plástico externo do mesmo modelo; interior transparente, encarte e disco são preservados. A escolha fica salva.
-- **Pré-carga adiada durante navegação e rotação manual**, incluindo um intervalo de 650 ms após o último comando e o término das transições. Logs e gravações de preferências também aguardam repouso; caches por layout mantidos.
-- Mantidos A-Z/Z-A/Custom, ordem salva, caixa selecionada completa fechada/aberta com abertura de 160°, configurações, webMAN e atualização parcial/em lote das artes via USB.
-- Versão **1.5.1** no início, cabeçalho e menu, com crédito a **SpeedVash**. Identidade PGORBT301 preservada.
+- **Controles mais claros:** L1/R1 escolhem o painel, Triângulo abre as ações e R3 escolhe HD ou USB.
+- **Origem fixa:** marcar arquivos ou pastas vincula a seleção ao painel e à pasta de origem. Abrir o destino no outro painel preserva a direção da cópia.
+- **Confirmação antes de gravar:** o app conta arquivos, subpastas e tamanho total, mostrando origem e destino para você conferir.
+- **Cópia de pastas completas**, incluindo subpastas e pastas vazias. Pastas existentes são combinadas; arquivos existentes têm confirmação de substituição.
+- **Listagem mais legível:** nomes maiores, borda para o item em foco, caixas de seleção azuis e indicação verde de cópia concluída. SELECT mostra o caminho completo.
+- **Progresso e resumo:** arquivo atual, lote inteiro, arquivos copiados, ignorados e erros. START pede confirmação antes de cancelar uma operação em andamento.
+- Mantidos estilos de caixa por jogo, A-Z/Z-A/Custom, configurações, webMAN, artes via USB, caches e pausa temporária do fundo.
+- Versão **1.5.2** no início, cabeçalho e menu, com crédito a **SpeedVash**. Identidade PGORBT301 preservada.
 
 Compilação nativa e testes no computador concluídos. **Teste desta versão no PS3 pendente.** A primeira carga das imagens necessárias ao desenho ainda é síncrona; as simulações não medem a fluidez real no console. A iluminação usa os shaders aprovados.
 
 ## Instalação
 
-1. Copie `PS3_GAME_ORBIT_v1.5.1.gnpdrm.pkg` para a raiz de um pendrive FAT32.
-2. Instale pelo gerenciador de pacotes do XMB, por cima da versão anterior. Identidade **PGORBT301**, `APP_VER 01.11`; preserve os arquivos de configuração existentes.
+1. Copie `PS3_GAME_ORBIT_v1.5.2.gnpdrm.pkg` para a raiz de um pendrive FAT32.
+2. Instale pelo gerenciador de pacotes do XMB, por cima da versão anterior. Identidade **PGORBT301**, `APP_VER 01.12`; preserve os arquivos de configuração existentes.
 3. No Super Slim, habilite HEN antes de abrir. Para montar jogos, mantenha webMAN MOD ativo.
 4. X monta o jogo com caixa aberta ou fechada. Após a confirmação, o app volta ao XMB; inicie pelo ícone do disco.
 
 ## Menus e ordenação
 
-Prévias geradas da interface real no computador: [tela inicial](assets/previews/TELA_INICIAL_1_5_1.png), [opções](assets/previews/MENU_HOME_1_5_1.png), [jogo](assets/previews/MENU_JOGO_1_5_1.png) e [gerenciador](assets/previews/GERENCIADOR_1_5_1.png). Não são capturas de um PS3.
+Prévias geradas da interface real no computador: [tela inicial](assets/previews/TELA_INICIAL_1_5_2.png), [opções](assets/previews/MENU_HOME_1_5_2.png), [jogo](assets/previews/MENU_JOGO_1_5_2.png) e [gerenciador](assets/previews/GERENCIADOR_1_5_2.png). Não são capturas de um PS3.
 
 | Botão | Opções |
 | --- | --- |
@@ -39,32 +39,35 @@ Os índices internos do catálogo e das texturas permanecem estáveis. Alterar n
 
 ## Gerenciador HD/USB
 
-Abra START → Gerenciador de arquivos HD/USB. O aviso informa a pausa do fundo animado; X continua e Círculo volta à biblioteca. Cada painel guarda sua própria pasta e posição. Na raiz de um dispositivo, Círculo abre a lista de HD e USBs disponíveis; R3 atualiza a lista após conectar um pendrive.
+Abra START → Gerenciador de arquivos HD/USB. X confirma o aviso e abre os dois painéis. Cada painel guarda sua própria pasta e posição.
 
 | Botão | Ação |
 | --- | --- |
-| Cima / baixo | Selecionar arquivo ou pasta |
-| Esquerda / direita ou L2 / R2 | Trocar o painel ativo |
-| L1 / R1 | Voltar ou avançar oito entradas |
-| X | Abrir pasta ou dispositivo |
-| Quadrado | Marcar/desmarcar um arquivo |
-| SELECT | Marcar/desmarcar todos os arquivos da pasta ativa |
-| Triângulo | Copiar os marcados para a pasta do outro painel; sem marcações, copiar o arquivo destacado |
-| Círculo | Pasta anterior; na raiz do dispositivo, escolher dispositivo; na lista de dispositivos, sair |
-| R3 | Atualizar pastas e dispositivos |
-| START | Sair do gerenciador |
-| Círculo durante cópia | Cancelar o arquivo atual e o restante do lote |
-| START durante cópia | Cancelar e sair |
+| Cima / baixo | Escolher arquivo ou pasta |
+| L1 / R1 | Escolher painel esquerdo / direito |
+| Esquerda / direita | Atalho para escolher o painel |
+| L2 / R2 | Voltar / avançar sete entradas |
+| X | Abrir pasta ou confirmar |
+| Quadrado | Marcar/desmarcar arquivo ou pasta |
+| Triângulo | Ações: copiar, marcar todos, limpar seleção, atualizar |
+| R3 | Escolher HD ou USB para o painel ativo |
+| SELECT | Ver o caminho completo; L2/R2 percorrem suas páginas |
+| Círculo | Pasta anterior ou voltar; durante preparação/cópia, cancelar |
+| START | Sair; durante operação, confirmar cancelamento e saída |
 
-É possível copiar HD → HD, HD → USB, USB → HD e entre USBs reconhecidos pelo sistema. A seleção pode reunir arquivos de pastas diferentes. Arquivos do lote com o mesmo nome devem ser copiados separadamente. Pastas servem para navegar; esta versão não faz cópia recursiva de pastas.
+Marque a origem com Quadrado. Use L1/R1 para passar ao outro painel e abra a pasta de destino. Em qualquer painel, Triângulo → Copiar usa a origem marcada. Sem marcações, copia o item em foco no painel ativo. Confira quantidade, tamanho e caminhos; somente X na confirmação inicia a gravação.
 
-Arquivos marcados aparecem em azul e os já copiados em verde, até sair do gerenciador. Em conflitos, escolha sobrescrever um, ignorar um, sobrescrever todos, ignorar todos ou cancelar. A decisão para todos vale somente para aquele lote. O progresso mostra o arquivo atual e o total do lote.
+As marcações pertencem a uma única pasta de origem. Abrir outra pasta nesse mesmo painel limpa as marcações; navegar no destino as preserva. Para escolher uma nova origem no outro painel, use Triângulo → Limpar seleção. Marcar todos inclui arquivos e pastas. O menu mostra a direção da cópia.
 
-A cópia usa blocos de 256 KiB e um temporário na pasta de destino. O destino anterior é mantido até a conclusão; falha ou cancelamento remove o temporário e preserva os arquivos já concluídos. Falha na troca final tenta restaurar o destino anterior; se isso também falhar, a mensagem informa o caminho do backup. A origem não é removida. Arquivos acima de 4 GB são aceitos no HD; USB FAT32 não permite um arquivo maior que 4 GiB menos 1 byte. NTFS/exFAT não têm suporte adicional nesta entrega.
+É possível copiar HD → HD, HD → USB, USB → HD e entre USBs montados pelo sistema. Pastas são copiadas com todo o conteúdo, incluindo pastas vazias. Se a pasta já existir, seus arquivos não relacionados são preservados. Cada conflito de arquivo permite sobrescrever, pular, sobrescrever todos, pular todos ou cancelar; a escolha para todos vale somente para o lote atual.
 
-Os bytes são copiados sem alteração. Para redimensionar artes, use a atualização de capas via USB da biblioteca. Durante o gerenciador, as caixas e a pré-carga ficam pausadas; ao sair, a preferência anterior do fundo e a visualização da biblioteca retornam.
+A cópia usa blocos de 256 KiB e um temporário por arquivo na pasta de destino. O arquivo anterior é mantido até a conclusão; falha ou cancelamento remove o temporário e preserva as cópias concluídas. Pastas já criadas também permanecem. Falha na troca final tenta restaurar o destino anterior; a mensagem informa o backup se a restauração falhar. A origem não é removida.
 
-Veja o [guia do gerenciador](docs/GERENCIADOR_1.5.1.md) para um exemplo completo.
+A preparação ocorre por etapas e pode ser cancelada sem gravar. Limites por lote: 4096 itens marcados, 16384 arquivos/pastas preparados, 8 MiB para seus caminhos e 1023 bytes por caminho. Se excedidos, copie subpastas em lotes menores. Copiar uma pasta para dentro dela mesma, itens não suportados ou conflitos entre arquivo e pasta é recusado antes da gravação.
+
+Tamanhos usam 64 bits. Um arquivo acima de 4 GB pode ser copiado para HD se houver espaço; USB FAT32 aceita no máximo 4 GiB menos 1 byte por arquivo. NTFS/exFAT não têm suporte adicional nesta entrega. Os bytes são copiados sem alteração; para redimensionar artes, use a atualização de capas da biblioteca.
+
+Durante o gerenciador, fundo animado, caixas e pré-carga ficam pausados. Ao sair, o fundo retorna à preferência anterior e a biblioteca volta a aparecer. Veja o [guia do gerenciador](docs/GERENCIADOR_1.5.2.md).
 
 ## Tipo de caixa
 
@@ -139,14 +142,14 @@ Preferências unificadas: `/dev_hdd0/game/PGORBT301/USRDIR/PS3_GAME_ORBIT_SETTIN
 
 “Salvar último jogo visto” vem ligado para preservar o comportamento anterior. Desligado, o app começa no primeiro jogo do filtro salvo. Se o último jogo não estiver disponível, começa no primeiro disponível. Alterações são gravadas após um breve intervalo e ao sair normalmente.
 
-Diagnóstico: `/dev_hdd0/tmp/PS3_GAME_ORBIT_FIX41.log`; alternativa em `USRDIR`. Consulte [o roteiro de teste](docs/TESTE_1.5.1.md) ao reportar um problema.
+Diagnóstico: `/dev_hdd0/tmp/PS3_GAME_ORBIT_FIX42.log`; alternativa em `USRDIR`. Consulte [o roteiro de teste](docs/TESTE_1.5.2.md) ao reportar um problema.
 
 ## Fontes, compilação e publicação
 
 - [Compilar e executar os testes](docs/BUILD.md)
-- [Guia para postar no GitHub](docs/GITHUB_1.5.1.md)
-- [Notas prontas para o release](docs/RELEASE_NOTES_1.5.1.md)
-- [Validação e teste no PS3](docs/TESTE_1.5.1.md)
+- [Guia para postar no GitHub](docs/GITHUB_1.5.2.md)
+- [Notas prontas para o release](docs/RELEASE_NOTES_1.5.2.md)
+- [Validação e teste no PS3](docs/TESTE_1.5.2.md)
 - [Histórico](CHANGELOG.md) e [créditos/licenças](CREDITS.md)
 
 O PKG já está compilado. O ZIP público contém código, shaders arquivados, ativos próprios e relatórios. A malha JFX licenciada e sua representação editável não são redistribuídas. Para compilar, obtenha sua cópia na fonte indicada em `assets/jfx_bluray/README.md` e execute `scripts/prepare-jfx.py`. O código procedural do interior e das articulações acompanha o projeto. Prévias de versões anteriores mantidas em `assets/previews` são imagens de referência geradas no computador, não capturas desta versão no console.

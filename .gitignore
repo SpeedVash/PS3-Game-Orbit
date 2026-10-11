@@ -1,0 +1,35 @@
+build/
+build-host/
+release/
+*.o
+*.d
+*.elf
+*.self
+*.pkg
+*.map
+BUILD_SHA256_V13.txt
+GITHUB_BUILD_V13.log
+GITHUB_BUILD_STATUS_V13.txt
+HOST_TEST_RESULTS_GITHUB_V13.txt
+# FIX20 tracks the exact archived V13 VPO/FPO to avoid silently recompiling them.
+shaders/*.vpo.o
+shaders/*.fpo.o
+dist/
+v14_case_vpo.h
+v14_case_fpo.h
+
+# Local SDK, licensed editable assets and generated JFX geometry.
+.stack/
+assets/jfx_bluray/*
+!assets/jfx_bluray/README.md
+src/jfx_case_data_fix29.inc
+*.obj
+*.fbx
+*.FBX
+*.psd
+*.glb
+*.gltf
+*.e3d
+*.log
+__pycache__/
+*.pyc
