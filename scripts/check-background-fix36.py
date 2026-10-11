@@ -19,6 +19,7 @@ constants=sorted(set(re.findall(r'\bGCM_[A-Z0-9_]+\b',body)))
 defines=''.join(f'constexpr u32 {name}={0 if name=="GCM_FALSE" else 1 if name=="GCM_TRUE" else i+2};\n' for i,name in enumerate(constants))
 prefix=r'''
 #include <cassert>
+#include <cstddef>
 #include <algorithm>
 #include <array>
 #include <cmath>
