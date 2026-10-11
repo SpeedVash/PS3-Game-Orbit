@@ -1,0 +1,13 @@
+{
+  "version": "1.5.4",
+  "fix": 44,
+  "app_ver": "01.14",
+  "app_id": "PGORBT301",
+  "package_filename": "PS3_GAME_ORBIT_v1.5.4.gnpdrm.pkg",
+  "package_bytes": 2560432,
+  "package_sha256": "4b85af34a1b0487d82664732a6bf12a5f8f661cdfad6de384053779a936dcc22",
+  "compiled_inputs_unchanged_count": 151,
+  "native_package_checks": "8 passed",
+  "hardware_test": "Pending for v1.5.4",
+  "ps1_status": "Editable preview; native PS1 visualization not integrated"
+}

@@ -1,5 +1,16 @@
 # Histórico de mudanças
 
+## 1.5.4 — 2026-10-11 (FIX44)
+
+- Preserva capas, interiores e discos recentes até a pressão de capacidade exigir liberação.
+- Redução entre layouts prioriza o jogo selecionado, a janela do destino e as caixas que ainda desaparecem.
+- Cache de arquivos JPEG/PNG já lidos preserva as imagens comuns ao layout de destino.
+- Limites Clássico 7/7/7, Spine 15/15/15 e Lista 5/5/5, com a proteção transitória de caixas visíveis mantida.
+- Regressão comparativa: quatro novas preparações na política anterior versus zero na nova, no cenário de ida e volta; 5/5 arquivos comuns mantidos na redução do cache.
+- Modelo de PS1 preparado a partir do anexo CC0 de effe, com tampa, livreto e disco articulados, abertura de 160° e arquivos Blender/GLB de prévia.
+- Gerenciador v1.5.3 confirmado funcional pelo usuário; fluidez da v1.5.4 ainda depende do teste físico.
+- Versão 1.5.4 e APP_VER/VERSION 01.14, PGORBT301 mantido.
+
 ## 1.5.3 — 2026-10-11 (FIX43)
 
 - Corrige o gerenciador dividido entre o topo e o rodapé da tela na v1.5.2.

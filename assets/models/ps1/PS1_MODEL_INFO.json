@@ -1,0 +1,90 @@
+{
+  "source_file": "effe_compact_disc_and_case.blend",
+  "author": "effe",
+  "license": "CC0",
+  "opening_degrees": 160,
+  "disc_slide_mm": 96,
+  "disc_forward_mm": 27,
+  "pieces": [
+    {
+      "name": "PS1_Base",
+      "source": "fond",
+      "vertices": 395,
+      "triangles": 802,
+      "joint": "Base",
+      "materials": [
+        "PS1_Plástico transparente"
+      ]
+    },
+    {
+      "name": "PS1_Tampa",
+      "source": "couvercle",
+      "vertices": 1074,
+      "triangles": 2112,
+      "joint": "PS1_Dobradiça",
+      "materials": [
+        "PS1_Plástico transparente",
+        "PS1_Plástico das bordas"
+      ]
+    },
+    {
+      "name": "PS1_Bandeja",
+      "source": "plateau noir",
+      "vertices": 2787,
+      "triangles": 5724,
+      "joint": "Base",
+      "materials": [
+        "PS1_Bandeja cinza escura",
+        "PS1_Bandeja estriada",
+        "PS1_Encaixe do disco"
+      ]
+    },
+    {
+      "name": "PS1_Livreto",
+      "source": "booklet",
+      "vertices": 812,
+      "triangles": 1600,
+      "joint": "PS1_Dobradiça",
+      "materials": [
+        "PS1_Papel",
+        "PS1_Arte da capa",
+        "PS1_Arte do interior"
+      ]
+    },
+    {
+      "name": "PS1_Disco",
+      "source": "CD.004",
+      "vertices": 1536,
+      "triangles": 1536,
+      "joint": "PS1_SaídaDisco",
+      "materials": [
+        "PS1_Arte do disco",
+        "PS1_Plástico transparente",
+        "PS1_Verso escuro do CD",
+        "PS1_Borda prateada do CD"
+      ]
+    },
+    {
+      "name": "PS1_PapelInterno",
+      "source": "fond_recto.002",
+      "vertices": 8,
+      "triangles": 6,
+      "joint": "Base",
+      "materials": [
+        "PS1_Arte do interior"
+      ]
+    },
+    {
+      "name": "PS1_Contracapa",
+      "source": "fond_verso.002",
+      "vertices": 8,
+      "triangles": 6,
+      "joint": "Base",
+      "materials": [
+        "PS1_Arte da capa"
+      ]
+    }
+  ],
+  "textures": "Arte de demonstração criada para a prévia; não são capas de jogos reais.",
+  "triangles_total": 11786
+}

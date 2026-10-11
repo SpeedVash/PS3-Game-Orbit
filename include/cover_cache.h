@@ -1,6 +1,9 @@
 #pragma once
 #include <unordered_map>
 #include <string>
+#ifdef PS3_GAME_ORBIT_FIX44
+#include <unordered_set>
+#endif
 #include "cover_image.h"
 #include "coverflow_state.h"
 
@@ -13,6 +16,11 @@ public:
     void clear();
 #ifdef PS3_GAME_ORBIT_FIX37
     void set_limit(size_t items){max_items_=items?items:1;evict_if_needed();}
+#ifdef PS3_GAME_ORBIT_FIX44
+    void set_limit(size_t items,const std::unordered_set<std::string>& preferred_paths){
+        preferred_paths_=preferred_paths;set_limit(items);
+    }
+#endif
 #endif
 #ifdef PS3_GAME_ORBIT_FIX35
     void invalidate(const std::string& path);
@@ -26,5 +34,8 @@ private:
     size_t max_bytes_=0,encoded_bytes_=0;
     unsigned long long clock_ = 0;
     std::unordered_map<std::string, Entry> entries_;
-    void evict_if_needed();
+#ifdef PS3_GAME_ORBIT_FIX44
+    std::unordered_set<std::string> preferred_paths_;
+#endif
+    void evict_if_needed(const std::string* loading_key=nullptr);
 };

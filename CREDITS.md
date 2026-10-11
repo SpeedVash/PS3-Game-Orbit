@@ -68,3 +68,7 @@ A ordenação persistente, gerenciador de arquivos e integração do conjunto ar
 ## v1.5.1
 
 O gerenciador de dois painéis, a seleção múltipla, o tratamento dos lotes, os materiais coloridos por jogo e o controle de pré-carga durante a interação são código do projeto. A aparência de dois painéis usa o Aurora como referência funcional, sem incorporar seus fontes ou ativos. A geometria licenciada mantém os termos anteriores; as cores não adicionam modelos de terceiros.
+
+## Modelo PS1 de prévia
+
+Compact disc and case, por effe (Blend Swap), licença CC0 fornecida no anexo. Caixa adaptada para articulação; disco regular e arte demonstrativa preparados para PS3 Game Orbit. Licença em assets/models/ps1/BLENDSWAP_LICENSE.txt. O modelo de PS3 aprovado conserva suas condições de distribuição.

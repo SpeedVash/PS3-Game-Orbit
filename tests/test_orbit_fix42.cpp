@@ -41,7 +41,9 @@ static std::string bytes(const fs::path& p){std::ifstream f(p,std::ios::binary);
 [[maybe_unused]] static std::array<float,3> world(const V14Vertex& v,const Mat4& m){return {{m.m[0]*v.x+m.m[4]*v.y+m.m[8]*v.z+m.m[12],m.m[1]*v.x+m.m[5]*v.y+m.m[9]*v.z+m.m[13],m.m[2]*v.x+m.m[6]*v.y+m.m[10]*v.z+m.m[14]}};}
 
 int main(int argc,char** argv){
-#ifdef PS3_GAME_ORBIT_FIX43
+#ifdef PS3_GAME_ORBIT_FIX44
+    assert(std::string(ProjectIdentity::Version)=="1.5.4");
+#elif defined(PS3_GAME_ORBIT_FIX43)
     assert(std::string(ProjectIdentity::Version)=="1.5.3");
 #else
     assert(std::string(ProjectIdentity::Version)=="1.5.2");

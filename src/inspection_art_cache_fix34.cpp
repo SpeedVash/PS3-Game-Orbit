@@ -49,8 +49,18 @@ bool RsxRendererV10::load_cached_inspection_art(InspectionArtCache& cache,int gi
 #endif
           || cache.bytes+WorstTextureBytes>InspectionArtBudgetBytes) {
         auto victim=cache.entries.end();auto oldest=std::numeric_limits<std::uint64_t>::max();
-        for(auto it=cache.entries.begin();it!=cache.entries.end();++it)
-            if(it->second.stamp<oldest) {victim=it;oldest=it->second.stamp;}
+        for(auto it=cache.entries.begin();it!=cache.entries.end();++it){
+#ifdef PS3_GAME_ORBIT_FIX44
+            if(inspection_cache_pins_.count(it->first))continue;
+            const bool preferred=preferred_covers_.count(it->first)!=0;
+            const bool victim_preferred=victim!=cache.entries.end() && preferred_covers_.count(victim->first)!=0;
+            if(victim!=cache.entries.end() && preferred!=victim_preferred){
+                if(!preferred){victim=it;oldest=it->second.stamp;}
+                continue;
+            }
+#endif
+            if(it->second.stamp<oldest){victim=it;oldest=it->second.stamp;}
+        }
         if(victim==cache.entries.end()) return false;
         auto& art=victim->second;
         cache.bytes-=std::min(cache.bytes,gpu_texture_storage_bytes(art.texture));

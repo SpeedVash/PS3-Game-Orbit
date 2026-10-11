@@ -301,6 +301,9 @@ void RsxRendererV10::release_cover_record(GpuCoverRecord& rec){
 }
 
 void RsxRendererV10::clear_cover_textures(){
+#ifdef PS3_GAME_ORBIT_FIX44
+    preferred_covers_.clear();inspection_cache_pins_.clear();
+#endif
     for(auto& kv:covers_) release_cover_record(kv.second);
     covers_.clear();
 #ifdef PS3_GAME_ORBIT_FIX32

@@ -1,5 +1,5 @@
 #include "rsx_renderer_v10.h"
-#ifdef PS3_GAME_ORBIT_FIX37
+#if defined(PS3_GAME_ORBIT_FIX37) && !defined(PS3_GAME_ORBIT_FIX44)
 #include "prefetch_policy_fix36.h"
 #include "library_pair_fix28.h"
 #include <algorithm>

@@ -22,8 +22,18 @@ void RsxRendererV10::trim_cover_cache(const std::unordered_set<int>& pinned) {
         pinned.size());
     while(covers_.size()>limit || gpu_cache_bytes_>GpuCoverBudgetBytes) {
         auto victim=covers_.end();auto oldest=std::numeric_limits<std::uint64_t>::max();
-        for(auto it=covers_.begin();it!=covers_.end();++it)
-            if(!pinned.count(it->first) && it->second.stamp<oldest) {victim=it;oldest=it->second.stamp;}
+        for(auto it=covers_.begin();it!=covers_.end();++it){
+            if(pinned.count(it->first))continue;
+#ifdef PS3_GAME_ORBIT_FIX44
+            const bool preferred=preferred_covers_.count(it->first)!=0;
+            const bool victim_preferred=victim!=covers_.end() && preferred_covers_.count(victim->first)!=0;
+            if(victim!=covers_.end() && preferred!=victim_preferred){
+                if(!preferred){victim=it;oldest=it->second.stamp;}
+                continue;
+            }
+#endif
+            if(it->second.stamp<oldest){victim=it;oldest=it->second.stamp;}
+        }
         if(victim==covers_.end()) break;
         release_cover_record(victim->second);covers_.erase(victim);++gpu_cache_evictions_;
     }
@@ -46,7 +56,16 @@ bool RsxRendererV10::reserve_cover_cache(const std::unordered_set<int>& pinned,s
     while(gpu_cache_bytes_+bytes>GpuCoverBudgetBytes || covers_.size()>=limit) {
         auto victim=covers_.end();auto oldest=std::numeric_limits<std::uint64_t>::max();
         for(auto it=covers_.begin();it!=covers_.end();++it) {
-            if(!pinned.count(it->first) && it->second.stamp<oldest) {victim=it;oldest=it->second.stamp;}
+            if(pinned.count(it->first))continue;
+#ifdef PS3_GAME_ORBIT_FIX44
+            const bool preferred=preferred_covers_.count(it->first)!=0;
+            const bool victim_preferred=victim!=covers_.end() && preferred_covers_.count(victim->first)!=0;
+            if(victim!=covers_.end() && preferred!=victim_preferred){
+                if(!preferred){victim=it;oldest=it->second.stamp;}
+                continue;
+            }
+#endif
+            if(it->second.stamp<oldest){victim=it;oldest=it->second.stamp;}
         }
         if(victim==covers_.end()) return false;
         release_cover_record(victim->second);covers_.erase(victim);++gpu_cache_evictions_;

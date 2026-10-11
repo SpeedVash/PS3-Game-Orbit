@@ -29,6 +29,9 @@ src/jfx_case_data_fix29.inc
 *.psd
 *.glb
 *.gltf
+# CC0 PS1 preview prepared from the supplied model; public redistribution allowed.
+!assets/models/ps1/*.glb
+!assets/models/ps1/*.gltf
 *.e3d
 *.log
 __pycache__/

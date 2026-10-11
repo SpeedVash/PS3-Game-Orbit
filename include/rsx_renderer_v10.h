@@ -233,6 +233,9 @@ private:
 #ifdef PS3_GAME_ORBIT_FIX37
     std::size_t resident_limit_=15;
     float geometry_phase_=0;
+#ifdef PS3_GAME_ORBIT_FIX44
+    std::unordered_set<int> preferred_covers_,inspection_cache_pins_;
+#endif
 #endif
     bool reserve_cover_cache(const std::unordered_set<int>& pinned,std::size_t bytes);
     bool load_gpu_cover(int gi,const GameEntry& game,CoverCache& cache,const std::unordered_set<int>& pinned);

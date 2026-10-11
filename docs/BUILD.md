@@ -1,4 +1,4 @@
-# Compilar PS3 Game Orbit 1.5.3
+# Compilar PS3 Game Orbit 1.5.4
 
 O PKG da release já está pronto para instalação. Este procedimento é para desenvolvedores, em Linux x86_64.
 
@@ -52,9 +52,9 @@ bash scripts/test-release.sh
 bash scripts/build-release.sh
 ```
 
-O pacote com nome público fica em `dist/release/PS3_GAME_ORBIT_v1.5.3.gnpdrm.pkg`. Os produtos nativos e relatórios ficam em `dist/B`.
+O pacote com nome público fica em `dist/release/PS3_GAME_ORBIT_v1.5.4.gnpdrm.pkg`. Os produtos nativos e relatórios ficam em `dist/B`.
 
-Os fontes implementam FIX43: desenho contínuo próprio para o gerenciador, corrigindo a tela dividida; gerenciador HD/USB com origem fixa, confirmação de lote e cópia recursiva de pastas; cores por jogo e pré-carga adiada durante comandos manuais preservadas. A caixa selecionada usa o conjunto completo articulado desde a fase fechada. As caixas vizinhas preservam o exterior leve do modelo aprovado. Os shaders e o controlador FIFO arquivados permanecem intactos. O SFO usa APP_VER 01.13; a versão pública é 1.5.3. Data/hora e metadados podem variar entre builds; confira o hash da entrega em `docs/RELEASE_1.5.3.json`.
+Os fontes implementam FIX44: reaproveitamento de capa, interior, disco e arquivos já lidos entre layouts, com prioridade para a janela de destino e proteção durante as transições. Preservam o desenho contínuo do gerenciador, a cópia recursiva HD/USB, as cores por jogo e a pré-carga adiada durante comandos manuais. A caixa selecionada usa o conjunto completo articulado desde a fase fechada. As caixas vizinhas preservam o exterior leve do modelo aprovado. Os shaders e o controlador FIFO arquivados permanecem intactos. O SFO usa APP_VER 01.14; a versão pública é 1.5.4. Data/hora e metadados podem variar entre builds; confira o hash da entrega em `docs/RELEASE_1.5.4.json`.
 
 Esta entrega foi compilada com o GCC/newlib/binutils e bibliotecas dos commits fixados acima. As ferramentas host de empacotamento vieram da distribuição oficial PS3DEV `nightly-2026-07-26`, com os mesmos argumentos de linha de comando. Em uma pilha híbrida, use um diretório de headers limpo para o SDK fixado, evitando headers antigos de outro PSL1GHT. A configuração pelo script `setup-stack-fix25.sh` mantém a rota de compilação integral das ferramentas.
 
@@ -63,7 +63,7 @@ Se os arquivos foram enviados ao GitHub pela interface web, os bits de execuçã
 Para executar os testes públicos de menus, configurações, importação, caches e layout sem obter o modelo licenciado:
 
 ```bash
-FIX43_PUBLIC_ONLY=1 bash tests/run_fix43_tests.sh
+FIX44_PUBLIC_ONLY=1 bash tests/run_fix44_tests.sh
 bash tests/run_manager_fix42.sh
 python3 scripts/check-file-manager-native-fix42.py
 python3 scripts/check-library-loop-fix42.py
@@ -89,4 +89,8 @@ Nenhuma biblioteca de fontes precisa ser instalada no PS3.
 
 ## GitHub Actions
 
-O workflow `checks.yml` executa testes públicos FIX42/FIX43 e simula as funções nativas de desenho do gerenciador, cópia em lote e simulação da API sysFs, além das regressões herdadas de USB parcial/ISO, buffers, caches, menu, fundo e layout, simulações do loop, testes herdados de fluxo/interface e verificações de apresentação/FIFO sem o modelo de terceiros. Ele não compila o PKG nem publica releases automaticamente. Os testes completos e a compilação nativa exigem a preparação local do modelo acima.
+O workflow `checks.yml` executa testes públicos FIX42/FIX43/FIX44 e simula as funções nativas de desenho do gerenciador, cópia em lote e simulação da API sysFs, além das regressões herdadas de USB parcial/ISO, buffers, caches, menu, fundo e layout, simulações do loop, testes herdados de fluxo/interface e verificações de apresentação/FIFO sem o modelo de terceiros. Ele não compila o PKG nem publica releases automaticamente. Os testes completos e a compilação nativa exigem a preparação local do modelo acima.
+
+## Modelo de PS1
+
+`assets/models/ps1/` contém a preparação editável e animada do modelo CC0 enviado para o estudo de PS1. Os arquivos Blender/GLB não são entradas da compilação nativa desta versão. Consulte `docs/PS1_MODELO_PREVIEW.md`; a adaptação RSX e a descoberta de jogos PS1 serão etapas posteriores.

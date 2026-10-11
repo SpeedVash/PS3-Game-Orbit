@@ -2,13 +2,21 @@
 
 ![PS3 Game Orbit](pkgfiles/ICON0.PNG)
 
-**v1.5.3 — criado por SpeedVash.** Biblioteca de jogos PS3 com capas completas, caixas articuladas, layouts Clássico, Spine e Lista, favoritos e montagem pelo webMAN MOD.
+**v1.5.4 — criado por SpeedVash.** Biblioteca de jogos PS3 com capas completas, caixas articuladas, layouts Clássico, Spine e Lista, favoritos e montagem pelo webMAN MOD.
 
-## Correção da v1.5.3
+## Reaproveitamento entre layouts
 
-Corrige a tela dividida ao abrir o gerenciador de arquivos na v1.5.2. A imagem contínua do gerenciador agora é desenhada em um retângulo próprio, centralizado e com proporções preservadas. A biblioteca recupera seu desenho normal ao sair.
+As capas e artes recentes permanecem em memória enquanto houver espaço. Ao mudar para um layout menor, a redução do cache prioriza o jogo selecionado e os vizinhos que serão usados. Os arquivos de imagem já lidos seguem a mesma prioridade. Isso reduz recarregamentos ao trocar layouts e voltar a jogos recentes.
 
-O teste no computador usa as funções nativas de envio e desenho do HUD, verifica todas as telas do gerenciador e a volta à biblioteca. A validação física no PS3 permanece pendente. A visualização de jogos PS1 fica para a próxima etapa, depois deste teste.
+Mantidos os limites Clássico 7/7/7, Spine 15/15/15 e Lista 5/5/5. A preparação de imagens novas continua a consumir leitura, decodificação e upload. Veja [validação](docs/VALIDACAO_1.5.4.md) e [teste no PS3](docs/TESTE_1.5.4.md).
+
+## Prévia do modelo PS1
+
+Preparada uma caixa de CD com tampa articulada e disco saindo, baseada no modelo CC0 enviado pelo usuário. Há arquivos Blender/GLB e uma [prévia do modelo](docs/PS1_MODELO_PREVIEW.md). A integração dos jogos PS1 ao desenho nativo será a próxima etapa.
+
+## Gerenciador corrigido
+
+A geometria própria introduzida na v1.5.3 conserva a tela inteira do gerenciador. O usuário confirmou que ela funcionou bem no PS3. A biblioteca recupera seu desenho normal ao sair.
 
 ## Recursos do gerenciador
 
@@ -19,14 +27,14 @@ O teste no computador usa as funções nativas de envio e desenho do HUD, verifi
 - **Listagem mais legível:** nomes maiores, borda para o item em foco, caixas de seleção azuis e indicação verde de cópia concluída. SELECT mostra o caminho completo.
 - **Progresso e resumo:** arquivo atual, lote inteiro, arquivos copiados, ignorados e erros. START pede confirmação antes de cancelar uma operação em andamento.
 - Mantidos estilos de caixa por jogo, A-Z/Z-A/Custom, configurações, webMAN, artes via USB, caches e pausa temporária do fundo.
-- Versão **1.5.3** no início, cabeçalho e menu, com crédito a **SpeedVash**. Identidade PGORBT301 preservada.
+- Versão **1.5.4** no início, cabeçalho e menu, com crédito a **SpeedVash**. Identidade PGORBT301 preservada.
 
 Compilação nativa e testes no computador concluídos. **Teste desta versão no PS3 pendente.** A primeira carga das imagens necessárias ao desenho ainda é síncrona; as simulações não medem a fluidez real no console. A iluminação usa os shaders aprovados.
 
 ## Instalação
 
-1. Copie `PS3_GAME_ORBIT_v1.5.3.gnpdrm.pkg` para a raiz de um pendrive FAT32.
-2. Instale pelo gerenciador de pacotes do XMB, por cima da versão anterior. Identidade **PGORBT301**, `APP_VER 01.13`; preserve os arquivos de configuração existentes.
+1. Copie `PS3_GAME_ORBIT_v1.5.4.gnpdrm.pkg` para a raiz de um pendrive FAT32.
+2. Instale pelo gerenciador de pacotes do XMB, por cima da versão anterior. Identidade **PGORBT301**, `APP_VER 01.14`; preserve os arquivos de configuração existentes.
 3. No Super Slim, habilite HEN antes de abrir. Para montar jogos, mantenha webMAN MOD ativo.
 4. X monta o jogo com caixa aberta ou fechada. Após a confirmação, o app volta ao XMB; inicie pelo ícone do disco.
 

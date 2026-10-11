@@ -1,0 +1,51 @@
+{
+  "checks": "Closed transforms, 160-degree opening, 96-mm slide, 27-mm forward travel, circular 15-mm hole/120-mm diameter, finite vertices and closed return passed.",
+  "poses": [
+    {
+      "frame": 1,
+      "opening_degrees": 0.0,
+      "disc_offset_mm": [
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "frame": 76,
+      "opening_degrees": 159.99999534548672,
+      "disc_offset_mm": [
+        0.0,
+        -11.999999871477485,
+        0.0
+      ]
+    },
+    {
+      "frame": 112,
+      "opening_degrees": 159.99999534548672,
+      "disc_offset_mm": [
+        95.99999757483602,
+        -27.000000467523932,
+        0.0
+      ]
+    },
+    {
+      "frame": 168,
+      "opening_degrees": 159.99999534548672,
+      "disc_offset_mm": [
+        0.0,
+        -11.999999871477485,
+        0.0
+      ]
+    },
+    {
+      "frame": 192,
+      "opening_degrees": -0.0,
+      "disc_offset_mm": [
+        0.0,
+        0.0,
+        0.0
+      ]
+    }
+  ],
+  "console_validation": "Pending; this is a Blender model preview."
+}

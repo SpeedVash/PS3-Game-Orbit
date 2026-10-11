@@ -44,3 +44,5 @@ python3 scripts/check-library-loop-fix42.py
 
 FIX43_PUBLIC_ONLY=1 bash tests/run_fix43_tests.sh
 python3 scripts/check-manager-hud-fix43.py
+
+FIX44_PUBLIC_ONLY=1 bash tests/run_fix44_tests.sh

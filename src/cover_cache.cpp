@@ -15,7 +15,7 @@ const CoverImage* CoverCache::get_or_load(const GameEntry& game) {
     Entry e{std::move(img), ++clock_};
     auto inserted = entries_.emplace(key, std::move(e));
     encoded_bytes_+=inserted.first->second.image.encoded.size();
-    evict_if_needed();
+    evict_if_needed(&key);
     return &inserted.first->second.image;
 }
 
@@ -30,13 +30,28 @@ void CoverCache::warm_visible_neighborhood(const CoverflowState& s, int radius) 
     }
 }
 
-void CoverCache::clear() { entries_.clear(); clock_ = 0;encoded_bytes_=0; }
+void CoverCache::clear() { entries_.clear(); clock_ = 0;encoded_bytes_=0;
+#ifdef PS3_GAME_ORBIT_FIX44
+    preferred_paths_.clear();
+#endif
+}
 
-void CoverCache::evict_if_needed() {
+void CoverCache::evict_if_needed(const std::string* loading_key) {
     while (entries_.size() > max_items_ || (max_bytes_ && encoded_bytes_>max_bytes_ && entries_.size()>1)) {
         auto victim = entries_.end();
         unsigned long long best = std::numeric_limits<unsigned long long>::max();
         for (auto it = entries_.begin(); it != entries_.end(); ++it) {
+            // The caller must receive a live image even when preference-based
+            // eviction would otherwise choose the record it just inserted.
+            if(loading_key && it->first==*loading_key)continue;
+#ifdef PS3_GAME_ORBIT_FIX44
+            const bool preferred=preferred_paths_.count(it->second.image.path)!=0;
+            const bool victim_preferred=victim!=entries_.end() && preferred_paths_.count(victim->second.image.path)!=0;
+            if(victim!=entries_.end() && preferred!=victim_preferred){
+                if(!preferred){best=it->second.stamp;victim=it;}
+                continue;
+            }
+#endif
             if (it->second.stamp < best) { best = it->second.stamp; victim = it; }
         }
         if (victim == entries_.end()) break;
