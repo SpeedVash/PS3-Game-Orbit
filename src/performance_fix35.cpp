@@ -2,13 +2,23 @@
 #ifdef PS3_GAME_ORBIT_FIX35
 #include "runtime_diag.h"
 #include <array>
+#ifdef PS3_GAME_ORBIT_FIX45
+#include <atomic>
+#endif
 #ifdef __PSL1GHT__
 #include <lv2/systime.h>
 #else
 #include <chrono>
 #endif
 namespace OrbitPerformanceFix35 {
-namespace {std::array<Metric,static_cast<unsigned>(Kind::Count)> metrics{};}
+namespace {
+#ifdef PS3_GAME_ORBIT_FIX45
+struct AtomicMetric {std::atomic<std::uint64_t> count{0},total_us{0},max_us{0};};
+std::array<AtomicMetric,static_cast<unsigned>(Kind::Count)> metrics{};
+#else
+std::array<Metric,static_cast<unsigned>(Kind::Count)> metrics{};
+#endif
+}
 std::uint64_t now_us(){
 #ifdef __PSL1GHT__
     return static_cast<std::uint64_t>(sysGetSystemTime());
@@ -16,13 +26,31 @@ std::uint64_t now_us(){
     return std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::steady_clock::now().time_since_epoch()).count();
 #endif
 }
-void record(Kind kind,std::uint64_t elapsed){auto& m=metrics[static_cast<unsigned>(kind)];++m.count;m.total_us+=elapsed;if(elapsed>m.max_us)m.max_us=elapsed;}
-Metric metric(Kind kind){return metrics[static_cast<unsigned>(kind)];}
+void record(Kind kind,std::uint64_t elapsed){
+    auto& m=metrics[static_cast<unsigned>(kind)];
+#ifdef PS3_GAME_ORBIT_FIX45
+    m.count.fetch_add(1,std::memory_order_relaxed);m.total_us.fetch_add(elapsed,std::memory_order_relaxed);
+    auto previous=m.max_us.load(std::memory_order_relaxed);
+    while(previous<elapsed && !m.max_us.compare_exchange_weak(previous,elapsed,std::memory_order_relaxed)){}
+#else
+    ++m.count;m.total_us+=elapsed;if(elapsed>m.max_us)m.max_us=elapsed;
+#endif
+}
+Metric metric(Kind kind){
+#ifdef PS3_GAME_ORBIT_FIX45
+    const auto& m=metrics[static_cast<unsigned>(kind)];
+    return {m.count.load(std::memory_order_relaxed),m.total_us.load(std::memory_order_relaxed),m.max_us.load(std::memory_order_relaxed)};
+#else
+    return metrics[static_cast<unsigned>(kind)];
+#endif
+}
 void report(){
     constexpr const char* names[]={"read","decode","upload","interface"};
-    for(unsigned i=0;i<metrics.size();++i){const auto& m=metrics[i];
+    for(unsigned i=0;i<metrics.size();++i){const auto m=metric(static_cast<Kind>(i));
         RuntimeDiag::log(
-#ifdef PS3_GAME_ORBIT_FIX36
+#ifdef PS3_GAME_ORBIT_FIX45
+            "PERF 1.5.5: stage=%s count=%llu total_ms=%.3f average_ms=%.3f max_ms=%.3f",
+#elif defined(PS3_GAME_ORBIT_FIX36)
             "PERF 1.3.3: stage=%s count=%llu total_ms=%.3f average_ms=%.3f max_ms=%.3f",
 #else
             "PERF 1.3.2: stage=%s count=%llu total_ms=%.3f average_ms=%.3f max_ms=%.3f",

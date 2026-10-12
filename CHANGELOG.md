@@ -1,5 +1,17 @@
 # Histórico de mudanças
 
+## 1.5.5 — 2026-10-11 (FIX45)
+
+- Prepara as artes de uma janela inicial de até 15 jogos, com progresso antes de abrir a biblioteca.
+- Os três layouts compartilham até 15 capas, 15 interiores e 15 discos, mantendo as texturas comuns ao alternar.
+- Leitura, decodificação, orientação, redução e conversão ARGB executadas em um worker PPU; fila limitada a duas imagens prontas e uma transferência.
+- Envio à GPU dividido em até 256 KiB por quadro, somente após reconhecer o quadro anterior; textura publicada apenas ao concluir.
+- Prioriza capas visíveis e próximos jogos; evita preparar vizinhos que não cabem junto às caixas em transição.
+- Recarga e novo catálogo invalidam resultados antigos; artes pendentes usam aparência neutra; arquivos inválidos terminam a pré-carga sem bloquear a biblioteca.
+- Worker encerrado antes de descarregar PNG/JPEG; contadores e logs protegidos para uso concorrente.
+- PS1 permanece em hiato. Modelos, shaders e geometria do gerenciador aprovado conservados.
+- Versão 1.5.5 e APP_VER/VERSION 01.15, PGORBT301 mantido. Teste físico desta versão pendente.
+
 ## 1.5.4 — 2026-10-11 (FIX44)
 
 - Preserva capas, interiores e discos recentes até a pressão de capacidade exigir liberação.

@@ -6,7 +6,12 @@
 #include <limits>
 
 void RsxRendererV10::apply_cache_policy(const CoverflowState& state,CoverCache& cache){
-    resident_limit_=state.layout==OrbitLayout::Classic?7:state.layout==OrbitLayout::List?5:15;
+    resident_limit_=
+#ifdef PS3_GAME_ORBIT_FIX45
+        15;
+#else
+        state.layout==OrbitLayout::Classic?7:state.layout==OrbitLayout::List?5:15;
+#endif
     preferred_covers_.clear();inspection_cache_pins_.clear();
     const auto* selected=current_game(state);
     if(!selected){clear_cover_textures();cache.clear();cache.set_limit(resident_limit_);return;}

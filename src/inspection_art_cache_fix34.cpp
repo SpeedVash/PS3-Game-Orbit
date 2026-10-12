@@ -30,6 +30,9 @@ bool RsxRendererV10::load_cached_inspection_art(InspectionArtCache& cache,int gi
     const auto identity=std::make_pair(game.path,path);
     const auto failed=cache.failed.find(gi);
     if(failed!=cache.failed.end() && failed->second==identity) return false;
+#ifdef PS3_GAME_ORBIT_FIX45
+    if(streamed_artwork_active())return false;
+#endif
     ++cache.misses;
     const auto image=load_cover_file(path,kind);
     if(!image.valid()) {
@@ -187,6 +190,10 @@ void RsxRendererV10::invalidate_game_art(int gi
     ,unsigned mask
 #endif
 ){
+#ifdef PS3_GAME_ORBIT_FIX45
+    cancel_streamed_artwork();
+    if(mask&1)streamed_failed_covers_.erase(gi);
+#endif
 #ifdef PS3_GAME_ORBIT_FIX36
     if(mask&1){auto cover=covers_.find(gi);if(cover!=covers_.end()){release_cover_record(cover->second);covers_.erase(cover);}failed_gpu_covers_.erase(gi);}
     for(const auto& pair:{std::make_pair(&inside_cache_,2u),std::make_pair(&disc_cache_,4u)}){

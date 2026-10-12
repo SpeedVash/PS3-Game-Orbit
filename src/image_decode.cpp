@@ -9,6 +9,17 @@
 #include <pngdec/pngdec.h>
 #include <jpgdec/jpgdec.h>
 #include "runtime_diag.h"
+#ifdef PS3_GAME_ORBIT_FIX45
+#include <atomic>
+#include <sys/systime.h>
+namespace {
+std::atomic_flag decoder_lock=ATOMIC_FLAG_INIT;
+struct DecoderGuardFix45 {
+    DecoderGuardFix45(){while(decoder_lock.test_and_set(std::memory_order_acquire))sysUsleep(1000);}
+    ~DecoderGuardFix45(){decoder_lock.clear(std::memory_order_release);}
+};
+}
+#endif
 #else
 #include <png.h>
 extern "C" {
@@ -196,6 +207,9 @@ static bool decode_jpeg_host(const CoverImage& src, DecodedImageRGBA& out, std::
 #endif
 
 bool decode_cover_rgba(const CoverImage& src, DecodedImageRGBA& out, std::string& error) {
+#if defined(PS3_GAME_ORBIT_FIX45) && defined(__PSL1GHT__)
+    DecoderGuardFix45 guard;
+#endif
 #ifdef PS3_GAME_ORBIT_FIX36
     out.width=out.height=out.pitch=0;out.rgba.clear();
 #else
@@ -219,6 +233,9 @@ bool decode_cover_rgba(const CoverImage& src, DecodedImageRGBA& out, std::string
 
 #ifdef PS3_GAME_ORBIT_FIX35
 bool init_image_decoders_fix35(){
+#if defined(PS3_GAME_ORBIT_FIX45) && defined(__PSL1GHT__)
+    DecoderGuardFix45 guard;
+#endif
 #ifdef __PSL1GHT__
     const bool png=ensure_image_module(SYSMODULE_PNGDEC,png_module_loaded)==0;
     const bool jpg=ensure_image_module(SYSMODULE_JPGDEC,jpg_module_loaded)==0;
@@ -228,12 +245,18 @@ bool init_image_decoders_fix35(){
 #endif
 }
 void shutdown_image_decoders_fix35(){
+#if defined(PS3_GAME_ORBIT_FIX45) && defined(__PSL1GHT__)
+    DecoderGuardFix45 guard;
+#endif
 #ifdef __PSL1GHT__
     if(png_module_loaded){sysModuleUnload(SYSMODULE_PNGDEC);png_module_loaded=false;}
     if(jpg_module_loaded){sysModuleUnload(SYSMODULE_JPGDEC);jpg_module_loaded=false;}
 #endif
 }
 bool decode_cover_argb_fix35(const CoverImage& src,DecodedImageARGB& out,std::string& error){
+#if defined(PS3_GAME_ORBIT_FIX45) && defined(__PSL1GHT__)
+    DecoderGuardFix45 guard;
+#endif
 #ifdef PS3_GAME_ORBIT_FIX36
     out.width=out.height=out.pitch=0;out.argb.clear();
 #else

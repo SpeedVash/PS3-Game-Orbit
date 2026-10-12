@@ -13,6 +13,9 @@
 #include "render_plan.h"
 #include "rsx_stage1.h"
 #include "v14_case_mesh.h"
+#ifdef PS3_GAME_ORBIT_FIX45
+#include "artwork_loader_fix45.h"
+#endif
 #include "library_hud_fix28.h"
 #ifdef PS3_GAME_ORBIT_FIX36
 #include "orbit_background_fix36.h"
@@ -93,6 +96,16 @@ public:
     // Visible/fading cases are pinned; FIX32 also retains recent textures in a
     // bounded LRU. Full covers texture BACK|SPINE|FRONT; ICON0 is front-only.
     bool sync_visible_covers(const CoverflowState& state,CoverCache& cache,int radius=2);
+#ifdef PS3_GAME_ORBIT_FIX45
+    static constexpr std::size_t ArtworkUploadSliceBytes=256u<<10;
+    bool start_streamed_artwork();
+    void stop_streamed_artwork();
+    bool service_streamed_artwork(const CoverflowState& state);
+    std::pair<std::size_t,std::size_t> streamed_preload_progress(const CoverflowState& state) const;
+    bool streamed_cover_failed(int gi,const GameEntry& game) const;
+    std::size_t last_artwork_upload_bytes() const{return last_artwork_upload_bytes_;}
+    bool streamed_artwork_active() const{return artwork_loader_ && artwork_loader_->running();}
+#endif
 #ifdef PS3_GAME_ORBIT_FIX37
     void apply_cache_policy(const CoverflowState& state,CoverCache& cache);
     std::size_t resident_limit()const{return resident_limit_;}
@@ -195,6 +208,9 @@ public:
 
 private:
     struct GpuCoverRecord {
+#ifdef PS3_GAME_ORBIT_FIX45
+        std::string game_path;
+#endif
         std::string path;
         GameCoverKind kind=GameCoverKind::None;
         unsigned orientation=1;
@@ -211,6 +227,19 @@ private:
     bool ready_=false;
     BootVisualStage boot_visual_stage_=BootVisualStage::None;
     std::string last_error_;
+#ifdef PS3_GAME_ORBIT_FIX45
+    std::unique_ptr<ArtworkLoaderFix45> artwork_loader_;
+    std::unique_ptr<PreparedArtworkFix45> pending_artwork_;
+    GpuTextureStage1 pending_artwork_texture_{};
+    std::size_t pending_artwork_copied_=0,last_artwork_upload_bytes_=0;
+    std::unordered_map<int,std::pair<std::string,std::string>> streamed_failed_covers_;
+    std::vector<ArtworkRequestFix45> artwork_requests(const CoverflowState& state) const;
+    bool artwork_complete(const ArtworkRequestFix45& request) const;
+    void cancel_streamed_artwork();
+    bool reserve_streamed_artwork(const ArtworkRequestFix45& request,const std::unordered_set<int>& pinned);
+    void fail_streamed_artwork(const ArtworkRequestFix45& request,const std::string& error);
+    void commit_streamed_artwork();
+#endif
     GpuTextureStage1 hud_texture_{};
 #ifdef PS3_GAME_ORBIT_FIX35
 #ifdef PS3_GAME_ORBIT_FIX40

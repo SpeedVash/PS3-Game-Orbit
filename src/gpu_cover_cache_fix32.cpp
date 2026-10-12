@@ -80,6 +80,9 @@ bool RsxRendererV10::load_gpu_cover(int gi,const GameEntry& game,CoverCache& cac
     }
     if(it!=covers_.end()) {release_cover_record(it->second);covers_.erase(it);}
     if(game.cover_path.empty() || failed_gpu_covers_.count(gi)) return false;
+#ifdef PS3_GAME_ORBIT_FIX45
+    if(streamed_artwork_active())return false;
+#endif
     // Reserve the bounded worst-case texture BEFORE allocating; visible/fading
     // cases are pinned. Main calls this only between acknowledged RSX frames.
     constexpr std::size_t WorstTextureBytes=1024u*1024u*4u;

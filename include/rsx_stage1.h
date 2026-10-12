@@ -11,6 +11,9 @@
 #endif
 
 struct DecodedImageRGBA;
+#ifdef PS3_GAME_ORBIT_FIX45
+struct PreparedArtworkFix45;
+#endif
 
 struct GpuTextureStage1 {
     void* gpu_ptr = nullptr;
@@ -45,6 +48,11 @@ public:
     bool initialized() const { return initialized_; }
 
     bool prepare_cover(const CoverImage& image, GpuTextureStage1& out,unsigned manual_orientation=1);
+#ifdef PS3_GAME_ORBIT_FIX45
+    bool begin_artwork_upload(const PreparedArtworkFix45& image,GpuTextureStage1& out);
+    std::size_t advance_artwork_upload(const PreparedArtworkFix45& image,GpuTextureStage1& out,
+                                     std::size_t& copied,std::size_t budget);
+#endif
 #ifdef PS3_GAME_ORBIT_FIX38
     bool prepare_disc_artwork(const CoverImage& image,GpuTextureStage1& out);
 #endif

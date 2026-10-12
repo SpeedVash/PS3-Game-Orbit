@@ -2,13 +2,15 @@
 
 ![PS3 Game Orbit](pkgfiles/ICON0.PNG)
 
-**v1.5.4 — criado por SpeedVash.** Biblioteca de jogos PS3 com capas completas, caixas articuladas, layouts Clássico, Spine e Lista, favoritos e montagem pelo webMAN MOD.
+**v1.5.5 — criado por SpeedVash.** Biblioteca de jogos PS3 com capas completas, caixas articuladas, layouts Clássico, Spine e Lista, favoritos e montagem pelo webMAN MOD.
 
-## Reaproveitamento entre layouts
+## Pré-carga e navegação
 
-As capas e artes recentes permanecem em memória enquanto houver espaço. Ao mudar para um layout menor, a redução do cache prioriza o jogo selecionado e os vizinhos que serão usados. Os arquivos de imagem já lidos seguem a mesma prioridade. Isso reduz recarregamentos ao trocar layouts e voltar a jogos recentes.
+Ao iniciar, o app prepara capas, interiores e discos de até 15 jogos próximos ao selecionado. A tela mostra o progresso antes de abrir a biblioteca. Bibliotecas menores usam apenas os jogos disponíveis no filtro, sem duplicações; imagens ausentes ou inválidas usam a aparência neutra.
 
-Mantidos os limites Clássico 7/7/7, Spine 15/15/15 e Lista 5/5/5. A preparação de imagens novas continua a consumir leitura, decodificação e upload. Veja [validação](docs/VALIDACAO_1.5.4.md) e [teste no PS3](docs/TESTE_1.5.4.md).
+Clássico, Spine e Lista compartilham o mesmo cache de até 15 capas, 15 interiores e 15 discos. Trocar o layout mantém as imagens comuns. Durante a navegação, uma tarefa separada lê e decodifica os próximos jogos, priorizando as capas visíveis e a direção em que você está navegando. O envio de uma nova textura à GPU é dividido em partes de até 256 KiB por quadro; ela só é mostrada depois de concluída.
+
+A geometria 3D e os shaders continuam preparados na inicialização e reutilizados pelos layouts. PS1 permanece em hiato. Veja [validação](docs/VALIDACAO_1.5.5.md) e [teste no PS3](docs/TESTE_1.5.5.md).
 
 ## Gerenciador corrigido
 
@@ -23,14 +25,14 @@ A geometria própria introduzida na v1.5.3 conserva a tela inteira do gerenciado
 - **Listagem mais legível:** nomes maiores, borda para o item em foco, caixas de seleção azuis e indicação verde de cópia concluída. SELECT mostra o caminho completo.
 - **Progresso e resumo:** arquivo atual, lote inteiro, arquivos copiados, ignorados e erros. START pede confirmação antes de cancelar uma operação em andamento.
 - Mantidos estilos de caixa por jogo, A-Z/Z-A/Custom, configurações, webMAN, artes via USB, caches e pausa temporária do fundo.
-- Versão **1.5.4** no início, cabeçalho e menu, com crédito a **SpeedVash**. Identidade PGORBT301 preservada.
+- Versão **1.5.5** no início, cabeçalho e menu, com crédito a **SpeedVash**. Identidade PGORBT301 preservada.
 
-Compilação nativa e testes no computador concluídos. **Teste desta versão no PS3 pendente.** A primeira carga das imagens necessárias ao desenho ainda é síncrona; as simulações não medem a fluidez real no console. A iluminação usa os shaders aprovados.
+Compilação nativa e testes no computador concluídos. **Teste desta versão no PS3 pendente.** A leitura e a decodificação das artes durante a navegação agora ocorrem fora da rotina de desenho; os testes no computador não medem a fluidez real no console. A iluminação usa os shaders aprovados.
 
 ## Instalação
 
-1. Copie `PS3_GAME_ORBIT_v1.5.4.gnpdrm.pkg` para a raiz de um pendrive FAT32.
-2. Instale pelo gerenciador de pacotes do XMB, por cima da versão anterior. Identidade **PGORBT301**, `APP_VER 01.14`; preserve os arquivos de configuração existentes.
+1. Copie `PS3_GAME_ORBIT_v1.5.5.gnpdrm.pkg` para a raiz de um pendrive FAT32.
+2. Instale pelo gerenciador de pacotes do XMB, por cima da versão anterior. Identidade **PGORBT301**, `APP_VER 01.15`; preserve os arquivos de configuração existentes.
 3. No Super Slim, habilite HEN antes de abrir. Para montar jogos, mantenha webMAN MOD ativo.
 4. X monta o jogo com caixa aberta ou fechada. Após a confirmação, o app volta ao XMB; inicie pelo ícone do disco.
 
@@ -138,13 +140,15 @@ A capa completa segue **verso · lombada · frente**. O inside segue **interior 
 
 | Layout | Jogos anteriores | Atual | Jogos seguintes | Limite de cada cache |
 | --- | ---: | ---: | ---: | ---: |
-| Clássico | 3 | 1 | 3 | 7 capas, 7 inside, 7 discos |
-| Lista | 2 | 1 | 2 | 5 capas, 5 inside, 5 discos |
-| Spine | Recentes | Atual | Recentes | 15 capas, 15 inside, 15 discos |
+| Clássico | 7 | 1 | 7 | 15 capas, 15 interiores, 15 discos |
+| Lista | 7 | 1 | 7 | 15 capas, 15 interiores, 15 discos |
+| Spine | 7 | 1 | 7 | 15 capas, 15 interiores, 15 discos |
 
-Janelas circulares seguem o filtro ativo e não repetem jogos em bibliotecas curtas. A pré-carga considera a direção da navegação e aguarda 650 ms sem comandos manuais, além do término das transições. Após 900 ms de espera também prepara inside/disco. Girar ou inclinar a caixa, trocar de jogo, usar zoom ou pressionar botões reinicia a espera; rotação automática não impede a pré-carga. Na entrada do app, as três artes do jogo selecionado são preparadas. Ao navegar, inside/disco são preparados durante a espera; ao abrir a caixa, ambos são preparados antes do desenho. Uma imagem é preparada por etapa, alternando trabalho de capa e interior/disco. Spine mantém o cache de artes recentes e prepara inside/disco do jogo atual. Caixas que estão terminando a transição mantêm sua capa até o último quadro reconhecido pela GPU; esse período pode reter uma capa adicional ao limite de repouso.
+Essa é a janela de preparação, independente da quantidade de caixas desenhadas em cada layout. Ela segue o filtro ativo e circula nas extremidades da lista. O jogo selecionado e as caixas que estão terminando uma transição têm prioridade; vizinhos que não cabem junto às caixas visíveis aguardam a liberação de espaço. Cada tipo de textura conserva o teto de 64 MiB e o limite de 1024×1024 pixels por imagem.
 
-As imagens que já estão no cache são reutilizadas. Se faltar uma imagem necessária ao desenho ou à abertura da caixa, seu carregamento ainda pode causar uma pausa inicial; o ajuste evita trabalho opcional concorrendo com os comandos manuais. Buffers de decodificação e de texturas liberadas continuam sendo reaproveitados. Os logs seguem agrupados e incluem tempo de leitura, decodificação, upload e interface, em milissegundos.
+A preparação inicial termina quando as artes existentes dessa janela estão prontas ou tiveram falha de leitura. A fila mantém no máximo duas imagens prontas na RAM e uma em transferência, e não carrega a biblioteca inteira. Ao navegar, ela muda de prioridade sem esperar o término da leitura atual. Resultados de um catálogo antigo ou de uma recarga de artes são descartados. Uma imagem ainda pendente usa a textura neutra; não é marcada como inválida apenas por estar na fila.
+
+Os três layouts preservam as mesmas texturas. O gerenciador pausa novos pedidos e conserva o cache ao voltar à biblioteca. Os logs registram o tempo da pré-carga, leitura, decodificação, envio à GPU e interface. A gravação de configurações e as operações explícitas de importar, copiar ou atualizar arquivos continuam tendo seu próprio custo de armazenamento. A validação da redução das pausas depende do teste físico no PS3.
 
 ## Configurações e compatibilidade
 

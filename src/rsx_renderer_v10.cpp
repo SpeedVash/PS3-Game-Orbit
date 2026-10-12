@@ -301,6 +301,9 @@ void RsxRendererV10::release_cover_record(GpuCoverRecord& rec){
 }
 
 void RsxRendererV10::clear_cover_textures(){
+#ifdef PS3_GAME_ORBIT_FIX45
+    cancel_streamed_artwork();streamed_failed_covers_.clear();
+#endif
 #ifdef PS3_GAME_ORBIT_FIX44
     preferred_covers_.clear();inspection_cache_pins_.clear();
 #endif
@@ -316,6 +319,9 @@ void RsxRendererV10::clear_cover_textures(){
 #endif
 }
 void RsxRendererV10::shutdown(){
+#ifdef PS3_GAME_ORBIT_FIX45
+    stop_streamed_artwork();
+#endif
     clear_cover_textures();
     if(stage1_) stage1_->release_cover(hud_texture_);
     if(stage1_) stage1_->release_cover(background_texture_);

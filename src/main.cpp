@@ -315,6 +315,9 @@ int main(){
 #endif
 #ifdef PS3_GAME_ORBIT_FIX32
         s64 prefetch_at=0,last_selection_time=0;std::string prefetch_selection;
+#ifdef PS3_GAME_ORBIT_FIX45
+        (void)prefetch_at;
+#endif
 #ifdef PS3_GAME_ORBIT_FIX35
         auto prefetch_layout=browser.state().layout;float previous_inspection_phase=0;
 #endif
@@ -328,7 +331,13 @@ int main(){
 #endif
 #ifdef PS3_GAME_ORBIT_FIX35
 #ifdef PS3_GAME_ORBIT_FIX36
-        RuntimeDiag::log("CONTROLS 1.4.2: TRIANGLE game; START homebrew; creator=SpeedVash; Classic=7/7/7 List=5/5/5 Spine=15/15/15; USB/PS3COVERS; normalized partial ID/ISO import");
+        RuntimeDiag::log(
+#ifdef PS3_GAME_ORBIT_FIX45
+            "CONTROLS 1.5.5: TRIANGLE game; START homebrew; creator=SpeedVash; shared cache=15/15/15; startup preload; asynchronous navigation artwork"
+#else
+            "CONTROLS 1.4.2: TRIANGLE game; START homebrew; creator=SpeedVash; Classic=7/7/7 List=5/5/5 Spine=15/15/15; USB/PS3COVERS; normalized partial ID/ISO import"
+#endif
+            );
 #else
         RuntimeDiag::log("CONTROLS 1.3.2: START game options; creator=SpeedVash; caches=15/15/15");
 #endif
@@ -338,7 +347,39 @@ int main(){
 #elif defined(PS3_GAME_ORBIT_FIX33)
         RuntimeDiag::log("CONTROLS 1.3: L3 open/close; X mounts open/closed; Circle closes or cancels a busy mount; recent_cache=10; idle_neighbors=4; artwork_suffixes=_INSIDE/_DISC");
 #endif
+#ifdef PS3_GAME_ORBIT_FIX45
+        if(!renderer.start_streamed_artwork())result=33;
+        const s64 preload_start=sysGetSystemTime();
+        const auto preload_state=browser.render_state();
+        CoverflowState preload_display;preload_display.layout=preload_state.layout;
+        preload_display.menu.animated_background=preload_state.menu.animated_background;
         while(result==0){
+            lifecycle.pump();
+            if(lifecycle.exit_requested() || controller.poll().circle.pressed){user_exit=true;break;}
+            renderer.apply_cache_policy(preload_state,cache);
+            if(!renderer.service_streamed_artwork(preload_state)){result=33;break;}
+            const auto progress=renderer.streamed_preload_progress(preload_state);
+            if(progress.second==0)break;
+            auto lines=browser.hud_lines("");
+            lines[1]="Preparando sua biblioteca";
+            lines[2]=std::to_string(progress.first)+" / "+std::to_string(progress.second)+" imagens preparadas";
+            lines[3]="Aguarde um momento. Círculo para sair.";lines[4]="";lines[5]="";
+            if(!renderer.set_library_hud(lines,&preload_display) ||
+               !renderer.update_orbit_background(preload_state.menu.animated_background,1.0f/60.0f)){result=32;break;}
+            if(!stream.begin_frame()){result=29;break;}
+            renderer.set_diagnostic_view("PRELOAD",V14Surface::CoverFront);
+            if(!renderer.render(preload_display,mesh,1,browser.scale())){result=27;break;}
+            if(!stream.complete_frame()){result=30;break;}
+            if(progress.first==progress.second)break;
+        }
+        const auto preload_progress=renderer.streamed_preload_progress(preload_state);
+        RuntimeDiag::log("ARTWORK 1.5.5 preload: done=%u total=%u elapsed_ms=%.3f cancelled=%u",
+            unsigned(preload_progress.first),unsigned(preload_progress.second),
+            double(sysGetSystemTime()-preload_start)/1000.0,unsigned(user_exit));
+        previous=sysGetSystemTime();
+#endif
+        while(result==0){
+            if(user_exit)break;
             lifecycle.pump();
             if(lifecycle.exit_requested()){user_exit=true;break;}
             const s64 now=sysGetSystemTime();
@@ -525,6 +566,9 @@ int main(){
 #endif
             renderer.apply_cache_policy(draw,cache);
 #endif
+#ifdef PS3_GAME_ORBIT_FIX45
+            if(!renderer.service_streamed_artwork(draw)){result=33;break;}
+#endif
             const auto poses=LibraryPairFix28::poses(draw,1);
             std::string key;
             for(const auto& pose:poses){
@@ -532,7 +576,9 @@ int main(){
                 key+=std::to_string(pose.game_index)+"\n"+game.path+"\n"+game.cover_path+"\n"+
                      std::to_string(static_cast<int>(game.cover_kind))+"\n"+std::to_string(game.cover_orientation)+"\n";
             }
+#ifndef PS3_GAME_ORBIT_FIX45
             for(auto& game:draw.games) if(failed_covers.count(game.path)) game.cover_path.clear();
+#endif
             if(key!=prepared_key
 #ifdef PS3_GAME_ORBIT_FIX40
                 && !managing
@@ -549,8 +595,17 @@ int main(){
                                      image ? read_cover_orientation_fix28(*image) : 1,game.cover_orientation,
                                      unsigned(renderer.has_full_cover_texture(pose.game_index)),unsigned(renderer.has_cover_texture(pose.game_index)));
 #endif
-                    if(!game.cover_path.empty() && !renderer.has_cover_texture(pose.game_index)){
-                        failed_covers.insert(game.path);game.cover_path.clear();
+                    if(!game.cover_path.empty() &&
+#ifdef PS3_GAME_ORBIT_FIX45
+                       renderer.streamed_cover_failed(pose.game_index,game)
+#else
+                       !renderer.has_cover_texture(pose.game_index)
+#endif
+                    ){
+                        failed_covers.insert(game.path);
+#ifndef PS3_GAME_ORBIT_FIX45
+                        game.cover_path.clear();
+#endif
                     }
                 }
                 cover_status=!selected ? "BIBLIOTECA VAZIA" : failed_covers.count(selected->path) ? "CAPA INVALIDA" :
@@ -562,6 +617,12 @@ int main(){
                                  unsigned(browser.state().visible.size()),unsigned(browser.state().games.size()),index,
                                  selected?selected->title.c_str():"",selected?selected->path.c_str():"",selected?selected->cover_path.c_str():"",cover_status.c_str(),unsigned(poses.size()),unsigned(renderer.gpu_cover_count()));
             }
+#ifdef PS3_GAME_ORBIT_FIX45
+            // A completion changes status even when selection/layout stay put.
+            cover_status=!selected?"BIBLIOTECA VAZIA":renderer.streamed_cover_failed(index,*selected)?"CAPA INVALIDA":
+                renderer.has_full_cover_texture(index)?"CAPA INTEIRA":renderer.has_cover_texture(index)?"CAPA FRONTAL":
+                selected->cover_path.empty()?"SEM CAPA":"PREPARANDO CAPA";
+#endif
             // All changing resources are prepared before begin_frame, after the
             // previous GET/REF/backend-label completion. No allocations in draw.
 #ifdef PS3_GAME_ORBIT_FIX37
@@ -593,6 +654,7 @@ int main(){
 #ifdef PS3_GAME_ORBIT_FIX35
             if(prefetch_layout!=draw.layout || previous_inspection_phase!=draw.inspection_phase){last_selection_time=now;prefetch_layout=draw.layout;previous_inspection_phase=draw.inspection_phase;}
 #endif
+#ifndef PS3_GAME_ORBIT_FIX45
             if(now-last_selection_time>=400000 && now>=prefetch_at
 #ifdef PS3_GAME_ORBIT_FIX41
                 && interaction.idle(now,draw)
@@ -627,6 +689,7 @@ int main(){
                 renderer.prefetch_nearby_cover(draw,cache);prefetch_at=now+200000;
 #endif
             }
+#endif
 #endif
 #ifdef PS3_GAME_ORBIT_FIX36
             if(!renderer.update_orbit_background(draw.menu.animated_background
@@ -708,6 +771,9 @@ int main(){
                      result,warmup_ok ? "OK" : "FAILED",fifo_ok ? "OK" : "not completed",stream.completed_frames(),stream.switches(),
                      unsigned(browser.state().games.size()),unsigned(user_exit),unsigned(time_limit),renderer.last_error().c_str(),stream.last_error().c_str());
 #ifdef PS3_GAME_ORBIT_FIX35
+#ifdef PS3_GAME_ORBIT_FIX45
+    renderer.stop_streamed_artwork();
+#endif
     shutdown_image_decoders_fix35();OrbitPerformanceFix35::report();
 #endif
     controller.shutdown();lifecycle.shutdown();

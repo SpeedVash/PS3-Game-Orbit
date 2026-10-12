@@ -11,7 +11,7 @@ permissions:
 jobs:
   host:
     runs-on: ubuntu-22.04
-    timeout-minutes: 10
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
       - name: Install host dependencies
@@ -50,3 +50,5 @@ jobs:
           FIX43_PUBLIC_ONLY=1 bash tests/run_fix43_tests.sh
           python3 scripts/check-manager-hud-fix43.py
           FIX44_PUBLIC_ONLY=1 bash tests/run_fix44_tests.sh
+          FIX45_PUBLIC_ONLY=1 bash tests/run_fix45_tests.sh
+          python3 scripts/check-library-loop-fix45.py
