@@ -57,7 +57,7 @@ std::string utf8(const std::uint16_t* text,std::size_t count){
 }
 bool valid_title(const std::string& title){const auto chars=utf16(title);return !chars.empty() && chars.size()<=96 && title.size()<=384 && title.find_first_not_of(' ')!=std::string::npos;}
 bool Names::set(const std::string& path,const std::string& title){if(!game_path(path) || !valid_title(title) || (!names_.count(path) && names_.size()>=4096))return false;names_[path]=title;return true;}
-void Names::apply(std::vector<GameEntry>& games)const{for(auto& game:games){const auto it=names_.find(game.path);if(it!=names_.end())game.title=it->second;}}
+void Names::apply(std::vector<GameEntry>& games)const{for(auto& game:games){const auto it=names_.find(game.identity_path());if(it!=names_.end())game.title=it->second;}}
 bool Names::save(const std::string& path)const{
     std::vector<std::string> keys;for(const auto& n:names_)keys.push_back(n.first);std::sort(keys.begin(),keys.end());
     std::string body;for(const auto& key:keys)body+=hex(key)+" "+hex(names_.at(key))+"\n";

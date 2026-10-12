@@ -1,8 +1,21 @@
 #include "mount_operation_fix29.h"
+#ifdef PS3_GAME_ORBIT_FIX47
+#include "physical_disc_fix47.h"
+#endif
 
 bool MountOperationFix29::start(const GameEntry& game,std::uint64_t now){
     if(busy()) return false;
     path_=game.path;expected_id_=game.title_id;deadline_=now+20000;
+#ifdef PS3_GAME_ORBIT_FIX47
+    if(game.source==GameSource::Disc){
+        const auto current=read_disc_sample_fix47(game.path);
+        if(!current.present || current.game.title_id!=game.title_id){
+            state_=State::Failed;status_="O disco foi removido ou trocado. Aguarde a biblioteca atualizar.";return false;
+        }
+        state_=State::Confirmed;exit_at_=now+1200;
+        status_="Disco "+game.title_id+" pronto. Voltando ao XMB...";return true;
+    }
+#endif
     if(!client_.start(path_,now)){state_=State::Failed;status_=client_.error();return false;}
     state_=State::WaitingResponse;status_="webMAN: enviando pedido de montagem...";return true;
 }

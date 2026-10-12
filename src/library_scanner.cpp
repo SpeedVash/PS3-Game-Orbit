@@ -5,6 +5,9 @@
 #include <algorithm>
 #include <cctype>
 #include <cstdio>
+#ifdef PS3_GAME_ORBIT_FIX47
+#include "physical_disc_fix47.h"
+#endif
 #ifdef __PSL1GHT__
 #include "runtime_diag.h"
 #endif
@@ -86,7 +89,13 @@ std::vector<GameEntry> LibraryScanner::scan_ps3() {
         ::snprintf(root, sizeof(root), "/dev_usb%03d", i);
         roots.push_back({root,GameSource::USB});
     }
-    return scan_locations(roots);
+    auto games=scan_locations(roots);
+#ifdef PS3_GAME_ORBIT_FIX47
+    // Append after the stable HD/USB catalog; only the visible order is sorted.
+    const auto disc=read_disc_sample_fix47();
+    if(disc.present)games.push_back(disc.game);
+#endif
+    return games;
 }
 std::vector<GameEntry> LibraryScanner::scan_locations(const std::vector<LibraryScanRoot>& roots){
     std::vector<GameEntry> out;

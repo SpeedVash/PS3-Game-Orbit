@@ -38,13 +38,13 @@ void sort_visible(std::vector<int>& v,const std::vector<GameEntry>& g,GameSortFi
     std::unordered_map<std::string,std::size_t> ranks;
     if(m==GameSortFix40::Custom)for(std::size_t i=0;i<order.size();++i)ranks.emplace(order[i],i);
     std::stable_sort(v.begin(),v.end(),[&](int a,int b){
-        if(m==GameSortFix40::Custom){const auto x=ranks.find(g[a].path),y=ranks.find(g[b].path);
+        if(m==GameSortFix40::Custom){const auto x=ranks.find(g[a].identity_path()),y=ranks.find(g[b].identity_path());
             const auto ra=x==ranks.end()?order.size():x->second,rb=y==ranks.end()?order.size():y->second;
             if(ra!=rb)return ra<rb;
         }
         const auto x=fold(g[a].title),y=fold(g[b].title);
         if(x!=y)return m==GameSortFix40::Reverse?x>y:x<y;
-        return g[a].path<g[b].path;
+        return g[a].identity_path()<g[b].identity_path();
     });
 }
 void reconcile(std::vector<std::string>& order,const std::vector<GameEntry>& games){
@@ -52,14 +52,14 @@ void reconcile(std::vector<std::string>& order,const std::vector<GameEntry>& gam
     for(const auto& p:order)if(seen.insert(p).second)clean.push_back(p);
     std::vector<int> alpha;for(std::size_t i=0;i<games.size();++i)alpha.push_back(int(i));
     sort_visible(alpha,games,GameSortFix40::Alphabetical,{});
-    for(int i:alpha)if(seen.insert(games[i].path).second)clean.push_back(games[i].path);
+    for(int i:alpha)if(seen.insert(games[i].identity_path()).second)clean.push_back(games[i].identity_path());
     order=std::move(clean);
 }
 bool move_visible(std::vector<std::string>& order,const std::vector<GameEntry>& games,const std::vector<int>& visible,int from,int to){
     if(from<0||to<0||from>=int(visible.size())||to>=int(visible.size()))return false;
     reconcile(order,games);
     std::unordered_set<std::string> included;std::vector<std::string> values;std::vector<std::size_t> slots;
-    for(int i:visible){if(i<0||i>=int(games.size()))return false;included.insert(games[i].path);values.push_back(games[i].path);}
+    for(int i:visible){if(i<0||i>=int(games.size()))return false;included.insert(games[i].identity_path());values.push_back(games[i].identity_path());}
     for(std::size_t i=0;i<order.size();++i)if(included.count(order[i]))slots.push_back(i);
     if(slots.size()!=values.size())return false;
     const auto moving=values[from];values.erase(values.begin()+from);values.insert(values.begin()+to,moving);

@@ -102,6 +102,10 @@ public:
     void stop_streamed_artwork();
     bool service_streamed_artwork(const CoverflowState& state);
     std::pair<std::size_t,std::size_t> streamed_preload_progress(const CoverflowState& state) const;
+#ifdef PS3_GAME_ORBIT_FIX47
+    // Main calls this only between acknowledged frames, before reusing a disc slot.
+    void cancel_pending_artwork(){cancel_streamed_artwork();}
+#endif
     bool streamed_cover_failed(int gi,const GameEntry& game) const;
     std::size_t last_artwork_upload_bytes() const{return last_artwork_upload_bytes_;}
     bool streamed_artwork_active() const{return artwork_loader_ && artwork_loader_->running();}

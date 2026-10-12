@@ -114,17 +114,17 @@ std::rename(temporary.c_str(),path.c_str())==0
     return ok;
 }
 void PreferencesFix29::apply(std::vector<GameEntry>& games) const {
-    for(auto& g:games){const auto it=records_.find(g.path);if(it!=records_.end()){g.favorite=it->second.favorite;g.cover_orientation=it->second.orientation;
+    for(auto& g:games){const auto it=records_.find(g.identity_path());if(it!=records_.end()){g.favorite=it->second.favorite;g.cover_orientation=it->second.orientation;
 #ifdef PS3_GAME_ORBIT_FIX41
         g.case_style=it->second.case_style;
 #endif
 }}
 }
 void PreferencesFix29::capture(const CoverflowState& state){
-    filter_=state.filter;if(const auto* game=current_game(state)) selected_=game->path;
-    for(const auto& g:state.games) if(valid_path(g.path)){
-        if(!records_.count(g.path) && records_.size()>=MaxRecords) continue;
-        records_[g.path]={g.favorite,g.cover_orientation
+    filter_=state.filter;if(const auto* game=current_game(state)) selected_=game->identity_path();
+    for(const auto& g:state.games) if(valid_path(g.identity_path())){
+        if(!records_.count(g.identity_path()) && records_.size()>=MaxRecords) continue;
+        records_[g.identity_path()]={g.favorite,g.cover_orientation
 #ifdef PS3_GAME_ORBIT_FIX41
             ,g.case_style
 #endif

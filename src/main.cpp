@@ -2,6 +2,9 @@
 #include <string>
 #include <vector>
 #include "library_scanner.h"
+#ifdef PS3_GAME_ORBIT_FIX47
+#include "physical_disc_monitor_fix47.h"
+#endif
 #include "cover_resolver.h"
 #include "cover_cache.h"
 #include "controller.h"
@@ -333,7 +336,9 @@ int main(){
 #ifdef PS3_GAME_ORBIT_FIX36
         RuntimeDiag::log(
 #ifdef PS3_GAME_ORBIT_FIX45
-#ifdef PS3_GAME_ORBIT_FIX46
+#ifdef PS3_GAME_ORBIT_FIX47
+            "CONTROLS 1.5.7: TRIANGLE game; START homebrew; creator=SpeedVash; shared cache=15/15/15; physical PS3 disc; retain startup image until artwork is ready"
+#elif defined(PS3_GAME_ORBIT_FIX46)
             "CONTROLS 1.5.6: TRIANGLE game; START homebrew; creator=SpeedVash; shared cache=15/15/15; retain startup image until artwork is ready"
 #else
             "CONTROLS 1.5.5: TRIANGLE game; START homebrew; creator=SpeedVash; shared cache=15/15/15; startup preload; asynchronous navigation artwork"
@@ -352,6 +357,11 @@ int main(){
         RuntimeDiag::log("CONTROLS 1.3: L3 open/close; X mounts open/closed; Circle closes or cancels a busy mount; recent_cache=10; idle_neighbors=4; artwork_suffixes=_INSIDE/_DISC");
 #endif
 #ifdef PS3_GAME_ORBIT_FIX45
+#ifdef PS3_GAME_ORBIT_FIX47
+        PhysicalDiscMonitorFix47 disc_monitor;
+        if(!disc_monitor.start(browser.state().games))
+            RuntimeDiag::log("DISC 1.5.7: monitor unavailable; startup/manual library scan remains available");
+#endif
         if(!renderer.start_streamed_artwork())result=33;
         const s64 preload_start=sysGetSystemTime();
         const auto preload_state=browser.render_state();
@@ -393,7 +403,9 @@ int main(){
         }
         const auto preload_progress=renderer.streamed_preload_progress(preload_state);
         RuntimeDiag::log(
-#ifdef PS3_GAME_ORBIT_FIX46
+#ifdef PS3_GAME_ORBIT_FIX47
+            "ARTWORK 1.5.7 preload: splash_retained=1 done=%u total=%u elapsed_ms=%.3f cancelled=%u",
+#elif defined(PS3_GAME_ORBIT_FIX46)
             "ARTWORK 1.5.6 preload: splash_retained=1 done=%u total=%u elapsed_ms=%.3f cancelled=%u",
 #else
             "ARTWORK 1.5.5 preload: done=%u total=%u elapsed_ms=%.3f cancelled=%u",
@@ -419,7 +431,7 @@ int main(){
                     if(candidate.set(rename_target,edited_title)){
                         saved=candidate.save(names_path);
                         if(!saved && candidate.save(ProjectIdentity::FallbackNamesPath)){names_path=ProjectIdentity::FallbackNamesPath;saved=true;}
-                        if(saved){names=std::move(candidate);auto* game=browser.selected_entry();if(game && game->path==rename_target)game->title=edited_title;
+                        if(saved){names=std::move(candidate);auto* game=browser.selected_entry();if(game && game->identity_path()==rename_target)game->title=edited_title;
 #ifdef PS3_GAME_ORBIT_FIX40
                             browser.refresh_order();
 #endif
@@ -518,7 +530,7 @@ int main(){
                 const auto action=pending_menu_action;pending_menu_action=GameMenuActionFix35::None;
                 if(auto* game=browser.selected_entry()){
                     if(action==GameMenuActionFix35::Rename){
-                        rename_target=game->path;
+                        rename_target=game->identity_path();
                         if(!keyboard.begin(game->title))browser.menu_status("Não foi possível abrir o teclado.");
                         else browser.menu_status("Digite o nome no teclado.",true);
                     }else{
@@ -575,6 +587,33 @@ int main(){
                 auto rescanned=browser.state().games;preferences.apply(rescanned);browser.replace_catalog(std::move(rescanned));
 #endif
             }
+#ifdef PS3_GAME_ORBIT_FIX47
+            // The optical worker never blocks a rendered frame. Apply its last
+            // complete snapshot between ACK and begin_frame, outside operations.
+            if(!managing && !mounting.busy() && !keyboard.busy() && !browser.state().menu.open &&
+               !browser.state().inspection_target && browser.state().inspection_phase==0 && interaction.quiet(now)){
+                DiscSampleFix47 disc;
+                if(disc_monitor.take(disc)){
+                    const auto* old_selection=current_game(browser.state());
+                    const bool follow_disc=old_selection && old_selection->source==GameSource::Disc;
+                    const auto old_filter=browser.state().filter;
+                    auto catalog=browser.state().games;
+                    const auto change=sync_disc_catalog_fix47(catalog,disc);
+                    if(change.changed){
+                        preferences.capture(browser.state());
+                        if(!change.preserves_indices){renderer.clear_cover_textures();cache.clear();}
+                        else if(change.index>=0)renderer.invalidate_game_art(change.index,7);
+                        renderer.cancel_pending_artwork();
+                        names.apply(catalog);preferences.apply(catalog);
+                        browser.replace_catalog(std::move(catalog),true);
+                        if(follow_disc && disc.present)browser.restore_selection(old_filter,disc.game.identity_path());
+                        prepared_key.clear();failed_covers.erase("/dev_bdvd");
+                        RuntimeDiag::log("DISC 1.5.7: present=%u id=%s stable_indices=%u",
+                            unsigned(disc.present),disc.game.title_id.c_str(),unsigned(change.preserves_indices));
+                    }
+                }
+            }
+#endif
             auto draw=browser.render_state();
 #ifdef PS3_GAME_ORBIT_FIX40
             if(managing){draw.visible.clear();draw.flow.clear();draw.flow_initialized=false;}

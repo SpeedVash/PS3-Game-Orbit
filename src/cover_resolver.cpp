@@ -35,7 +35,7 @@ CoverResult CoverResolver::resolve(const GameEntry& game) const {
     }
 
     // 2) Global full cover using the ISO/folder name.
-    std::string stem = iso_stem(game.path);
+    std::string stem = game.format == GameFormat::Disc ? std::string{} : iso_stem(game.path);
     if (!stem.empty()) {
         auto r = try_full(global_dir_ + "/" + stem, CoverSource::GlobalByGameName);
         if (!r.path.empty()) return r;
@@ -51,7 +51,7 @@ CoverResult CoverResolver::resolve(const GameEntry& game) const {
     }
 
     // 4) Folder game fallback. ICON0 is front artwork only, never treated as a full cover.
-    if (game.format == GameFormat::Folder) {
+    if (game.format == GameFormat::Folder || game.format == GameFormat::Disc) {
         const std::string icon0 = game.path + "/PS3_GAME/ICON0.PNG";
         if (file_exists(icon0)) return {icon0, CoverSource::FolderIcon0, false};
     }
@@ -71,7 +71,7 @@ void CoverResolver::resolve_inspection_art(GameEntry& game) const {
         if(!game.title_id.empty()) {
             auto p=try_base(global_dir_+"/"+game.title_id+suffix);if(!p.empty()) return p;
         }
-        const auto stem=iso_stem(game.path);
+        const auto stem=game.format==GameFormat::Disc ? std::string{} : iso_stem(game.path);
         if(!stem.empty()) {
             auto p=try_base(global_dir_+"/"+stem+suffix);if(!p.empty()) return p;
             const auto slash=game.path.find_last_of('/');

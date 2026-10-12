@@ -502,7 +502,7 @@ bool RsxRendererV10::set_library_hud(const LibraryHudLinesFix28& lines
         const int n=int(state->visible.size());const int begin=std::max(0,std::min(state->selected-4,n-9));
         for(int vi=begin;vi<std::min(n,begin+9);++vi) {
             const auto& g=state->games[std::size_t(state->visible[std::size_t(vi)])];
-            rows.push_back(std::to_string(vi+1)+"   "+g.title+(g.favorite ? "  *" : ""));
+            rows.push_back(std::to_string(vi+1)+"   "+g.title+(g.source==GameSource::Disc ? "  [Disco]" : "")+(g.favorite ? "  *" : ""));
         }
         if(n) active=state->selected-begin;
     }

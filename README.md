@@ -2,7 +2,7 @@
 
 ![PS3 Game Orbit](pkgfiles/ICON0.PNG)
 
-**v1.5.6 — criado por SpeedVash.** Biblioteca de jogos PS3 com capas completas, caixas articuladas, layouts Clássico, Spine e Lista, favoritos e montagem pelo webMAN MOD.
+**v1.5.7 — criado por SpeedVash.** Biblioteca de jogos PS3 com capas completas, caixas articuladas, layouts Clássico, Spine e Lista, favoritos e montagem pelo webMAN MOD.
 
 ## Pré-carga e navegação
 
@@ -10,7 +10,7 @@ Ao iniciar, o app prepara capas, interiores e discos de até 15 jogos próximos 
 
 Clássico, Spine e Lista compartilham o mesmo cache de até 15 capas, 15 interiores e 15 discos. Trocar o layout mantém as imagens comuns. Durante a navegação, uma tarefa separada lê e decodifica os próximos jogos, priorizando as capas visíveis e a direção em que você está navegando. O envio de uma nova textura à GPU é dividido em partes de até 256 KiB por quadro; ela só é mostrada depois de concluída.
 
-A geometria 3D e os shaders continuam preparados na inicialização e reutilizados pelos layouts. PS1 permanece em hiato. Veja [validação](docs/VALIDACAO_1.5.6.md) e [teste no PS3](docs/TESTE_1.5.6.md).
+A geometria 3D e os shaders continuam preparados na inicialização e reutilizados pelos layouts. PS1 permanece em hiato. Veja [validação](docs/VALIDACAO_1.5.7.md) e [teste no PS3](docs/DISCO_PS3_1.5.7.md).
 
 ## Gerenciador corrigido
 
@@ -25,14 +25,22 @@ A geometria própria introduzida na v1.5.3 conserva a tela inteira do gerenciado
 - **Listagem mais legível:** nomes maiores, borda para o item em foco, caixas de seleção azuis e indicação verde de cópia concluída. SELECT mostra o caminho completo.
 - **Progresso e resumo:** arquivo atual, lote inteiro, arquivos copiados, ignorados e erros. START pede confirmação antes de cancelar uma operação em andamento.
 - Mantidos estilos de caixa por jogo, A-Z/Z-A/Custom, configurações, webMAN, artes via USB, caches e pausa temporária do fundo.
-- Versão **1.5.6** no início, cabeçalho e menu, com crédito a **SpeedVash**. Identidade PGORBT301 preservada.
+- Versão **1.5.7** no início, cabeçalho e menu, com crédito a **SpeedVash**. Identidade PGORBT301 preservada.
 
-O usuário confirmou que a v1.5.5 eliminou a pequena pausa ao mudar de layout. A v1.5.6 corrige a apresentação durante a espera inicial. Compilação nativa e testes no computador concluídos; **a nova transição no PS3 aguarda confirmação**. A iluminação usa os shaders aprovados.
+O usuário confirmou que a v1.5.5 eliminou a pequena pausa ao mudar de layout. A v1.5.7 mantém a tela de carregamento durante a espera inicial e acrescenta o disco de PS3 à biblioteca 3D. Compilação nativa e testes no computador concluídos; **a detecção do disco no PS3 aguarda confirmação**. A iluminação usa os shaders aprovados.
+
+## Disco de PS3
+
+O jogo disponível no leitor aparece em **Todos**, identificado como **Disco**, com a mesma caixa 3D. Nome e ID são lidos do PARAM.SFO; as imagens da ID em PS3COVERS aparecem na capa, interior e disco. L3 abre a caixa. X volta ao XMB para iniciar pelo ícone do disco.
+
+Inserção e retirada são lidas em segundo plano. Favoritos, nomes e estilo são separados por ID; o cache dos jogos comuns continua preservado. Se uma ISO ou pasta montada ocupar o leitor, disponibilize o disco pelo seu gerenciador antes de visualizar o original. O Orbit consulta a mídia sem desmontar ou ejetar.
+
+Veja o [guia e teste do disco](docs/DISCO_PS3_1.5.7.md). A detecção real no PS3 aguarda confirmação.
 
 ## Instalação
 
-1. Copie `PS3_GAME_ORBIT_v1.5.6.gnpdrm.pkg` para a raiz de um pendrive FAT32.
-2. Instale pelo gerenciador de pacotes do XMB, por cima da versão anterior. Identidade **PGORBT301**, `APP_VER 01.16`; preserve os arquivos de configuração existentes.
+1. Copie `PS3_GAME_ORBIT_v1.5.7.gnpdrm.pkg` para a raiz de um pendrive FAT32.
+2. Instale pelo gerenciador de pacotes do XMB, por cima da versão anterior. Identidade **PGORBT301**, `APP_VER 01.17`; preserve os arquivos de configuração existentes.
 3. No Super Slim, habilite HEN antes de abrir. Para montar jogos, mantenha webMAN MOD ativo.
 4. X monta o jogo com caixa aberta ou fechada. Após a confirmação, o app volta ao XMB; inicie pelo ícone do disco.
 
@@ -156,14 +164,14 @@ Preferências unificadas: `/dev_hdd0/game/PGORBT301/USRDIR/PS3_GAME_ORBIT_SETTIN
 
 “Salvar último jogo visto” vem ligado para preservar o comportamento anterior. Desligado, o app começa no primeiro jogo do filtro salvo. Se o último jogo não estiver disponível, começa no primeiro disponível. Alterações são gravadas após um breve intervalo e ao sair normalmente.
 
-Diagnóstico: `/dev_hdd0/tmp/PS3_GAME_ORBIT_FIX42.log`; alternativa em `USRDIR`. Consulte [o roteiro de teste](docs/TESTE_1.5.3.md) ao reportar um problema.
+Diagnóstico: `/dev_hdd0/tmp/PS3_GAME_ORBIT_FIX47.log`; alternativa em `USRDIR`. Consulte [o roteiro de teste](docs/DISCO_PS3_1.5.7.md) ao reportar um problema.
 
 ## Fontes, compilação e publicação
 
 - [Compilar e executar os testes](docs/BUILD.md)
-- [Notas prontas para o release](docs/RELEASE_NOTES_1.5.3.md)
-- [Teste no PS3](docs/TESTE_1.5.3.md)
-- [Registro de validação](docs/VALIDACAO_1.5.3.md)
+- [Notas prontas para o release](docs/GITHUB_1.5.7.md)
+- [Teste no PS3](docs/DISCO_PS3_1.5.7.md)
+- [Registro de validação](docs/VALIDACAO_1.5.7.md)
 - [Histórico](CHANGELOG.md) e [créditos/licenças](CREDITS.md)
 
 O PKG já está compilado. O ZIP público contém código, shaders arquivados, ativos próprios e relatórios. A malha JFX licenciada e sua representação editável não são redistribuídas. Para compilar, obtenha sua cópia na fonte indicada em `assets/jfx_bluray/README.md` e execute `scripts/prepare-jfx.py`. O código procedural do interior e das articulações acompanha o projeto. Prévias de versões anteriores mantidas em `assets/previews` são imagens de referência geradas no computador, não capturas desta versão no console.

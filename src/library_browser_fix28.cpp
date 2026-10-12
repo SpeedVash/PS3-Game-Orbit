@@ -23,17 +23,19 @@ void LibraryBrowserFix28::front_pose(){
 #endif
 }
 std::string LibraryBrowserFix28::selected_path() const {
-    const auto* game=current_game(state_);return game ? game->path : "";
+    const auto* game=current_game(state_);return game ? game->identity_path() : "";
 }
-void LibraryBrowserFix28::replace_catalog(std::vector<GameEntry> games){
+void LibraryBrowserFix28::replace_catalog(std::vector<GameEntry> games,bool preserve_pose){
     const auto previous=selected_path();
+    const auto yaw=state_.center_yaw_deg,pitch=state_.center_pitch_deg;
+    const bool inspecting=state_.inspect_mode;
     std::unordered_set<std::string> favorites;
     std::unordered_map<std::string,unsigned> orientations;
-    for(const auto& g:state_.games) if(g.favorite) favorites.insert(g.path);
-    for(const auto& g:state_.games) orientations[g.path]=g.cover_orientation;
+    for(const auto& g:state_.games) if(g.favorite) favorites.insert(g.identity_path());
+    for(const auto& g:state_.games) orientations[g.identity_path()]=g.cover_orientation;
     for(auto& g:games){
-        if(favorites.count(g.path)) g.favorite=true;
-        const auto old=orientations.find(g.path);
+        if(favorites.count(g.identity_path())) g.favorite=true;
+        const auto old=orientations.find(g.identity_path());
         if(old!=orientations.end()) g.cover_orientation=old->second;
 #ifdef PS3_GAME_ORBIT_FIX30
         g.cover_orientation=1; // Normal artwork is automatic; no saved manual flips.
@@ -41,9 +43,11 @@ void LibraryBrowserFix28::replace_catalog(std::vector<GameEntry> games){
     }
     state_.games=std::move(games);rebuild_visible(state_);
     for(std::size_t i=0;i<state_.visible.size();++i){
-        if(state_.games[state_.visible[i]].path==previous){state_.selected=int(i);break;}
+        if(state_.games[state_.visible[i]].identity_path()==previous){state_.selected=int(i);break;}
     }
-    front_pose();
+    if(preserve_pose && !previous.empty() && previous==selected_path()){
+        state_.center_yaw_deg=yaw;state_.center_pitch_deg=pitch;state_.inspect_mode=inspecting;
+    }else front_pose();
 #ifdef PS3_GAME_ORBIT_FIX31
     pending_path_.clear();pending_layout_=-1;OrbitFlowFix31::reset(state_);
 #endif
@@ -222,7 +226,7 @@ AppCommands LibraryBrowserFix28::update(const InputFrame& raw_input,float dt){
     if(explicit_navigation) pending_path_.clear();
     if(!mount_busy_ && !explicit_navigation && !pending_path_.empty()) {
         for(std::size_t i=0;i<state_.visible.size();++i) {
-            if(state_.games[state_.visible[i]].path==pending_path_) {state_.selected=int(i);break;}
+            if(state_.games[state_.visible[i]].identity_path()==pending_path_) {state_.selected=int(i);break;}
         }
         pending_path_.clear();
     }
@@ -338,7 +342,7 @@ void LibraryBrowserFix28::restore_selection(FilterMode filter,const std::string&
     state_.selected=0;
 #endif
     state_.filter=filter;rebuild_visible(state_);
-    for(std::size_t i=0;i<state_.visible.size();++i) if(state_.games[state_.visible[i]].path==path){state_.selected=int(i);break;}
+    for(std::size_t i=0;i<state_.visible.size();++i) if(state_.games[state_.visible[i]].identity_path()==path){state_.selected=int(i);break;}
     state_.transition=1;front_pose();preferences_changed_=false;
 #ifdef PS3_GAME_ORBIT_FIX31
     pending_path_.clear();OrbitFlowFix31::reset(state_);
@@ -385,7 +389,7 @@ LibraryHudLinesFix28 LibraryBrowserFix28::hud_lines(const std::string& cover_sta
     const auto* game=current_game(state_);
     lines[1]=game ? game->title : state_.games.empty() ? "Sua biblioteca está vazia" : "Nenhum jogo neste filtro";
     lines[2]=game ? std::to_string(state_.selected+1)+" / "+std::to_string(state_.visible.size())+"    "+
-        (game->source==GameSource::HDD ? "HDD" : "USB")+"    "+(game->format==GameFormat::ISO ? "ISO" : "Pasta")+
+        (game->source==GameSource::Disc ? "DISCO" : game->source==GameSource::HDD ? "HDD" : "USB")+"    "+(game->format==GameFormat::Disc ? "Blu-ray" : game->format==GameFormat::ISO ? "ISO" : "Pasta")+
         (game->title_id.empty() ? "" : "    "+game->title_id)+(game->favorite ? "    Favorito" : "") :
         #ifdef PS3_GAME_ORBIT_FIX36
         "0 / 0    START para abrir opções";
@@ -400,6 +404,7 @@ LibraryHudLinesFix28 LibraryBrowserFix28::hud_lines(const std::string& cover_sta
     if(state_.inspection_target || state_.inspection_phase>0) lines[4]+="|OPEN";
 #ifdef PS3_GAME_ORBIT_FIX33
     if(mount_busy_) lines[4]+="|MOUNT";
+    if(game && game->source==GameSource::Disc)lines[4]+="|DISC";
 #endif
 #else
     lines[4]+=(state_.layout==OrbitLayout::Spine ? "|SPINE" : "|CLASSIC");
@@ -414,8 +419,8 @@ LibraryHudLinesFix28 LibraryBrowserFix28::hud_lines(const std::string& cover_sta
     if(g){
         lines[1]=g->title;
         lines[2]=std::to_string(state_.selected+1)+"/"+std::to_string(state_.visible.size())+"  "+
-                 (g->source==GameSource::HDD ? "HDD" : "USB")+" / "+
-                 (g->format==GameFormat::ISO ? "ISO" : "PASTA")+"  "+
+                 (g->source==GameSource::Disc ? "DISCO" : g->source==GameSource::HDD ? "HDD" : "USB")+" / "+
+                 (g->format==GameFormat::Disc ? "BLU-RAY" : g->format==GameFormat::ISO ? "ISO" : "PASTA")+"  "+
                  (g->title_id.empty() ? "SEM ID" : g->title_id)+"  "+cover_status+
                  (g->favorite ? "  FAVORITO" : "")+"  "+cover_orientation_name_fix28(g->cover_orientation);
     }else{
@@ -437,7 +442,7 @@ LibraryHudLinesFix28 LibraryBrowserFix28::hud_lines(const std::string& cover_sta
 void LibraryBrowserFix28::refresh_order(){
     const auto path=selected_path();const auto yaw=state_.center_yaw_deg,pitch=state_.center_pitch_deg;
     rebuild_visible(state_);
-    for(std::size_t i=0;i<state_.visible.size();++i)if(state_.games[state_.visible[i]].path==path){state_.selected=int(i);break;}
+    for(std::size_t i=0;i<state_.visible.size();++i)if(state_.games[state_.visible[i]].identity_path()==path){state_.selected=int(i);break;}
     state_.center_yaw_deg=yaw;state_.center_pitch_deg=pitch;
     state_.menu.sort_mode=int(state_.sort_mode);preferences_changed_=true;
     pending_path_.clear();pending_layout_=-1;OrbitFlowFix31::reset(state_);

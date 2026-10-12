@@ -13,7 +13,7 @@ using LibraryHudLinesFix28=std::array<std::string,6>;
 class LibraryBrowserFix28 {
 public:
     explicit LibraryBrowserFix28(std::string diagnostic_cover,std::string second_diagnostic_cover="");
-    void replace_catalog(std::vector<GameEntry> games);
+    void replace_catalog(std::vector<GameEntry> games,bool preserve_pose=false);
     AppCommands update(const InputFrame& input,float dt);
     const CoverflowState& state() const { return state_; }
     CoverflowState render_state() const;

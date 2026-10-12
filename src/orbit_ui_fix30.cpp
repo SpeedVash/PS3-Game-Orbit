@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <cmath>
 #include <vector>
+#include <tuple>
 #include "orbit_font_fix30.inc"
 #ifdef PS3_GAME_ORBIT_FIX35
 #include "hud_cache_fix35.h"
@@ -279,7 +280,8 @@ void paint_hud_fix35(DecodedImageRGBA& p,const std::array<std::string,6>& s,cons
     }else{
         const bool opened=s[4].find("OPEN")!=std::string::npos;
         const bool mounting=s[4].find("MOUNT")!=std::string::npos;
-        button(p,"X",73,157,mounting ? "Montando" : "Montar",Blue);
+        const bool disc=s[4].find("|DISC")!=std::string::npos;
+        button(p,"X",73,157,disc ? (mounting ? "Saindo" : "Ir ao XMB") : mounting ? "Montando" : "Montar",Blue);
         if(opened){
 #ifdef PS3_GAME_ORBIT_FIX37
             button(p,"L3",260,157,"Fechar");button(p,"TRIANGLE",400,157,"Jogo",Green);
@@ -340,7 +342,7 @@ void paint_hud_fix35(DecodedImageRGBA& p,const std::array<std::string,6>& s,cons
         text(p,"L2 / R2   Zoom    R3   Restaurar",74,257,18,White,480);
         text(p,"Quadrado   Clássico / Spine / Lista",74,285,18,White,480);
         text(p,"L3   Abrir / fechar caixa e disco",74,313,18,White,480);
-        text(p,"X   Montar com caixa aberta ou fechada",74,341,18,White,480);
+        text(p,s[4].find("|DISC")!=std::string::npos ? "X   Voltar ao XMB para iniciar o disco" : "X   Montar com caixa aberta ou fechada",74,341,18,White,480);
 #else
         text(p,"L2 / R2   Aproximar / afastar",74,257,18,White,480);
         text(p,"R3   Restaurar posição e zoom",74,285,18,White,480);
@@ -650,7 +652,7 @@ std::array<V14Vertex,4> background_vertices(){return {{vertex(0,0,0,0),vertex(12
 std::vector<HudRectFix35> HudCacheFix35::update(const std::array<std::string,6>& lines,const std::vector<std::string>& rows,int active,const GameMenuStateFix35& menu){
     const auto layout=[](const auto& s){return s.find("LIST")!=std::string::npos ? 2 : s.find("SPINE")!=std::string::npos ? 1 : 0;};
     const auto mode=[&](const auto& s,const auto& m){return m.open ? 3 : s.rfind("HELP",0)==0 ? 2 : layout(s)==2 && s.find("OPEN")==std::string::npos ? 1 : 0;};
-    const auto controls=[](const auto& s){return std::make_pair(s.find("OPEN")!=std::string::npos,s.find("MOUNT")!=std::string::npos);};
+    const auto controls=[](const auto& s){return std::make_tuple(s.find("OPEN")!=std::string::npos,s.find("MOUNT")!=std::string::npos,s.find("|DISC")!=std::string::npos);};
     std::vector<HudRectFix35> dirty;unsigned regions=0;
     if(!image_.valid()){
         image_.width=1280;image_.height=512;image_.pitch=5120;image_.rgba.resize(std::size_t(image_.pitch)*512);

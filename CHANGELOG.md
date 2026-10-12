@@ -1,5 +1,16 @@
 # Histórico de mudanças
 
+## 1.5.7 — 2026-10-12 (FIX47)
+
+- Adiciona o jogo PS3 disponível no leitor à biblioteca 3D, com nome e ID lidos do PARAM.SFO.
+- Usa as artes da ID em PS3COVERS na capa, interior e disco; conserva a caixa articulada e os três layouts.
+- Detecta inserção, troca e retirada em uma tarefa separada e aplica as mudanças entre quadros, preservando índices e texturas do HD/USB.
+- Separa favoritos, nomes e estilos por ID do disco, mantendo o caminho real do leitor para a consulta dos arquivos.
+- X confirma a ID e volta ao XMB sem enviar montagem ao webMAN; indica “Ir ao XMB” na ajuda e nos comandos do disco.
+- Consulta o tipo de mídia, emulação e redirecionamentos Cobra/HEN sem montar, desmontar ou ejetar. Consultas indisponíveis usam a entrada genérica Disco.
+- Mantém o cache compartilhado e a imagem de início durante a preparação das artes. PS1 permanece em hiato.
+- Versão 1.5.7, APP_VER/VERSION 01.17 e PGORBT301 preservado. Teste físico desta versão pendente.
+
 ## 1.5.6 — 2026-10-11 (FIX46)
 
 - Mantém a imagem “Carregando sua biblioteca...” visível até concluir as artes da janela inicial de até 15 jogos.
