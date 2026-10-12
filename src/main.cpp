@@ -333,7 +333,11 @@ int main(){
 #ifdef PS3_GAME_ORBIT_FIX36
         RuntimeDiag::log(
 #ifdef PS3_GAME_ORBIT_FIX45
+#ifdef PS3_GAME_ORBIT_FIX46
+            "CONTROLS 1.5.6: TRIANGLE game; START homebrew; creator=SpeedVash; shared cache=15/15/15; retain startup image until artwork is ready"
+#else
             "CONTROLS 1.5.5: TRIANGLE game; START homebrew; creator=SpeedVash; shared cache=15/15/15; startup preload; asynchronous navigation artwork"
+#endif
 #else
             "CONTROLS 1.4.2: TRIANGLE game; START homebrew; creator=SpeedVash; Classic=7/7/7 List=5/5/5 Spine=15/15/15; USB/PS3COVERS; normalized partial ID/ISO import"
 #endif
@@ -351,8 +355,10 @@ int main(){
         if(!renderer.start_streamed_artwork())result=33;
         const s64 preload_start=sysGetSystemTime();
         const auto preload_state=browser.render_state();
+#ifndef PS3_GAME_ORBIT_FIX46
         CoverflowState preload_display;preload_display.layout=preload_state.layout;
         preload_display.menu.animated_background=preload_state.menu.animated_background;
+#endif
         while(result==0){
             lifecycle.pump();
             if(lifecycle.exit_requested() || controller.poll().circle.pressed){user_exit=true;break;}
@@ -360,6 +366,13 @@ int main(){
             if(!renderer.service_streamed_artwork(preload_state)){result=33;break;}
             const auto progress=renderer.streamed_preload_progress(preload_state);
             if(progress.second==0)break;
+#ifdef PS3_GAME_ORBIT_FIX46
+            // Startup remains in display buffer 1. Calibration only drew into
+            // buffer 0; service and acknowledge uploads without clearing or
+            // flipping either framebuffer. The first library draw replaces it.
+            if(!stream.begin_frame()){result=29;break;}
+            if(!stream.complete_frame()){result=30;break;}
+#else
             auto lines=browser.hud_lines("");
             lines[1]="Preparando sua biblioteca";
             lines[2]=std::to_string(progress.first)+" / "+std::to_string(progress.second)+" imagens preparadas";
@@ -370,10 +383,21 @@ int main(){
             renderer.set_diagnostic_view("PRELOAD",V14Surface::CoverFront);
             if(!renderer.render(preload_display,mesh,1,browser.scale())){result=27;break;}
             if(!stream.complete_frame()){result=30;break;}
+#endif
             if(progress.first==progress.second)break;
+#ifdef PS3_GAME_ORBIT_FIX46
+            // Let the lower-priority artwork worker run while the splash stays
+            // on screen. Readiness, rather than a timer, ends this preparation.
+            usleep(1000);
+#endif
         }
         const auto preload_progress=renderer.streamed_preload_progress(preload_state);
-        RuntimeDiag::log("ARTWORK 1.5.5 preload: done=%u total=%u elapsed_ms=%.3f cancelled=%u",
+        RuntimeDiag::log(
+#ifdef PS3_GAME_ORBIT_FIX46
+            "ARTWORK 1.5.6 preload: splash_retained=1 done=%u total=%u elapsed_ms=%.3f cancelled=%u",
+#else
+            "ARTWORK 1.5.5 preload: done=%u total=%u elapsed_ms=%.3f cancelled=%u",
+#endif
             unsigned(preload_progress.first),unsigned(preload_progress.second),
             double(sysGetSystemTime()-preload_start)/1000.0,unsigned(user_exit));
         previous=sysGetSystemTime();

@@ -2,15 +2,15 @@
 
 ![PS3 Game Orbit](pkgfiles/ICON0.PNG)
 
-**v1.5.5 — criado por SpeedVash.** Biblioteca de jogos PS3 com capas completas, caixas articuladas, layouts Clássico, Spine e Lista, favoritos e montagem pelo webMAN MOD.
+**v1.5.6 — criado por SpeedVash.** Biblioteca de jogos PS3 com capas completas, caixas articuladas, layouts Clássico, Spine e Lista, favoritos e montagem pelo webMAN MOD.
 
 ## Pré-carga e navegação
 
-Ao iniciar, o app prepara capas, interiores e discos de até 15 jogos próximos ao selecionado. A tela mostra o progresso antes de abrir a biblioteca. Bibliotecas menores usam apenas os jogos disponíveis no filtro, sem duplicações; imagens ausentes ou inválidas usam a aparência neutra.
+Ao iniciar, o app prepara capas, interiores e discos de até 15 jogos próximos ao selecionado. A imagem “Carregando sua biblioteca...” permanece na tela até terminar essa preparação. A biblioteca aparece ao concluir, evitando a espera mostrando somente o fundo animado. Bibliotecas menores usam apenas os jogos disponíveis no filtro, sem duplicações; imagens ausentes ou inválidas usam a aparência neutra.
 
 Clássico, Spine e Lista compartilham o mesmo cache de até 15 capas, 15 interiores e 15 discos. Trocar o layout mantém as imagens comuns. Durante a navegação, uma tarefa separada lê e decodifica os próximos jogos, priorizando as capas visíveis e a direção em que você está navegando. O envio de uma nova textura à GPU é dividido em partes de até 256 KiB por quadro; ela só é mostrada depois de concluída.
 
-A geometria 3D e os shaders continuam preparados na inicialização e reutilizados pelos layouts. PS1 permanece em hiato. Veja [validação](docs/VALIDACAO_1.5.5.md) e [teste no PS3](docs/TESTE_1.5.5.md).
+A geometria 3D e os shaders continuam preparados na inicialização e reutilizados pelos layouts. PS1 permanece em hiato. Veja [validação](docs/VALIDACAO_1.5.6.md) e [teste no PS3](docs/TESTE_1.5.6.md).
 
 ## Gerenciador corrigido
 
@@ -25,14 +25,14 @@ A geometria própria introduzida na v1.5.3 conserva a tela inteira do gerenciado
 - **Listagem mais legível:** nomes maiores, borda para o item em foco, caixas de seleção azuis e indicação verde de cópia concluída. SELECT mostra o caminho completo.
 - **Progresso e resumo:** arquivo atual, lote inteiro, arquivos copiados, ignorados e erros. START pede confirmação antes de cancelar uma operação em andamento.
 - Mantidos estilos de caixa por jogo, A-Z/Z-A/Custom, configurações, webMAN, artes via USB, caches e pausa temporária do fundo.
-- Versão **1.5.5** no início, cabeçalho e menu, com crédito a **SpeedVash**. Identidade PGORBT301 preservada.
+- Versão **1.5.6** no início, cabeçalho e menu, com crédito a **SpeedVash**. Identidade PGORBT301 preservada.
 
-Compilação nativa e testes no computador concluídos. **Teste desta versão no PS3 pendente.** A leitura e a decodificação das artes durante a navegação agora ocorrem fora da rotina de desenho; os testes no computador não medem a fluidez real no console. A iluminação usa os shaders aprovados.
+O usuário confirmou que a v1.5.5 eliminou a pequena pausa ao mudar de layout. A v1.5.6 corrige a apresentação durante a espera inicial. Compilação nativa e testes no computador concluídos; **a nova transição no PS3 aguarda confirmação**. A iluminação usa os shaders aprovados.
 
 ## Instalação
 
-1. Copie `PS3_GAME_ORBIT_v1.5.5.gnpdrm.pkg` para a raiz de um pendrive FAT32.
-2. Instale pelo gerenciador de pacotes do XMB, por cima da versão anterior. Identidade **PGORBT301**, `APP_VER 01.15`; preserve os arquivos de configuração existentes.
+1. Copie `PS3_GAME_ORBIT_v1.5.6.gnpdrm.pkg` para a raiz de um pendrive FAT32.
+2. Instale pelo gerenciador de pacotes do XMB, por cima da versão anterior. Identidade **PGORBT301**, `APP_VER 01.16`; preserve os arquivos de configuração existentes.
 3. No Super Slim, habilite HEN antes de abrir. Para montar jogos, mantenha webMAN MOD ativo.
 4. X monta o jogo com caixa aberta ou fechada. Após a confirmação, o app volta ao XMB; inicie pelo ícone do disco.
 
@@ -146,7 +146,7 @@ A capa completa segue **verso · lombada · frente**. O inside segue **interior 
 
 Essa é a janela de preparação, independente da quantidade de caixas desenhadas em cada layout. Ela segue o filtro ativo e circula nas extremidades da lista. O jogo selecionado e as caixas que estão terminando uma transição têm prioridade; vizinhos que não cabem junto às caixas visíveis aguardam a liberação de espaço. Cada tipo de textura conserva o teto de 64 MiB e o limite de 1024×1024 pixels por imagem.
 
-A preparação inicial termina quando as artes existentes dessa janela estão prontas ou tiveram falha de leitura. A fila mantém no máximo duas imagens prontas na RAM e uma em transferência, e não carrega a biblioteca inteira. Ao navegar, ela muda de prioridade sem esperar o término da leitura atual. Resultados de um catálogo antigo ou de uma recarga de artes são descartados. Uma imagem ainda pendente usa a textura neutra; não é marcada como inválida apenas por estar na fila.
+Durante a preparação inicial, o fundo da biblioteca aguarda e a imagem de carregamento permanece visível. A preparação termina quando as artes existentes dessa janela estão prontas ou tiveram falha de leitura. A fila mantém no máximo duas imagens prontas na RAM e uma em transferência, e não carrega a biblioteca inteira. Ao navegar, ela muda de prioridade sem esperar o término da leitura atual. Resultados de um catálogo antigo ou de uma recarga de artes são descartados. Uma imagem ainda pendente usa a textura neutra; não é marcada como inválida apenas por estar na fila.
 
 Os três layouts preservam as mesmas texturas. O gerenciador pausa novos pedidos e conserva o cache ao voltar à biblioteca. Os logs registram o tempo da pré-carga, leitura, decodificação, envio à GPU e interface. A gravação de configurações e as operações explícitas de importar, copiar ou atualizar arquivos continuam tendo seu próprio custo de armazenamento. A validação da redução das pausas depende do teste físico no PS3.
 

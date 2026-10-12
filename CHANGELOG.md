@@ -1,5 +1,14 @@
 # Histórico de mudanças
 
+## 1.5.6 — 2026-10-11 (FIX46)
+
+- Mantém a imagem “Carregando sua biblioteca...” visível até concluir as artes da janela inicial de até 15 jogos.
+- A pré-carga reconhece os ciclos de upload sem limpar ou trocar os framebuffers; o primeiro quadro da biblioteca substitui a imagem inicial.
+- Cede CPU ao worker durante a espera, com saída por Círculo e conclusão definida pela preparação real, sem atraso fixo.
+- Mantém o cache comum e a navegação em segundo plano da v1.5.5, cuja troca de layouts foi confirmada pelo usuário sem a pequena pausa anterior.
+- Validação do bloco real do main em 33 cenários, incluindo espera longa, catálogo vazio, falta de artes, cancelamento e falhas.
+- Versão 1.5.6 e APP_VER/VERSION 01.16, PGORBT301 e configurações mantidos. A correção visual do início aguarda teste físico. PS1 permanece em hiato.
+
 ## 1.5.5 — 2026-10-11 (FIX45)
 
 - Prepara as artes de uma janela inicial de até 15 jogos, com progresso antes de abrir a biblioteca.
