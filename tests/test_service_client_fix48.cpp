@@ -53,8 +53,10 @@ int main(int argc,char** argv){
     assert(ready && snapshot.status.config.manual_percent==57);
     std::uint64_t revision=0;for(unsigned i=0;i<25;++i){c.manual_percent=35+i;revision=client.configure(c);}
     bool applied=false;for(unsigned i=0;i<1000;++i){if(client.take(snapshot) && snapshot.revision>=revision && snapshot.status.config.manual_percent==59){applied=true;break;}delay(2);}assert(applied);
-    client.stop();stop.store(true);server.join();
+    c.manual_percent=70;client.configure(c);client.stop();
+    Orbit48FanConfig final_config{};assert(OrbitService48::load_settings(ORBIT48_SETTINGS_PATH,final_config));assert(final_config.manual_percent==70);
+    stop.store(true);server.join();
     assert(!OrbitService48::exchange(false,ORBIT48_STATUS,{},999,error,out,{},75) && error==ORBIT48_BUSY);
     puts("PASS: native split ISO bytes/metadata, missing part rejection, ID mismatch and configuration backup recovery");
-    puts("PASS: actual mailbox client ignores stale/malformed replies; cancel token, bounded payload, timeout, 25 rapid config revisions and worker shutdown");
+    puts("PASS: actual mailbox client ignores stale/malformed replies; cancel token, bounded payload, timeout, 25 rapid config revisions and last setting saved on immediate shutdown");
 }

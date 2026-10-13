@@ -250,12 +250,15 @@ struct OrbitServiceClientFix48::Impl {
         if(!OrbitService48::bootstrap(message)){s.message=message;publish(std::move(s));return;}
         s.ready=true;auto configured=OrbitService48::defaults();OrbitService48::load_settings(ORBIT48_SETTINGS_PATH,configured);
         {lock(mutex);if(!pending && revision==0){requested=configured;pending=true;}unlock(mutex);}
-        while(!stop.load(std::memory_order_acquire)){
+        while(true){
             Orbit48FanConfig c{};bool apply=false;std::uint64_t request_revision=0;
             lock(mutex);apply=pending;if(apply){c=requested;pending=false;request_revision=revision;}unlock(mutex);
+            // Finish the last requested setting before the interface leaves.
+            // Status polling can stop immediately; configuration needs its ACK.
+            if(!apply && stop.load(std::memory_order_acquire))break;
             std::uint32_t code=0;Bytes response;
             const bool ok=OrbitService48::exchange(false,apply?ORBIT48_CONFIGURE:ORBIT48_STATUS,
-                apply?config_bytes(c):Bytes{},clock_us(),code,response,[&]{return stop.load(std::memory_order_acquire);});
+                apply?config_bytes(c):Bytes{},clock_us(),code,response,[&]{return !apply && stop.load(std::memory_order_acquire);});
             if(ok && status(response,s.status)){
                 s.message=OrbitService48::error_message(code);
                 if(!code && apply && !OrbitService48::save_settings(ORBIT48_SETTINGS_PATH,c))s.message="Ajuste aplicado; configuração não pôde ser salva.";
