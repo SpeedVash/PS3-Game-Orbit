@@ -2,6 +2,9 @@
 #include <string>
 #include <vector>
 #include "library_scanner.h"
+#ifdef PS3_GAME_ORBIT_FIX48
+#include "orbit_service_client_fix48.h"
+#endif
 #ifdef PS3_GAME_ORBIT_FIX47
 #include "physical_disc_monitor_fix47.h"
 #endif
@@ -173,6 +176,14 @@ int main(){
     if(result==0 && !user_exit){
         // The last calibration frame is acknowledged before any disk reads,
         // texture releases/uploads or HUD geometry changes.
+#ifdef PS3_GAME_ORBIT_FIX48
+        OrbitServiceClientFix48 orbit_service;
+        OrbitService48::Snapshot service_snapshot;std::uint64_t fan_revision=0;
+        auto initial_fan=OrbitService48::defaults();
+        OrbitService48::load_settings(ORBIT48_SETTINGS_PATH,initial_fan);
+        browser.restore_fan_config(initial_fan);
+        if(!orbit_service.start())RuntimeDiag::log("SERVICE 1.6: client thread unavailable");
+#endif
 #ifdef PS3_GAME_ORBIT_FIX32
         renderer.clear_cover_textures();cache.clear();
 #endif
@@ -464,6 +475,14 @@ int main(){
             const auto command=browser.update(polled_input,frame_dt);previous=now;
 #endif
             if(command.request_exit){user_exit=true;break;}
+#ifdef PS3_GAME_ORBIT_FIX48
+            if(command.configure_fan)fan_revision=orbit_service.configure(browser.state().menu.fan_config);
+            if(orbit_service.take(service_snapshot) && browser.state().menu.open && browser.state().menu.fan_menu){
+                if(service_snapshot.ready && service_snapshot.revision>=fan_revision)
+                    browser.fan_snapshot(service_snapshot.status,service_snapshot.message);
+                else if(!service_snapshot.ready)browser.menu_status(service_snapshot.message);
+            }
+#endif
 #ifdef PS3_SP_LOADER_FIX29
             if(command.mount_selected){
                 if(const auto* target=current_game(browser.state())){

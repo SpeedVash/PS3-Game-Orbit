@@ -56,3 +56,9 @@ jobs:
           bash tests/run_physical_disc_fix47.sh
           FIX47_PUBLIC_ONLY=1 bash tests/run_fix47_tests.sh
           python3 scripts/check-library-loop-fix47.py
+          bash tests/run_service_core_fix48.sh
+          bash tests/run_ntfs_volume_fix48.sh
+          bash tests/run_service_dispatch_fix48.sh
+          bash tests/run_service_client_fix48.sh
+          FIX48_PUBLIC_ONLY=1 bash tests/run_fix48_artwork.sh
+          python3 scripts/check-library-loop-fix48.py

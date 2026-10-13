@@ -384,9 +384,25 @@ void paint_hud_fix35(DecodedImageRGBA& p,const std::array<std::string,6>& s,cons
 #ifdef PS3_GAME_ORBIT_FIX40
             menu->reorder?"Alterar posição":
 #endif
-            menu->homebrew?"Opções do PS3 Game Orbit":"Opções do jogo",394,200,28,White,492);
+            menu->homebrew?
+#ifdef PS3_GAME_ORBIT_FIX48
+            (menu->fan_menu?"Controle da ventoinha":"Opções do PS3 Game Orbit"):
+#else
+            "Opções do PS3 Game Orbit":
+#endif
+            "Opções do jogo",394,200,28,White,492);
 #ifdef PS3_GAME_ORBIT_FIX39
-        text(p,menu->homebrew?std::string("Versão ")+ProjectIdentity::Version+" · SpeedVash":s[1],394,242,20,Muted,492);
+        text(p,menu->homebrew?
+#ifdef PS3_GAME_ORBIT_FIX48
+            (menu->fan_menu?menu->fan_telemetry:
+#endif
+            std::string("Versão ")+ProjectIdentity::Version+" · SpeedVash"
+#ifdef PS3_GAME_ORBIT_FIX48
+            ):
+#else
+            :
+#endif
+            s[1],394,242,20,Muted,492);
 #else
         text(p,menu->homebrew?"Versão 1.4 · SpeedVash":s[1],394,242,20,Muted,492);
 #endif
@@ -410,15 +426,39 @@ void paint_hud_fix35(DecodedImageRGBA& p,const std::array<std::string,6>& s,cons
             "Gerenciador de arquivos do HD"
 #endif
 #endif
+#ifdef PS3_GAME_ORBIT_FIX48
+            ,"Controle da ventoinha"
+#endif
         };
 #ifdef PS3_GAME_ORBIT_FIX41
         const std::string case_label=std::string("Tipo de caixa: ")+CaseStyleFix41::name(static_cast<GameCaseStyleFix41>(menu->case_style));
         game_options[4]=case_label.c_str();
 #endif
         const auto* options=menu->homebrew?home_options:game_options;
+#ifdef PS3_GAME_ORBIT_FIX48
+        const auto& c=menu->fan_config;
+        const std::array<std::string,6> fan_labels{{
+            std::string("Modo: ")+(c.mode==ORBIT48_FAN_AUTO?"Automático":c.mode==ORBIT48_FAN_MANUAL?"Manual":"Padrão do PS3 (SYSCON)"),
+            "Temperatura alvo: "+std::to_string(c.target_c)+"°C",
+            "Velocidade manual: "+std::to_string(c.manual_percent)+"%",
+            "Mínimo automático: "+std::to_string(c.minimum_percent)+"%",
+            "Máximo automático: "+std::to_string(c.maximum_percent)+"%","Voltar"}};
+        const char* fan_options[6];for(unsigned i=0;i<6;++i)fan_options[i]=fan_labels[i].c_str();
+        if(menu->fan_menu)options=fan_options;
+#endif
 #ifdef PS3_GAME_ORBIT_FIX40
 #ifdef PS3_GAME_ORBIT_FIX41
-        const int Count=menu->reorder?0:menu->homebrew?6:menu->sort_mode==2?6:5,Spacing=27;
+        const int Count=menu->reorder?0:menu->homebrew?
+#ifdef PS3_GAME_ORBIT_FIX48
+            (menu->fan_menu?6:7):
+#else
+            6:
+#endif
+            menu->sort_mode==2?6:5,Spacing=
+#ifdef PS3_GAME_ORBIT_FIX48
+            menu->homebrew && !menu->fan_menu?24:
+#endif
+            27;
 #else
         const int Count=menu->reorder?0:menu->homebrew?6:menu->sort_mode==2?5:4,Spacing=menu->homebrew?27:31;
 #endif
@@ -445,7 +485,19 @@ void paint_hud_fix35(DecodedImageRGBA& p,const std::array<std::string,6>& s,cons
             if(i==menu->selected){rect(p,382,y-3,516,Spacing-2,{{106,141,152,80}});rect(p,382,y-3,3,Spacing-2,Blue);}
             text(p,options[i],402,y,20,i==menu->selected ? White : Muted,474);
         }
-        text(p,menu->status.empty() ? "X selecionar   Círculo voltar" : menu->status,394,448,18,Muted,492);
+        text(p,menu->status.empty() ?
+#ifdef PS3_GAME_ORBIT_FIX48
+            (menu->fan_menu?"← / → ajustar · L1 / R1: 5 · Círculo voltar":"X selecionar   Círculo voltar"):
+#else
+            "X selecionar   Círculo voltar":
+#endif
+            menu->status,394,
+#ifdef PS3_GAME_ORBIT_FIX48
+            466,
+#else
+            448,
+#endif
+            18,Muted,492);
     }
     }
 }

@@ -1,5 +1,8 @@
 #pragma once
 #include <string>
+#ifdef PS3_GAME_ORBIT_FIX48
+#include "orbit_service_protocol_fix48.h"
+#endif
 
 enum class GameMenuActionFix35 { None, Rename, ReloadCovers, ImportUsb };
 struct GameMenuStateFix35 {
@@ -18,6 +21,11 @@ struct GameMenuStateFix35 {
     int case_style=0;
 #endif
     std::string status;
+#ifdef PS3_GAME_ORBIT_FIX48
+    bool fan_menu=false;
+    Orbit48FanConfig fan_config{ORBIT48_FAN_AUTO,68,35,85,40};
+    std::string fan_telemetry;
+#endif
     bool operator==(const GameMenuStateFix35& o) const {
         return open==o.open && busy==o.busy && selected==o.selected && status==o.status
 #ifdef PS3_GAME_ORBIT_FIX36
@@ -31,6 +39,13 @@ struct GameMenuStateFix35 {
 #endif
 #ifdef PS3_GAME_ORBIT_FIX41
             && case_style==o.case_style
+#endif
+#ifdef PS3_GAME_ORBIT_FIX48
+            && fan_menu==o.fan_menu && fan_telemetry==o.fan_telemetry &&
+            fan_config.mode==o.fan_config.mode && fan_config.target_c==o.fan_config.target_c &&
+            fan_config.minimum_percent==o.fan_config.minimum_percent &&
+            fan_config.maximum_percent==o.fan_config.maximum_percent &&
+            fan_config.manual_percent==o.fan_config.manual_percent
 #endif
         ;
     }

@@ -72,3 +72,7 @@ O gerenciador de dois painéis, a seleção múltipla, o tratamento dos lotes, o
 ## Modelo PS1 de prévia
 
 Compact disc and case, por effe (Blend Swap), licença CC0 fornecida no anexo. Caixa adaptada para articulação; disco regular e arte demonstrativa preparados para PS3 Game Orbit. Licença em assets/models/ps1/BLENDSWAP_LICENSE.txt. O modelo de PS3 aprovado conserva suas condições de distribuição.
+
+## Serviço próprio da v1.6
+
+Implementação do serviço residente, protocolo local, política de ventoinha, parser NTFS e leitor de setores do Orbit. Interfaces LV2/Cobra/PS3MAPI verificadas nos headers públicos do PSL1GHT e webMAN MOD; não inclui a implementação de webMAN, multiMAN, rawseciso ou NTFS-3G. O NTFS-3G foi usado somente para criar o volume sintético de teste. A assinatura SELF usa a ferramenta geohot da stack PSL1GHT.

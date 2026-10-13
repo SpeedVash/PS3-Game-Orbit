@@ -1,5 +1,18 @@
 # Histórico de mudanças
 
+## 1.6 — 2026-10-13 (FIX48)
+
+- Substitui a montagem HTTP por um serviço próprio residente, incluído no PKG, que usa HEN/Cobra diretamente.
+- Monta ISOs PS3 no HD interno e USB FAT32, incluindo `.iso.0`, `.iso.1`...; verifica sequência, tamanho e ID antes de substituir a montagem.
+- Monta jogos em pasta em GAMES/GAMEZ com redirecionamentos do sistema e um disco virtual mínimo criado pelo Orbit.
+- Acrescenta catálogo e leitura de ISOs em USB NTFS, com MBR, EBR e GPT; interpreta MFT, índices, atributos e mapas de setores em 64 bits, sem gravar no volume.
+- Mantém o leitor NTFS no VSH para servir a ISO após fechar a interface. Valida tamanho, setor e número de série do USB ao montar.
+- Adiciona START → Controle da ventoinha, modos Automático/Manual/SYSCON, temperaturas CPU/RSX, ajustes salvos e proteção térmica.
+- Verifica a política aplicada, restaura instruções temporárias e suspende o controle quando há outro controlador ou durante a transição de processo no HEN.
+- Carrega o plugin em slot livre sem editar boot_plugins.txt nem descarregar plugins de terceiros.
+- Mantém o disco original, cache comum de artes, imagem de carregamento, gerenciador e modelo/shaders aprovados. PS1 permanece em hiato.
+- Versão 1.6, APP_VER/VERSION 01.60 e identidade PGORBT301. Compilação e testes no computador; teste físico pendente.
+
 ## 1.5.7 — 2026-10-12 (FIX47)
 
 - Adiciona o jogo PS3 disponível no leitor à biblioteca 3D, com nome e ID lidos do PARAM.SFO.

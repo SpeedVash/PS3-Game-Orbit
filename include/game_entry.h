@@ -1,5 +1,9 @@
 #pragma once
 #include <string>
+#ifdef PS3_GAME_ORBIT_FIX48
+#include <cstdint>
+enum class GameStorageFix48 { Native, NTFS };
+#endif
 #ifdef PS3_GAME_ORBIT_FIX41
 #include "case_style_fix41.h"
 #endif
@@ -32,5 +36,9 @@ struct GameEntry {
     const std::string& identity_path() const { return library_key.empty() ? path : library_key; }
 #ifdef PS3_GAME_ORBIT_FIX41
     GameCaseStyleFix41 case_style=GameCaseStyleFix41::Clear;
+#endif
+#ifdef PS3_GAME_ORBIT_FIX48
+    GameStorageFix48 storage=GameStorageFix48::Native;
+    std::uint64_t ntfs_device=0,ntfs_partition=0,ntfs_serial=0;
 #endif
 };

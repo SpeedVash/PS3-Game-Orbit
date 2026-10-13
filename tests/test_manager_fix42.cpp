@@ -5,11 +5,20 @@
 #include <cstdlib>
 #include <cstdio>
 #include <cerrno>
+#include <sys/statvfs.h>
 #include "file_manager_fix42.h"
 namespace fs=std::filesystem;
 using Manager=FileManagerFix42;
 using Mode=Manager::Mode;
 static bool fail_commit=false;
+static bool large_capacity_fixture=false;
+extern "C" int __real_statvfs(const char*,struct statvfs*);
+extern "C" int __wrap_statvfs(const char* path,struct statvfs* info){
+    const int result=__real_statvfs(path,info);
+    if(!result && large_capacity_fixture && info->f_frsize)
+        info->f_bavail=std::max<unsigned long>(info->f_bavail,(6ULL*1024*1024*1024)/info->f_frsize);
+    return result;
+}
 extern "C" int __real_rename(const char*,const char*);
 extern "C" int __wrap_rename(const char* from,const char* to){
     if(fail_commit&&std::string(from).find(".orbit152_tmp_")!=std::string::npos){fail_commit=false;errno=EIO;return -1;}
@@ -55,7 +64,12 @@ static void clean(const fs::path& p){for(const auto& e:fs::recursive_directory_i
     assert(e.path().filename().string().rfind(".orbit152_",0)!=0);}
 struct Fixture {
     fs::path root,hd,usb;Manager manager;
-    static fs::path temporary(){char p[]="/tmp/orbit152-manager-XXXXXX";const char* r=mkdtemp(p);assert(r);return r;}
+    static fs::path temporary(){
+        const char* temporary_root=std::getenv("TMPDIR");
+        const auto name=std::string(temporary_root?temporary_root:"/tmp")+"/orbit152-manager-XXXXXX";
+        std::vector<char> storage(name.begin(),name.end());storage.push_back(0);
+        const char* r=mkdtemp(storage.data());assert(r);return r;
+    }
     Fixture():root(temporary()),hd(root/"dev_hdd0"),usb(root/"dev_usb000"),manager(std::vector<std::string>{hd.string(),usb.string()}){
         fs::create_directories(hd);fs::create_directories(usb);
     }
@@ -141,7 +155,9 @@ int main(){
     }
     {
         Fixture t;write(t.usb/"large.bin","");const auto size=5ULL*1024*1024*1024+123;fs::resize_file(t.usb/"large.bin",size);t.open();auto& m=t.manager;
+        large_capacity_fixture=true;
         hit(m,&InputFrame::r1);select(m,"large.bin");begin(m);assert(m.view().batch_total==size);m.step();m.step();assert(m.view().total==size&&m.view().done==256*1024);
+        large_capacity_fixture=false;
         hit(m,&InputFrame::circle);assert(!fs::exists(t.hd/"large.bin"));clean(t.root);
         write(t.hd/"large.bin","");fs::resize_file(t.hd/"large.bin",size);hit(m,&InputFrame::cross);hit(m,&InputFrame::l1);refresh(m);select(m,"large.bin");prepare(m);
         assert(m.view().mode==Mode::Summary&&m.view().status.find("4 GB")!=std::string::npos);clean(t.root);

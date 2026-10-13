@@ -4,14 +4,14 @@ ifeq ($(strip $(PSL1GHT)),)
 $(error "Please set PSL1GHT. Example: export PSL1GHT=$$PS3DEV")
 endif
 
-# Version 1.5.7 adds the current PS3 disc to the shared 3D library.
-TARGET := ps3_game_orbit_fix47
+# Version 1.6 adds own PS3 mounting, NTFS reading and resident fan control.
+TARGET := ps3_game_orbit_fix48
 TITLE := PS3 Game Orbit
 APPID := PGORBT301
 CONTENTID := UP0001-$(APPID)_00-0000000000000000
 ICON0 := pkgfiles/ICON0.PNG
 PKGFILES := pkgfiles
-SFOXML := assets/PARAM_1_5_7.xml
+SFOXML := assets/PARAM_1_6.xml
 
 include $(PSL1GHT)/ppu_rules
 
@@ -30,7 +30,7 @@ SELF_TARGET := $(TARGET).self
 PKG_TARGET := $(TARGET).pkg
 
 CXXFLAGS += -std=gnu++17 -O2 -Wall -Wextra -Werror -MMD -MP -mcpu=cell -D__CELLOS_LV2__ -D__PSL1GHT__ -DPS3_SP_LOADER_FIX28=1 -DPS3_SP_LOADER_FIX29=1 -DPS3_GAME_ORBIT_FIX30=1 \
-            -DPS3_GAME_ORBIT_FIX31=1 -DPS3_GAME_ORBIT_FIX32=1 -DPS3_GAME_ORBIT_FIX33=1 -DPS3_GAME_ORBIT_FIX34=1 -DPS3_GAME_ORBIT_FIX35=1 -DPS3_GAME_ORBIT_FIX36=1 -DPS3_GAME_ORBIT_FIX37=1 -DPS3_GAME_ORBIT_FIX38=1 -DPS3_GAME_ORBIT_FIX39=1 -DPS3_GAME_ORBIT_FIX40=1 -DPS3_GAME_ORBIT_FIX41=1 -DPS3_GAME_ORBIT_FIX42=1 -DPS3_GAME_ORBIT_FIX43=1 -DPS3_GAME_ORBIT_FIX44=1 -DPS3_GAME_ORBIT_FIX45=1 -DPS3_GAME_ORBIT_FIX46=1 -DPS3_GAME_ORBIT_FIX47=1 $(LIBPSL1GHT_INC) -I$(INCLUDES)
+            -DPS3_GAME_ORBIT_FIX31=1 -DPS3_GAME_ORBIT_FIX32=1 -DPS3_GAME_ORBIT_FIX33=1 -DPS3_GAME_ORBIT_FIX34=1 -DPS3_GAME_ORBIT_FIX35=1 -DPS3_GAME_ORBIT_FIX36=1 -DPS3_GAME_ORBIT_FIX37=1 -DPS3_GAME_ORBIT_FIX38=1 -DPS3_GAME_ORBIT_FIX39=1 -DPS3_GAME_ORBIT_FIX40=1 -DPS3_GAME_ORBIT_FIX41=1 -DPS3_GAME_ORBIT_FIX42=1 -DPS3_GAME_ORBIT_FIX43=1 -DPS3_GAME_ORBIT_FIX44=1 -DPS3_GAME_ORBIT_FIX45=1 -DPS3_GAME_ORBIT_FIX46=1 -DPS3_GAME_ORBIT_FIX47=1 -DPS3_GAME_ORBIT_FIX48=1 $(LIBPSL1GHT_INC) -I$(INCLUDES)
 LDFLAGS += $(MACHDEP) -Wl,-Map,$(TARGET).map
 LIBPATHS += $(LIBPSL1GHT_LIB)
 LIBS += -lrsx -lgcm_sys -lrt -lnet -lio -lsysutil -lsysmodule -lm -ljpgdec -lpngdec -lsysfs -llv2
@@ -40,6 +40,11 @@ CGCFLAGS += -Wcg,-strict
 all: $(SELF_TARGET)
 self: $(SELF_TARGET)
 pkg: $(PKG_TARGET)
+$(PKG_TARGET): $(PKGFILES)/USRDIR/orbit_service.sprx $(PKGFILES)/USRDIR/orbit_folder.iso
+$(PKGFILES)/USRDIR/orbit_service.sprx: $(wildcard plugin/*) include/orbit_service_protocol_fix48.h include/fan_policy_fix48.h include/raw_reader_fix48.h scripts/build-orbit-service-fix48.sh scripts/make-orbit-prx-fix48.py scripts/verify-orbit-prx-fix48.py
+	@./scripts/build-orbit-service-fix48.sh
+$(PKGFILES)/USRDIR/orbit_folder.iso: scripts/make-folder-iso-fix48.py
+	@python3 scripts/make-folder-iso-fix48.py $@
 preflight:
 	@./scripts/preflight_v13.sh
 api-audit:
@@ -67,6 +72,7 @@ clean:
 	rm -f $(SOURCES)/*.o $(SOURCES)/*.d $(SHADERS)/*.vpo.o $(SHADERS)/*.fpo.o v14_case_vpo.h v14_case_fpo.h
 	rm -f $(ELF_TARGET) $(SELF_TARGET) $(TARGET).fake.self $(PKG_TARGET) $(TARGET).gnpdrm.pkg $(TARGET).map
 	rm -rf build
+	rm -f $(PKGFILES)/USRDIR/orbit_service.sprx
 
 # Clean keeps the frozen shader blobs. clean-shaders is an explicit removal only.
 .PHONY: clean-shaders

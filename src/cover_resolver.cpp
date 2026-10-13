@@ -1,4 +1,7 @@
 #include "cover_resolver.h"
+#ifdef PS3_GAME_ORBIT_FIX48
+#include "iso_metadata_fix48.h"
+#endif
 #include <sys/stat.h>
 
 CoverResolver::CoverResolver(std::string global_dir) : global_dir_(std::move(global_dir)) {}
@@ -9,6 +12,9 @@ bool CoverResolver::file_exists(const std::string& path) {
 }
 
 std::string CoverResolver::iso_stem(const std::string& path) {
+#ifdef PS3_GAME_ORBIT_FIX48
+    return OrbitIso48::stem(path);
+#else
     size_t slash = path.find_last_of('/');
     std::string name = slash == std::string::npos ? path : path.substr(slash + 1);
     if (name.size() >= 4) {
@@ -17,6 +23,7 @@ std::string CoverResolver::iso_stem(const std::string& path) {
         if (ext == ".iso") name.resize(name.size()-4);
     }
     return name;
+#endif
 }
 
 CoverResult CoverResolver::resolve(const GameEntry& game) const {

@@ -1,11 +1,19 @@
 #pragma once
 #include "game_entry.h"
+#ifdef PS3_GAME_ORBIT_FIX48
+#include "orbit_service_client_fix48.h"
+#else
 #include "webman_mount_fix29.h"
+#endif
 
 class MountOperationFix29 {
 public:
     enum class State { Idle, WaitingResponse, WaitingDisc, Confirmed, Unverified, Failed };
+#ifdef PS3_GAME_ORBIT_FIX48
+    explicit MountOperationFix29(std::string host="127.0.0.1",int port=80){(void)host;(void)port;}
+#else
     explicit MountOperationFix29(std::string host="127.0.0.1",int port=80):client_(std::move(host),port){}
+#endif
     bool start(const GameEntry& game,std::uint64_t now_ms);
     void update(std::uint64_t now_ms,const std::string& mounted_title_id="");
     void cancel(){client_.cancel();if(busy()){state_=State::Failed;status_="Pedido encerrado";}}
@@ -15,9 +23,19 @@ public:
     const std::string& status() const {return status_;}
     const std::string& path() const {return path_;}
     State state() const {return state_;}
-    int http_status() const {return client_.http_status();}
+    int http_status() const {
+#ifdef PS3_GAME_ORBIT_FIX48
+        return 0;
+#else
+        return client_.http_status();
+#endif
+    }
 private:
+#ifdef PS3_GAME_ORBIT_FIX48
+    NativeMountFix48 client_;
+#else
     WebmanMountFix29 client_;
+#endif
     State state_=State::Idle;
     std::string expected_id_,path_,status_;
     std::uint64_t deadline_=0,exit_at_=0;

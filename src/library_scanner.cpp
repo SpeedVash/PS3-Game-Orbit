@@ -5,6 +5,10 @@
 #include <algorithm>
 #include <cctype>
 #include <cstdio>
+#ifdef PS3_GAME_ORBIT_FIX48
+#include "iso_metadata_fix48.h"
+#include "ntfs_catalog_fix48.h"
+#endif
 #ifdef PS3_GAME_ORBIT_FIX47
 #include "physical_disc_fix47.h"
 #endif
@@ -34,7 +38,11 @@ void LibraryScanner::scan_iso_dir(const std::string& path, GameSource source, st
     while (auto* e = readdir(d)) {
         if (e->d_name[0] == '.') continue;
         std::string name = e->d_name;
+#ifdef PS3_GAME_ORBIT_FIX48
+        if(!OrbitIso48::iso_name(name))continue;
+#else
         if (!ends_with_ci(name, ".iso")) continue;
+#endif
         const std::string full=path+"/"+name;
         struct stat st{};
         if(stat(full.c_str(),&st)!=0 || !S_ISREG(st.st_mode)) continue;
@@ -44,6 +52,14 @@ void LibraryScanner::scan_iso_dir(const std::string& path, GameSource source, st
         g.path = full;
         g.source = source;
         g.format = GameFormat::ISO;
+#ifdef PS3_GAME_ORBIT_FIX48
+        std::vector<std::string> parts;std::string error;
+        if(!OrbitIso48::native_parts(full,parts,error))continue;
+        const auto metadata=OrbitIso48::native_metadata(parts);
+        if(!metadata.title.empty())g.title=metadata.title;
+        else g.title=OrbitIso48::stem(name);
+        if(!metadata.id.empty())g.title_id=metadata.id;
+#endif
         out.push_back(std::move(g));
     }
     closedir(d);
@@ -90,6 +106,10 @@ std::vector<GameEntry> LibraryScanner::scan_ps3() {
         roots.push_back({root,GameSource::USB});
     }
     auto games=scan_locations(roots);
+#ifdef PS3_GAME_ORBIT_FIX48
+    OrbitNtfsCatalog48::scan(games);
+    std::sort(games.begin(),games.end(),[](const GameEntry& a,const GameEntry& b){return a.title<b.title;});
+#endif
 #ifdef PS3_GAME_ORBIT_FIX47
     // Append after the stable HD/USB catalog; only the visible order is sorted.
     const auto disc=read_disc_sample_fix47();

@@ -2,7 +2,23 @@
 
 ![PS3 Game Orbit](pkgfiles/ICON0.PNG)
 
-**v1.5.7 — criado por SpeedVash.** Biblioteca de jogos PS3 com capas completas, caixas articuladas, layouts Clássico, Spine e Lista, favoritos e montagem pelo webMAN MOD.
+**v1.6 — criado por SpeedVash.** Biblioteca de jogos PS3 com capas completas, caixas articuladas, layouts Clássico, Spine e Lista, favoritos, montagem própria de jogos PS3 e serviço residente com controle da ventoinha.
+
+## Montagem própria e serviço residente
+
+O PKG inclui `orbit_service.sprx`. O Orbit carrega esse plugin em um slot VSH livre quando HEN/Cobra está ativo; ele permanece em segundo plano ao voltar ao XMB e durante o jogo. Não é necessário abrir webMAN ou multiMAN para montar. HEN/Cobra continuam necessários, pois fornecem as funções do sistema usadas pelo serviço. Após reiniciar o PS3, habilite HEN e abra o Orbit novamente.
+
+| Armazenamento | Jogos PS3 suportados |
+| --- | --- |
+| HD interno | `PS3ISO/*.iso`, partes `.iso.0`, `.iso.1`... e pastas em `GAMES`/`GAMEZ` |
+| USB FAT32 | ISOs divididas em sequência e jogos em pasta com arquivos inteiros |
+| USB NTFS | ISOs inteiras ou divididas em `PS3ISO`, leitura direta, incluindo subpastas |
+
+NTFS é somente leitura para ISOs. O gerenciador de arquivos continua usando HD/USB FAT32. Pastas em NTFS, exFAT, arquivos de pasta fragmentados em `.666xx` e ISOs NTFS comprimidas, esparsas ou cifradas não são suportados nesta versão.
+
+Abra **START → Controle da ventoinha** para escolher Automático, Manual ou Padrão do PS3. O padrão do Orbit é automático a 68°C, mínimo 35% e máximo 85%. CPU/RSX e velocidade aparecem nesse menu. Os ajustes são salvos e continuam aplicados pelo plugin depois que a interface fecha. Temperatura alta pode elevar a velocidade mesmo no modo manual. Se webMAN/sMAN ou outro controlador estiver ativo, o Orbit suspende seu controle, sem descarregar o plugin alheio.
+
+Veja [instalação e teste no PS3](docs/ORBIT_1.6.md) e [validação da versão](docs/VALIDACAO_1.6.md). **O teste em hardware da v1.6 ainda está pendente.** PS1 permanece em hiato.
 
 ## Pré-carga e navegação
 
@@ -24,8 +40,8 @@ A geometria própria introduzida na v1.5.3 conserva a tela inteira do gerenciado
 - **Cópia de pastas completas**, incluindo subpastas e pastas vazias. Pastas existentes são combinadas; arquivos existentes têm confirmação de substituição.
 - **Listagem mais legível:** nomes maiores, borda para o item em foco, caixas de seleção azuis e indicação verde de cópia concluída. SELECT mostra o caminho completo.
 - **Progresso e resumo:** arquivo atual, lote inteiro, arquivos copiados, ignorados e erros. START pede confirmação antes de cancelar uma operação em andamento.
-- Mantidos estilos de caixa por jogo, A-Z/Z-A/Custom, configurações, webMAN, artes via USB, caches e pausa temporária do fundo.
-- Versão **1.5.7** no início, cabeçalho e menu, com crédito a **SpeedVash**. Identidade PGORBT301 preservada.
+- Mantidos estilos de caixa por jogo, A-Z/Z-A/Custom, configurações, artes via USB, caches e pausa temporária do fundo.
+- Versão **1.6** no início, cabeçalho e menu, com crédito a **SpeedVash**. Identidade PGORBT301 preservada.
 
 O usuário confirmou que a v1.5.5 eliminou a pequena pausa ao mudar de layout. A v1.5.7 mantém a tela de carregamento durante a espera inicial e acrescenta o disco de PS3 à biblioteca 3D. Compilação nativa e testes no computador concluídos; **a detecção do disco no PS3 aguarda confirmação**. A iluminação usa os shaders aprovados.
 
@@ -39,9 +55,9 @@ Veja o [guia e teste do disco](docs/DISCO_PS3_1.5.7.md). A detecção real no PS
 
 ## Instalação
 
-1. Copie `PS3_GAME_ORBIT_v1.5.7.gnpdrm.pkg` para a raiz de um pendrive FAT32.
-2. Instale pelo gerenciador de pacotes do XMB, por cima da versão anterior. Identidade **PGORBT301**, `APP_VER 01.17`; preserve os arquivos de configuração existentes.
-3. No Super Slim, habilite HEN antes de abrir. Para montar jogos, mantenha webMAN MOD ativo.
+1. Copie `PS3_GAME_ORBIT_v1.6.gnpdrm.pkg` para a raiz de um pendrive FAT32.
+2. Instale pelo gerenciador de pacotes do XMB, por cima da versão anterior. Identidade **PGORBT301**, `APP_VER 01.60`; preserve os arquivos de configuração existentes.
+3. No Super Slim, habilite HEN antes de abrir. O plugin do Orbit incluído no PKG é carregado automaticamente para montar os jogos.
 4. X monta o jogo com caixa aberta ou fechada. Após a confirmação, o app volta ao XMB; inicie pelo ícone do disco.
 
 ## Menus e ordenação
@@ -51,7 +67,7 @@ Prévia do [gerenciador corrigido](assets/previews/GERENCIADOR_1_5_3.png), calcu
 | Botão | Opções |
 | --- | --- |
 | Triângulo — jogo | Alterar nome · Copiar capas do USB · Recarregar capas · Adicionar/Remover dos favoritos · Tipo de caixa · Alterar posição, disponível em Custom |
-| START — homebrew | Atualizar biblioteca · Fundo animado · Atualizar todas as capas via USB · Salvar último jogo visto · Listagem · Gerenciador de arquivos HD/USB |
+| START — homebrew | Atualizar biblioteca · Fundo animado · Atualizar todas as capas via USB · Salvar último jogo visto · Listagem · Gerenciador de arquivos HD/USB · Controle da ventoinha |
 
 Em START → Listagem, X alterna A até Z → Z até A → Custom. Em Custom, selecione o jogo e abra Triângulo → Alterar posição. O direcional escolhe a posição; L1/R1 saltam dez posições; X confirma e Círculo cancela. As posições mostradas são relativas ao filtro ativo. O jogo selecionado continua selecionado ao mudar a ordenação.
 
@@ -85,7 +101,7 @@ A cópia usa blocos de 256 KiB e um temporário por arquivo na pasta de destino.
 
 A preparação ocorre por etapas e pode ser cancelada sem gravar. Limites por lote: 4096 itens marcados, 16384 arquivos/pastas preparados, 8 MiB para seus caminhos e 1023 bytes por caminho. Se excedidos, copie subpastas em lotes menores. Copiar uma pasta para dentro dela mesma, itens não suportados ou conflitos entre arquivo e pasta é recusado antes da gravação.
 
-Tamanhos usam 64 bits. Um arquivo acima de 4 GB pode ser copiado para HD se houver espaço; USB FAT32 aceita no máximo 4 GiB menos 1 byte por arquivo. NTFS/exFAT não têm suporte adicional nesta entrega. Os bytes são copiados sem alteração; para redimensionar artes, use a atualização de capas da biblioteca.
+Tamanhos usam 64 bits. Um arquivo acima de 4 GB pode ser copiado para HD se houver espaço; USB FAT32 aceita no máximo 4 GiB menos 1 byte por arquivo. A montagem de ISOs NTFS usa um leitor próprio; o gerenciador de arquivos não oferece cópia para NTFS/exFAT. Os bytes são copiados sem alteração; para redimensionar artes, use a atualização de capas da biblioteca.
 
 Durante o gerenciador, fundo animado, caixas e pré-carga ficam pausados. Ao sair, o fundo retorna à preferência anterior e a biblioteca volta a aparecer. Veja o [guia do gerenciador](docs/GERENCIADOR_1.5.2.md).
 

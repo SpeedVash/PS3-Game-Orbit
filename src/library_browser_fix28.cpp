@@ -61,7 +61,13 @@ AppCommands LibraryBrowserFix28::update(const InputFrame& raw_input,float dt){
 #ifdef PS3_GAME_ORBIT_FIX40
     state_.menu.sort_mode=int(state_.sort_mode);
     #ifdef PS3_GAME_ORBIT_FIX41
-    const int MenuItems=state_.menu.homebrew?6:state_.sort_mode==GameSortFix40::Custom?6:5;
+    const int MenuItems=state_.menu.homebrew?
+#ifdef PS3_GAME_ORBIT_FIX48
+        (state_.menu.fan_menu?6:7):
+#else
+        6:
+#endif
+        state_.sort_mode==GameSortFix40::Custom?6:5;
 #else
     const int MenuItems=state_.menu.homebrew?6:state_.sort_mode==GameSortFix40::Custom?5:4;
 #endif
@@ -75,6 +81,9 @@ AppCommands LibraryBrowserFix28::update(const InputFrame& raw_input,float dt){
         const bool home=input.start.pressed;
         state_.menu.open=!(state_.menu.open && state_.menu.homebrew==home);
         state_.menu.homebrew=home;help_open_=false;toggled=true;
+#ifdef PS3_GAME_ORBIT_FIX48
+        state_.menu.fan_menu=false;
+#endif
 #ifdef PS3_GAME_ORBIT_FIX40
         state_.menu.reorder=false;
 #endif
@@ -99,6 +108,35 @@ AppCommands LibraryBrowserFix28::update(const InputFrame& raw_input,float dt){
                 input=InputFrame{};
             }
 #endif
+#ifdef PS3_GAME_ORBIT_FIX48
+            if(state_.menu.fan_menu){
+                if(input.circle.pressed){state_.menu.fan_menu=false;state_.menu.selected=6;}
+                else{
+                    if(input.up.pressed)state_.menu.selected=(state_.menu.selected+5)%6;
+                    if(input.down.pressed)state_.menu.selected=(state_.menu.selected+1)%6;
+                    int delta=input.right.pressed||input.cross.pressed?1:input.left.pressed?-1:0;
+                    if(input.l1.pressed)delta=-5;
+                    if(input.r1.pressed)delta=5;
+                    if(state_.menu.selected==5 && input.cross.pressed){state_.menu.fan_menu=false;state_.menu.selected=6;}
+                    else if(delta && state_.menu.selected<5){
+                        auto& c=state_.menu.fan_config;
+                        switch(state_.menu.selected){
+                        case 0:c.mode=unsigned((int(c.mode)+(delta<0?-1:1)+3)%3);break;
+                        case 1:c.target_c=unsigned(std::clamp(int(c.target_c)+delta,60,75));break;
+                        case 2:c.manual_percent=unsigned(std::clamp(int(c.manual_percent)+delta,35,100));break;
+                        case 3:c.minimum_percent=unsigned(std::clamp(int(c.minimum_percent)+delta,35,70));
+                            if(c.maximum_percent<c.minimum_percent)c.maximum_percent=c.minimum_percent;
+                            break;
+                        case 4:c.maximum_percent=unsigned(std::clamp(int(c.maximum_percent)+delta,35,100));
+                            if(c.minimum_percent>c.maximum_percent)c.minimum_percent=c.maximum_percent;
+                            break;
+                        }
+                        menu_command.configure_fan=true;state_.menu.status="Aplicando ajuste da ventoinha...";
+                    }
+                }
+                input=InputFrame{};
+            }
+#endif
             if(input.circle.pressed)state_.menu.open=false;
             if(input.up.pressed)state_.menu.selected=(state_.menu.selected+MenuItems-1)%MenuItems;
             if(input.down.pressed)state_.menu.selected=(state_.menu.selected+1)%MenuItems;
@@ -112,6 +150,9 @@ AppCommands LibraryBrowserFix28::update(const InputFrame& raw_input,float dt){
 #ifdef PS3_GAME_ORBIT_FIX40
                     case 4:state_.sort_mode=static_cast<GameSortFix40>((int(state_.sort_mode)+1)%3);refresh_order();break;
                     case 5:menu_command.open_file_manager=true;state_.menu.open=false;break;
+#ifdef PS3_GAME_ORBIT_FIX48
+                    case 6:state_.menu.fan_menu=true;state_.menu.selected=0;state_.menu.status.clear();break;
+#endif
 #endif
                     }
                 }else{
@@ -260,6 +301,9 @@ AppCommands LibraryBrowserFix28::update(const InputFrame& raw_input,float dt){
     auto commands=navigation_.update(state_,navigation,dt);
 #ifdef PS3_GAME_ORBIT_FIX35
     commands.game_menu_action=menu_command.game_menu_action;
+#ifdef PS3_GAME_ORBIT_FIX48
+    commands.configure_fan=menu_command.configure_fan;
+#endif
     commands.rescan_library=commands.rescan_library || menu_command.rescan_library;
 #ifdef PS3_GAME_ORBIT_FIX37
     commands.import_all_usb=menu_command.import_all_usb;

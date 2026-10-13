@@ -36,3 +36,4 @@ src/jfx_case_data_fix29.inc
 *.log
 __pycache__/
 *.pyc
+pkgfiles/USRDIR/orbit_service.sprx

@@ -15,6 +15,9 @@ struct AppCommands {
     bool open_file_manager=false;
 #endif
     bool request_exit = false;
+#ifdef PS3_GAME_ORBIT_FIX48
+    bool configure_fan=false;
+#endif
 };
 
 class AppController {
