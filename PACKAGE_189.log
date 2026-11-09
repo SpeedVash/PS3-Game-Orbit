@@ -1,0 +1,1 @@
+PASS package189: 01.89; only SFO/EBOOT/new helper changed versus 1.8.8; native installer callback identical; frozen resident/UI/artwork/geometry; 55 simulated native scenarios; physical return pending

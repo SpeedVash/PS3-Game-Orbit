@@ -76,3 +76,19 @@ Compact disc and case, por effe (Blend Swap), licença CC0 fornecida no anexo. C
 ## Serviço próprio da v1.6
 
 Implementação do serviço residente, protocolo local, política de ventoinha, parser NTFS e leitor de setores do Orbit. Interfaces LV2/Cobra/PS3MAPI verificadas nos headers públicos do PSL1GHT e webMAN MOD; não inclui a implementação de webMAN, multiMAN, rawseciso ou NTFS-3G. O NTFS-3G foi usado somente para criar o volume sintético de teste. A assinatura SELF usa a ferramenta geohot da stack PSL1GHT.
+
+## Instalador interno da v1.8.0
+
+O parser PKG, planejamento, transação com recuperação, conferência de arquivos, thread e telas são implementação própria do Orbit. AES usa os dois fontes mínimos de BearSSL, Copyright 2016 Thomas Pornin, licença MIT; SHA-1 usa o cabeçalho ps3-dev de Mohammed Asif, Copyright 2026, licença Apache 2.0. Licenças e aviso acompanham os fontes e o PKG. O formato PS3 foi conferido com os fontes públicos do RPCS3; nenhum código GPL do emulador ou do IRISMAN foi incorporado. As chamadas de conteúdo usam os headers e stubs públicos do PSL1GHT.
+
+## Correção de entradas na v1.8.1
+
+Atributo NPDRM 0x100 reproduzido em PKG de tradução fornecido pelo autor e comparado ao tratamento de arquivos no RPCS3. Tipos 5/6 e diretório 0x12 conferidos em unpkg.cpp. Diagnóstico, normalização limitada e testes de regressão são código do Orbit. Pacotes de terceiros/tradução usados na validação não são redistribuídos neste ZIP.
+
+## Fila nativa da v1.8.2
+
+Seleção múltipla, plano de conferência, protocolo de sessão, auxiliar VSH, ponte de callback com pilha própria e testes são implementação do Orbit. Interfaces e sequência LoadPlugin3/LoadPage/installPKG conferidas nos fontes públicos do PS3HEN e webMAN MOD, com revisões fixadas em `docs/VALIDACAO_1.8.2.md`. Não foi copiada a implementação GPL de seus instaladores. AES/SHA-1 e respectivos avisos mantêm as licenças já distribuídas. O auxiliar usa o instalador do sistema, sem redistribuir módulos proprietários do XMB.
+
+## Reconstrução da v1.8.3
+
+Novo envio de sentido único, auxiliar mínimo e seletor de pacotes são código do Orbit. A extração/instalação interna, leitor/criptografia de PKG e planejador por arquivos das revisões anteriores foram removidos do novo build. A sequência de interface nativa mantém as referências públicas do PS3HEN; adaptadores de ABI e inicialização de thread reutilizam utilitários próprios verificados. Não inclui módulos proprietários ou implementação GPL do instalador. Os avisos instalados de componentes anteriores são preservados por compatibilidade.

@@ -1,0 +1,56 @@
+PASS native handoff189: normal native_calls= [0, 1] sent= 2 safe= 1 return_calls= 0 XMB_results= [] return_error= 0x0
+PASS native handoff189: exit_view native_calls= [0, 1] sent= 2 safe= 1 return_calls= 0 XMB_results= [] return_error= 0x0
+PASS native handoff189: late_views native_calls= [0, 1] sent= 2 safe= 1 return_calls= 0 XMB_results= [] return_error= 0x0
+PASS native handoff189: page_negative native_calls= [0, 1] sent= 2 safe= 1 return_calls= 0 XMB_results= [] return_error= 0x0
+PASS native handoff189: no_notify native_calls= [0, 1] sent= 2 safe= 1 return_calls= 0 XMB_results= [] return_error= 0x0
+PASS native handoff189: reject_first native_calls= [0] sent= 0 safe= 1 return_calls= 0 XMB_results= [] return_error= 0x0
+PASS native handoff189: reject_second native_calls= [0, 1] sent= 1 safe= 1 return_calls= 0 XMB_results= [] return_error= 0x0
+PASS native handoff189: no_interface native_calls= [] sent= 0 safe= 1 return_calls= 0 XMB_results= [] return_error= 0x0
+PASS native handoff189: no_ui native_calls= [0] sent= 1 safe= 1 return_calls= 0 XMB_results= [] return_error= 0x0
+PASS native handoff189: bad_manifest native_calls= [] sent= 0 safe= 1 return_calls= 0 XMB_results= [] return_error= 0x0
+PASS native handoff189: source_changed native_calls= [] sent= 0 safe= 1 return_calls= 0 XMB_results= [] return_error= 0x0
+PASS native handoff189: header_changed native_calls= [] sent= 0 safe= 1 return_calls= 0 XMB_results= [] return_error= 0x0
+PASS native handoff189: invalid_path native_calls= [] sent= 0 safe= 1 return_calls= 0 XMB_results= [] return_error= 0x0
+PASS native handoff189: bad_exports native_calls= [] sent= 0 safe= 1 return_calls= 0 XMB_results= [] return_error= 0x0
+PASS native handoff189: no_run native_calls= [] sent= 0 safe= 1 return_calls= 0 XMB_results= [] return_error= 0x0
+PASS native handoff189: wrong_nonce native_calls= [] sent= 0 safe= 1 return_calls= 0 XMB_results= [] return_error= 0x0
+PASS native handoff189: no_xmb native_calls= [] sent= 0 safe= 1 return_calls= 0 XMB_results= [] return_error= 0x0
+PASS native handoff189: conflict native_calls= [] sent= 0 safe= 1 return_calls= 0 XMB_results= [] return_error= 0x0
+PASS native handoff189: missing_callback native_calls= [] sent= 0 safe= 0 return_calls= 0 XMB_results= [] return_error= 0x0
+PASS native handoff189: negative_load native_calls= [] sent= 0 safe= 0 return_calls= 0 XMB_results= [] return_error= 0x0
+PASS native handoff189: no_runtime no native UI call, terminal safe failure
+PASS native handoff189: create_fail no native UI call, terminal safe failure
+PASS native handoff189: zero_tls native_calls= [] sent= 0 safe= 1 return_calls= 0 XMB_results= [] return_error= 0x0
+PASS native handoff189: zero_callback_tls native_calls= [] sent= 0 safe= 1 return_calls= 0 XMB_results= [] return_error= 0x0
+PASS native handoff189: bad_flags native_calls= [] sent= 0 safe= 1 return_calls= 0 XMB_results= [] return_error= 0x0
+PASS native handoff189: tampered_flags native_calls= [] sent= 0 safe= 1 return_calls= 0 XMB_results= [] return_error= 0x0
+PASS native handoff189: return_on native_calls= [0, 1] sent= 2 safe= 1 return_calls= 1 XMB_results= [0, 0, 0, 0] return_error= 0x0
+PASS native handoff189: return_missing_app native_calls= [0, 1] sent= 2 safe= 1 return_calls= 0 XMB_results= [] return_error= 0x1890f
+PASS native handoff189: return_no_interface native_calls= [0, 1] sent= 2 safe= 1 return_calls= 0 XMB_results= [] return_error= 0x18911
+PASS native handoff189: return_reject native_calls= [0, 1] sent= 2 safe= 1 return_calls= 1 XMB_results= [0, 0, 0, 2147549189] return_error= 0x18913
+PASS native handoff189: return_slow_ui native_calls= [0, 1] sent= 2 safe= 1 return_calls= 1 XMB_results= [0, 0, 0, 0] return_error= 0x0
+PASS native handoff189: return_no_xmb native_calls= [0, 1] sent= 2 safe= 1 return_calls= 0 XMB_results= [] return_error= 0x1890e
+PASS native handoff189: return_other_install native_calls= [0, 1] sent= 2 safe= 1 return_calls= 0 XMB_results= [] return_error= 0x1890e
+PASS native handoff189: return_interrupted native_calls= [0] sent= 0 safe= 1 return_calls= 0 XMB_results= [] return_error= 0x0
+PASS native handoff189: return_no_ack native_calls= [0, 1] sent= 2 safe= 1 return_calls= 1 XMB_results= [0, 0, 0, 0] return_error= 0x18910
+PASS native handoff189: return_wrong_ack native_calls= [0, 1] sent= 2 safe= 1 return_calls= 1 XMB_results= [0, 0, 0, 0] return_error= 0x18910
+PASS native handoff189: return_truncated_ack native_calls= [0, 1] sent= 2 safe= 1 return_calls= 1 XMB_results= [0, 0, 0, 0] return_error= 0x18910
+PASS native handoff189: return_slow_ack native_calls= [0, 1] sent= 2 safe= 1 return_calls= 1 XMB_results= [0, 0, 0, 0] return_error= 0x0
+PASS native handoff189: return_reject_0 native_calls= [0, 1] sent= 2 safe= 1 return_calls= 0 XMB_results= [2147549189] return_error= 0x18913
+PASS native handoff189: return_reject_1 native_calls= [0, 1] sent= 2 safe= 1 return_calls= 0 XMB_results= [0, 2147549189] return_error= 0x18913
+PASS native handoff189: return_reject_2 native_calls= [0, 1] sent= 2 safe= 1 return_calls= 0 XMB_results= [0, 0, 2147549189] return_error= 0x18913
+PASS native handoff189: return_positive_focus native_calls= [0, 1] sent= 2 safe= 1 return_calls= 1 XMB_results= [0, 0, 1, 0] return_error= 0x0
+PASS native handoff189: return_lost_interface native_calls= [0, 1] sent= 2 safe= 1 return_calls= 0 XMB_results= [0, 0] return_error= 0x18911
+PASS native handoff189: return_busy_after_focus native_calls= [0, 1] sent= 2 safe= 1 return_calls= 0 XMB_results= [0, 0] return_error= 0x18912
+PASS native handoff189: return_no_command native_calls= [0, 1] sent= 2 safe= 1 return_calls= 0 XMB_results= [] return_error= 0x18911
+PASS native handoff189: return_all_one native_calls= [0, 1] sent= 2 safe= 1 return_calls= 1 XMB_results= [1, 1, 1, 1] return_error= 0x0
+PASS native handoff189: return_first_one native_calls= [0, 1] sent= 2 safe= 1 return_calls= 1 XMB_results= [1, 0, 0, 0] return_error= 0x0
+PASS native handoff189: return_last_one native_calls= [0, 1] sent= 2 safe= 1 return_calls= 1 XMB_results= [0, 0, 0, 1] return_error= 0x0
+PASS native handoff189: return_mixed native_calls= [0, 1] sent= 2 safe= 1 return_calls= 1 XMB_results= [1, 0, 1, 0] return_error= 0x0
+PASS native handoff189: return_single_on native_calls= [0] sent= 1 safe= 1 return_calls= 1 XMB_results= [0, 0, 0, 0] return_error= 0x0
+PASS native handoff189: return_single_all_one native_calls= [0] sent= 1 safe= 1 return_calls= 1 XMB_results= [1, 1, 1, 1] return_error= 0x0
+PASS native handoff189: return_unexpected_positive native_calls= [0, 1] sent= 2 safe= 1 return_calls= 0 XMB_results= [0, 0, 2] return_error= 0x18913
+PASS native handoff189: return_all_one_no_ack native_calls= [0, 1] sent= 2 safe= 1 return_calls= 1 XMB_results= [1, 1, 1, 1] return_error= 0x18910
+PASS native handoff189: return_single_all_one_no_ack native_calls= [0] sent= 1 safe= 1 return_calls= 1 XMB_results= [1, 1, 1, 1] return_error= 0x18910
+PASS native handoff189: return_negative_one native_calls= [0, 1] sent= 2 safe= 1 return_calls= 0 XMB_results= [0, 0, -1] return_error= 0x18913
+PASS handoff189 PPC64: 55 simulated LV2/VSH cases; physical log response 1 no longer stops the first XMB command; one/two packages; 0, 1 and mixed dispatch results; no false success without process ACK; negative/unexpected result stops before execution; native installer and guarded callback preserved; physical HEN/CFW return remains pending

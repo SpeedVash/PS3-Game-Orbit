@@ -1,193 +1,157 @@
-# PS3 Game Orbit
+# PS3 Game Orbit 2.1.3
 
-![PS3 Game Orbit](pkgfiles/ICON0.PNG)
+A **v2.1.3** otimiza o navegador de **instalação de PKGs no PLUS**. O fundo decorativo é preparado uma vez e compartilhado com a abertura do PLUS. Durante a navegação, a tela atualiza apenas as linhas e informações alteradas, incluindo unidades, marcações e revisão da fila.
 
-**v1.6 — criado por SpeedVash.** Biblioteca de jogos PS3 com capas completas, caixas articuladas, layouts Clássico, Spine e Lista, favoritos, montagem própria de jogos PS3 e serviço residente com controle da ventoinha.
+Instale `PS3_GAME_ORBIT_v2.1.3.pkg` sobre a versão atual. A seleção, a ordem da fila e o envio ao instalador do XMB usam o mesmo processo anterior. A correção dos menus e das setas de PS1 da v2.1.2 está incluída. Veja `docs/NOTAS_2.1.3.md`.
 
-## Montagem própria e serviço residente
+Os testes no PC e a compilação nativa passaram; a resposta percebida no seu PS3 precisa de reteste.
 
-O PKG inclui `orbit_service.sprx`. O Orbit carrega esse plugin em um slot VSH livre quando HEN/Cobra está ativo; ele permanece em segundo plano ao voltar ao XMB e durante o jogo. Não é necessário abrir webMAN ou multiMAN para montar. HEN/Cobra continuam necessários, pois fornecem as funções do sistema usadas pelo serviço. Após reiniciar o PS3, habilite HEN e abra o Orbit novamente.
+Desde a **v2.1.0**, o aplicativo reúne o **PS3 Game Orbit padrão** e o **PS3 ORBIT PLUS** no mesmo aplicativo. O PLUS traz a interface aprovada, com navegação por plataforma e origem, painéis em azul, tipografia maior e opções redesenhadas.
 
-| Armazenamento | Jogos PS3 suportados |
-| --- | --- |
-| HD interno | `PS3ISO/*.iso`, partes `.iso.0`, `.iso.1`... e pastas em `GAMES`/`GAMEZ` |
-| USB FAT32 | ISOs divididas em sequência e jogos em pasta com arquivos inteiros |
-| USB NTFS | ISOs inteiras ou divididas em `PS3ISO`, leitura direta, incluindo subpastas |
+## Alternar a interface
 
-NTFS é somente leitura para ISOs. O gerenciador de arquivos continua usando HD/USB FAT32. Pastas em NTFS, exFAT, arquivos de pasta fragmentados em `.666xx` e ISOs NTFS comprimidas, esparsas ou cifradas não são suportados nesta versão.
+1. Abra o Orbit e pressione **START**.
+2. Entre em **Interface**.
+3. Escolha **PS3 Game Orbit padrão** ou **PS3 ORBIT PLUS** com o direcional e confirme com **X**. **Círculo** volta sem aplicar.
 
-Abra **START → Controle da ventoinha** para escolher Automático, Manual ou Padrão do PS3. O padrão do Orbit é automático a 68°C, mínimo 35% e máximo 85%. CPU/RSX e velocidade aparecem nesse menu. Os ajustes são salvos e continuam aplicados pelo plugin depois que a interface fecha. Temperatura alta pode elevar a velocidade mesmo no modo manual. Se webMAN/sMAN ou outro controlador estiver ativo, o Orbit suspende seu controle, sem descarregar o plugin alheio.
+A troca é imediata e a escolha fica salva para a próxima abertura. Na primeira instalação sem uma escolha salva, o visual inicial é o **Padrão**. Os dois visuais compartilham os mesmos jogos, favoritos, configurações, catálogo e covers. Alternar a interface não faz uma nova leitura da biblioteca nem descarta as imagens já carregadas.
 
-Veja [instalação e teste no PS3](docs/ORBIT_1.6.md) e [validação da versão](docs/VALIDACAO_1.6.md). **O teste em hardware da v1.6 ainda está pendente.** PS1 permanece em hiato.
+Instale `PS3_GAME_ORBIT_v2.1.3.pkg` sobre a versão atual. A identificação continua **PGORBT301**, com versão de instalação **02.13**. O log desta versão é `/dev_hdd0/tmp/PS3_GAME_ORBIT_2_1_3.log`.
 
-## Pré-carga e navegação
+O visual padrão conserva o desenho da v2.0.4. As caixas PS3 e PS1, materiais, transparência aprovada de **96%** nas áreas FRONT/BACK de PS1, animações, carregamento e montagem dos jogos permanecem iguais à base. Os dois visuais oferecem Clássico, Spine e Lista; PS3/PS1 separados; Todos/HD/USB/Favoritos; seleção de CD de PS1; importação de covers por USB; fundo personalizado; ventoinha; cópia de disco e instalação de PKGs.
 
-Ao iniciar, o app prepara capas, interiores e discos de até 15 jogos próximos ao selecionado. A imagem “Carregando sua biblioteca...” permanece na tela até terminar essa preparação. A biblioteca aparece ao concluir, evitando a espera mostrando somente o fundo animado. Bibliotecas menores usam apenas os jogos disponíveis no filtro, sem duplicações; imagens ausentes ou inválidas usam a aparência neutra.
+A compilação nativa e os testes no PC passaram. A confirmação em **PS3 físico/HEN/CFW está pendente**. As imagens em `assets/previews/2.1.0/` são prévias no PC com o código da interface e a geometria original, usando artes ilustrativas. Veja `docs/NOTAS_2.1.3.md`.
 
-Clássico, Spine e Lista compartilham o mesmo cache de até 15 capas, 15 interiores e 15 discos. Trocar o layout mantém as imagens comuns. Durante a navegação, uma tarefa separada lê e decodifica os próximos jogos, priorizando as capas visíveis e a direção em que você está navegando. O envio de uma nova textura à GPU é dividido em partes de até 256 KiB por quadro; ela só é mostrada depois de concluída.
+Os recursos abaixo são herdados da v2.0.4.
 
-A geometria 3D e os shaders continuam preparados na inicialização e reutilizados pelos layouts. PS1 permanece em hiato. Veja [validação](docs/VALIDACAO_1.5.7.md) e [teste no PS3](docs/DISCO_PS3_1.5.7.md).
+## Spine de PS1
 
-## Gerenciador corrigido
+O modo mostra o jogo selecionado e **três jogos de cada lado**, quando a biblioteca tem pelo menos sete jogos. O limite antigo de pacotes gráficos descartava algumas caixas PS1; agora as sete montagens completas permanecem no desenho. O controlador RSX continua dividindo os comandos em segmentos confirmados e faz uma apresentação final por quadro.
 
-A geometria própria introduzida na v1.5.3 conserva a tela inteira do gerenciador. O usuário confirmou que ela funcionou bem no PS3. A biblioteca recupera seu desenho normal ao sair.
+As BACK, que fornecem as lombadas PS1, têm prioridade na mesma janela de quinze jogos usada pelo carregamento PS3. Ao entrar no Spine de PS1, a tela de preparação aguarda o conjunto necessário, usando a rotina de carregamento já existente. Uma BACK visível ausente também progride em pequenas fatias durante a navegação, sem depender de selecionar esse jogo. O cache mantém os limites anteriores e prepara as capas internas dos jogos próximos.
 
-## Recursos do gerenciador
+## Catálogo salvo para HD e USB
 
-- **Controles mais claros:** L1/R1 escolhem o painel, Triângulo abre as ações e R3 escolhe HD ou USB.
-- **Origem fixa:** marcar arquivos ou pastas vincula a seleção ao painel e à pasta de origem. Abrir o destino no outro painel preserva a direção da cópia.
-- **Confirmação antes de gravar:** o app conta arquivos, subpastas e tamanho total, mostrando origem e destino para você conferir.
-- **Cópia de pastas completas**, incluindo subpastas e pastas vazias. Pastas existentes são combinadas; arquivos existentes têm confirmação de substituição.
-- **Listagem mais legível:** nomes maiores, borda para o item em foco, caixas de seleção azuis e indicação verde de cópia concluída. SELECT mostra o caminho completo.
-- **Progresso e resumo:** arquivo atual, lote inteiro, arquivos copiados, ignorados e erros. START pede confirmação antes de cancelar uma operação em andamento.
-- Mantidos estilos de caixa por jogo, A-Z/Z-A/Custom, configurações, artes via USB, caches e pausa temporária do fundo.
-- Versão **1.6** no início, cabeçalho e menu, com crédito a **SpeedVash**. Identidade PGORBT301 preservada.
+A primeira abertura desta versão faz uma leitura completa e salva um índice por armazenamento em `/dev_hdd0/game/PGORBT301/USRDIR/catalog17/`. O índice inclui jogos PS3/PS1, títulos, IDs, caminhos das covers e todos os CDs de cada jogo. Nas próximas aberturas, o Orbit reutiliza esses dados e confere apenas os armazenamentos e as informações das pastas principais, sem varrer os arquivos de cada jogo novamente.
 
-O usuário confirmou que a v1.5.5 eliminou a pequena pausa ao mudar de layout. A v1.5.7 mantém a tela de carregamento durante a espera inicial e acrescenta o disco de PS3 à biblioteca 3D. Compilação nativa e testes no computador concluídos; **a detecção do disco no PS3 aguarda confirmação**. A iluminação usa os shaders aprovados.
+Mudanças nas pastas principais podem renovar o índice automaticamente. **Depois de adicionar, remover ou alterar jogos, discos ou covers, use START → Atualizar biblioteca**, especialmente para mudanças dentro de uma pasta já existente. Essa opção faz uma leitura completa e atualiza o índice. Catálogos antigos ou corrompidos são reconstruídos. Um USB desconectado deixa de contribuir com jogos; ao reconectar o mesmo volume, os caminhos são associados ao ponto de montagem atual.
 
-## Disco de PS3
+Quando a identificação nativa de um USB não está disponível, o Orbit cria nele o pequeno arquivo `PS3_GAME_ORBIT_VOLUME.ID` para reconhecer esse volume nas próximas aberturas e em outra porta. O catálogo com os dados dos jogos permanece no HD interno. A leitura do disco físico continua atualizada.
 
-O jogo disponível no leitor aparece em **Todos**, identificado como **Disco**, com a mesma caixa 3D. Nome e ID são lidos do PARAM.SFO; as imagens da ID em PS3COVERS aparecem na capa, interior e disco. L3 abre a caixa. X volta ao XMB para iniciar pelo ícone do disco.
+As imagens das caixas visíveis ainda são preparadas para a memória gráfica a cada execução. O índice evita repetir a descoberta de jogos, leitura de metadados e procura de caminhos das artes em toda a biblioteca.
 
-Inserção e retirada são lidas em segundo plano. Favoritos, nomes e estilo são separados por ID; o cache dos jogos comuns continua preservado. Se uma ISO ou pasta montada ocupar o leitor, disponibilize o disco pelo seu gerenciador antes de visualizar o original. O Orbit consulta a mídia sem desmontar ou ejetar.
 
-Veja o [guia e teste do disco](docs/DISCO_PS3_1.5.7.md). A detecção real no PS3 aguarda confirmação.
 
-## Instalação
+## Instalar
 
-1. Copie `PS3_GAME_ORBIT_v1.6.gnpdrm.pkg` para a raiz de um pendrive FAT32.
-2. Instale pelo gerenciador de pacotes do XMB, por cima da versão anterior. Identidade **PGORBT301**, `APP_VER 01.60`; preserve os arquivos de configuração existentes.
-3. No Super Slim, habilite HEN antes de abrir. O plugin do Orbit incluído no PKG é carregado automaticamente para montar os jogos.
-4. X monta o jogo com caixa aberta ou fechada. Após a confirmação, o app volta ao XMB; inicie pelo ícone do disco.
+1. Instale `PS3_GAME_ORBIT_v2.1.3.pkg` pelo XMB, sobre a versão atual.
+2. Reinicie o console após a atualização e habilite o HEN novamente, quando aplicável.
+3. Organize os jogos em `PSXISO` no HD interno ou em um USB FAT32. Use uma pasta por jogo e uma subpasta por CD.
+4. Conecte o USB antes de abrir o Orbit. Selecione a plataforma com **L1/R1** e confira **Origem: Todos**. Use **Atualizar biblioteca** se necessário.
+5. Pressione **X** no jogo. Jogos com mais de um CD abrem **Selecionar disco de PS1**. Escolha com o direcional e confirme com **X**; **Círculo** cancela. A mesma escolha está disponível nas **Opções do Jogo**.
 
-## Menus e ordenação
+Exemplo de caminhos:
 
-Prévia do [gerenciador corrigido](assets/previews/GERENCIADOR_1_5_3.png), calculada com os pixels e o mapeamento de tela usados pelo desenho nativo. É uma simulação no computador, não uma captura do PS3.
+```text
+/dev_usb000/PSXISO/Final Fantasy IX/Disco 1/FFIX.cue
+/dev_usb000/PSXISO/Final Fantasy IX/Disco 1/FFIX.bin
+/dev_usb000/PSXISO/Final Fantasy IX/Disco 2/FFIX.cue
+/dev_usb000/PSXISO/Final Fantasy IX/Disco 2/FFIX.bin
+/dev_usb000/PSXISO/Final Fantasy IX/Disco 3/FFIX.cue
+/dev_usb000/PSXISO/Final Fantasy IX/Disco 3/FFIX.bin
+/dev_usb000/PSXISO/Final Fantasy IX/Disco 4/FFIX.cue
+/dev_usb000/PSXISO/Final Fantasy IX/Disco 4/FFIX.bin
+```
 
-| Botão | Opções |
-| --- | --- |
-| Triângulo — jogo | Alterar nome · Copiar capas do USB · Recarregar capas · Adicionar/Remover dos favoritos · Tipo de caixa · Alterar posição, disponível em Custom |
-| START — homebrew | Atualizar biblioteca · Fundo animado · Atualizar todas as capas via USB · Salvar último jogo visto · Listagem · Gerenciador de arquivos HD/USB · Controle da ventoinha |
+Para um CD, também é aceito `PSXISO/Nome do jogo/Jogo.cue` com seus BINs na mesma pasta, ou uma imagem diretamente em `PSXISO`. Os nomes `Disco`, `Disc` e `CD` seguidos de número são reconhecidos, inclusive quando uma pasta está vazia; nesse caso o seletor mostra o erro.
 
-Em START → Listagem, X alterna A até Z → Z até A → Custom. Em Custom, selecione o jogo e abra Triângulo → Alterar posição. O direcional escolhe a posição; L1/R1 saltam dez posições; X confirma e Círculo cancela. As posições mostradas são relativas ao filtro ativo. O jogo selecionado continua selecionado ao mudar a ordenação.
+Na Lista, use Cima/Baixo para navegar; no Clássico/Spine, Cima controla o autogiro.
 
-Os índices internos do catálogo e das texturas permanecem estáveis. Alterar nome muda apenas o título mostrado, sem renomear a ISO, pasta, ID ou arte; A-Z/Z-A são atualizados após salvar o nome.
+A caixa é escolhida automaticamente, sem opção manual adicional. **L3** abre/fecha a inspeção e exibe todos os CDs do jogo. Cada disco mantém sua própria arte. O seletor define o disco para iniciar no XMB; não troca o CD durante a execução do jogo.
 
-## Gerenciador HD/USB
+## Capas da caixa simples (um ou dois CDs)
 
-Abra START → Gerenciador de arquivos HD/USB. X confirma o aviso e abre os dois painéis. Cada painel guarda sua própria pasta e posição.
+Aceita PNG, JPG e JPEG. Coloque as capas na pasta principal do jogo. Para vários CDs, coloque um `DISC.png` na subpasta de cada CD:
 
-| Botão | Ação |
-| --- | --- |
-| Cima / baixo | Escolher arquivo ou pasta |
-| L1 / R1 | Escolher painel esquerdo / direito |
-| Esquerda / direita | Atalho para escolher o painel |
-| L2 / R2 | Voltar / avançar sete entradas |
-| X | Abrir pasta ou confirmar |
-| Quadrado | Marcar/desmarcar arquivo ou pasta |
-| Triângulo | Ações: copiar, marcar todos, limpar seleção, atualizar |
-| R3 | Escolher HD ou USB para o painel ativo |
-| SELECT | Ver o caminho completo; L2/R2 percorrem suas páginas |
-| Círculo | Pasta anterior ou voltar; durante preparação/cópia, cancelar |
-| START | Sair; durante operação, confirmar cancelamento e saída |
-
-Marque a origem com Quadrado. Use L1/R1 para passar ao outro painel e abra a pasta de destino. Em qualquer painel, Triângulo → Copiar usa a origem marcada. Sem marcações, copia o item em foco no painel ativo. Confira quantidade, tamanho e caminhos; somente X na confirmação inicia a gravação.
-
-As marcações pertencem a uma única pasta de origem. Abrir outra pasta nesse mesmo painel limpa as marcações; navegar no destino as preserva. Para escolher uma nova origem no outro painel, use Triângulo → Limpar seleção. Marcar todos inclui arquivos e pastas. O menu mostra a direção da cópia.
-
-É possível copiar HD → HD, HD → USB, USB → HD e entre USBs montados pelo sistema. Pastas são copiadas com todo o conteúdo, incluindo pastas vazias. Se a pasta já existir, seus arquivos não relacionados são preservados. Cada conflito de arquivo permite sobrescrever, pular, sobrescrever todos, pular todos ou cancelar; a escolha para todos vale somente para o lote atual.
-
-A cópia usa blocos de 256 KiB e um temporário por arquivo na pasta de destino. O arquivo anterior é mantido até a conclusão; falha ou cancelamento remove o temporário e preserva as cópias concluídas. Pastas já criadas também permanecem. Falha na troca final tenta restaurar o destino anterior; a mensagem informa o backup se a restauração falhar. A origem não é removida.
-
-A preparação ocorre por etapas e pode ser cancelada sem gravar. Limites por lote: 4096 itens marcados, 16384 arquivos/pastas preparados, 8 MiB para seus caminhos e 1023 bytes por caminho. Se excedidos, copie subpastas em lotes menores. Copiar uma pasta para dentro dela mesma, itens não suportados ou conflitos entre arquivo e pasta é recusado antes da gravação.
-
-Tamanhos usam 64 bits. Um arquivo acima de 4 GB pode ser copiado para HD se houver espaço; USB FAT32 aceita no máximo 4 GiB menos 1 byte por arquivo. A montagem de ISOs NTFS usa um leitor próprio; o gerenciador de arquivos não oferece cópia para NTFS/exFAT. Os bytes são copiados sem alteração; para redimensionar artes, use a atualização de capas da biblioteca.
-
-Durante o gerenciador, fundo animado, caixas e pré-carga ficam pausados. Ao sair, o fundo retorna à preferência anterior e a biblioteca volta a aparecer. Veja o [guia do gerenciador](docs/GERENCIADOR_1.5.2.md).
-
-## Tipo de caixa
-
-Selecione o jogo, abra Triângulo → Tipo de caixa e pressione X para alternar:
-
-| Opção | Plástico externo | Interior |
+| Arquivo | Medida recomendada (largura × altura) | Uso |
 | --- | --- | --- |
-| Padrão | Transparente, sem cor | Transparente |
-| Platinum | Cinza opaco | Transparente |
-| Greatest Hits | Vermelho opaco | Transparente |
+| `FRONT.png` | 1000 × 1000 | Somente a frente do livreto, presa à tampa. |
+| `BACK.png` | 1000 × 780 | Traseira externa, com as duas lombadas. |
+| `INSIDE1.png` | 1000 × 780 | Mesmo espaço da BACK, no lado interno atrás do CD. |
+| `INSIDE2.png` | 1000 × 1000 | Parte interna do livreto, presa à tampa. |
+| `DISC.png` | 1000 × 1000 | Arte do CD, centralizada. |
 
-A geometria e as artes são as mesmas nos três estilos. A escolha acompanha o jogo nos layouts Clássico, Spine e Lista, com a caixa fechada ou aberta. Ela é salva com as preferências do jogo; dados das versões anteriores recebem o estilo padrão.
+Em `BACK` e `INSIDE1`, use **50 pixels de lombada esquerda + 900 pixels de painel central + 50 pixels de lombada direita**, com 780 pixels de altura. Monte cada imagem como ela deve ser vista do respectivo lado; não espelhe manualmente a `INSIDE1`. As duas têm o mesmo recorte e dimensões. Outras resoluções são aceitas com a mesma proporção.
 
-## Imagens no pendrive e no HDD
+Exemplo: `PSXISO/Nome do jogo/FRONT.png`, `BACK.png`, `INSIDE1.png`, `INSIDE2.png`, `DISC.png`, `Jogo.cue` e os BINs correspondentes. Não é preciso juntar as quatro capas numa imagem. `FRONT` tem prioridade sobre o antigo `COVER`; o antigo `INSIDE` é aceito como alternativa para `INSIDE2` quando esta não existe. Se uma capa não existir ou estiver inválida, somente aquela face usa o material neutro.
 
-Crie **PS3COVERS na raiz do pendrive**. As imagens devem ficar diretamente nessa pasta, sem subpastas.
+Para uma imagem solta diretamente em `PSXISO`, prefira `Nome do jogo_FRONT.png`, `Nome do jogo_BACK.png`, `Nome do jogo_INSIDE1.png`, `Nome do jogo_INSIDE2.png` e `Nome do jogo_DISC.png`; os mesmos sufixos são aceitos em `/dev_hdd0/PS3COVERS`.
 
-| Arte | Exemplo com ID | ISO sem ID reconhecida | Saída no HDD |
-| --- | --- | --- | --- |
-| Capa completa | `PS3COVERS/BLES01287.jpg` | `PS3COVERS/Bayonetta.jpg` | 1000 × 550, JPG |
-| Inside Cover Full | `PS3COVERS/BLES01287_INSIDE.jpg` | `PS3COVERS/Bayonetta_INSIDE.jpg` | 1000 × 550, JPG |
-| Disco | `PS3COVERS/BLES01287_DISC.png` | `PS3COVERS/Bayonetta_DISC.png` | 500 × 500, PNG |
+Os arquivos em `assets/models/ps1/templates191/` são exemplos coloridos para conferir cada posição e as lombadas. As prévias usam esses exemplos e não são capturas do PS3.
 
-Use **Triângulo → Copiar capas do USB** para o jogo atual, ou **START → Atualizar todas as capas via USB** para a biblioteca inteira, incluindo jogos fora do filtro atual.
+## Caixa com três ou quatro CDs
 
-**Uma imagem já basta.** Tipos ausentes ou inválidos preservam a arte anterior; os outros tipos válidos ainda são copiados. A busca percorre `/dev_usb000` até `/dev_usb007`, somente dentro de `PS3COVERS`. JPG, JPEG e PNG são aceitos como origem, inclusive extensões maiúsculas. `_INSIDE` e `_DISC` devem permanecer em maiúsculas. A origem no USB fica intacta.
+Usa o modelo fornecido em `boite-de-jeux-ps120240703-1-f1tep2.zip`, pasta `Crafitys/boite-de-jeux-ps1/`, com a adaptação de quatro suportes e a animação aprovadas na prévia. A caixa provisória anterior foi substituída.
 
-O destino é **`/dev_hdd0/PS3COVERS`**. A cópia usa dimensões exatas, sem manter proporções diferentes: prepare a arte no aspecto 1000:550 para evitar distorção. A transparência do PNG do disco é preservada; capa/inside são convertidos para JPG. Arquivos antigos concorrentes são removidos apenas para o tipo atualizado, após gravação e troca com backup.
+Os três suportes têm fundos e encaixes centrais fechados, presentes com a caixa fechada e aberta. O suporte da base e o da tampa são transparentes; a bandeja articulada central e a faixa lateral da dobradiça são pretas e opacas. As capas internas ficam atrás dos suportes; nenhum furo de impressão foi reaberto. Os encaixes são: CD 1 na base; CD 2 na frente da bandeja central; CD 3 no verso da mesma bandeja; CD 4 na tampa, quando existir. Os CDs da bandeja e da tampa acompanham essas peças até a retirada. Fora da caixa, todos ficam retos.
 
-Para ISO, use o nome exato sem `.iso`/`.ISO`, preservando espaços e maiúsculas/minúsculas. Exemplo: `My ISO Game.ISO` → `My ISO Game_DISC.png`. Uma ID reconhecida tem prioridade; a origem pelo nome da ISO também é aceita e gravada no HDD com a ID. Sem ID, o destino mantém o nome da ISO. A ID interna do ISO ainda não é lida; o scanner reconhece uma ID de quatro letras e cinco números juntos no nome do arquivo.
+Coloque um `DISC.png` em cada subpasta: `Disco 1/DISC.png`, `Disco 2/DISC.png` etc. Também são aceitos `DISC1.png` a `DISC4.png` na pasta principal. A arte de um disco ausente não é substituída pela de outro: usa a imagem padrão. A escolha de qual CD montar continua no seletor aberto por **X** e não muda a disposição das artes.
 
-Jogos em pasta usam a TITLE_ID. Renomear um jogo pelo menu não muda os nomes esperados das imagens. Cópias manuais no HDD não são redimensionadas: use Triângulo → Recarregar capas depois de copiá-las.
+`COVER.png` continua aceito para a capa completa (traseira 48%, lombada 4%, frente 48%). `FRONT.png` é aceito quando não houver COVER. `BACK.png` fornece a traseira e as duas lombadas. **Na caixa de 3/4 CDs, use 1000 × 728 pixels**, com o seguinte recorte exato:
 
-Modelos de arte: [Inside Cover Full 1000×550](assets/examples/INSIDE_COVER_FULL_MODELO_1000x550.png) e [disco 500×500](assets/examples/DISC_EXEMPLO_500.png).
+| Parte da BACK de 3/4 CDs | Largura × altura | Colunas de pixels |
+| --- | --- | --- |
+| Lombada esquerda | **99 × 728 px** | 0 a 98 |
+| Traseira | **802 × 728 px** | 99 a 900 |
+| Lombada direita | **99 × 728 px** | 901 a 999 |
 
-A capa completa segue **verso · lombada · frente**. O inside segue **interior esquerdo · lombada · interior direito**, usando a mesma área e o mesmo recorte central. O disco é recortado pela geometria circular com furo de 15 mm. A arte cobre a região opaca de raio 8,0 até 59,5 mm. A borda de 7,5 a 8,0 mm e a de 59,5 a 60,0 mm ficam transparentes. Sem imagens opcionais, o app usa o interior neutro e o disco padrão.
+As dobras ficam em **x = 99** e **x = 901**. Esquerda e direita são vistas pela traseira externa, sem espelhar. Em outra resolução, mantenha **9,9% / 80,2% / 9,9%** e a proporção **1000:728**. O gabarito PNG e o SVG editável estão em `assets/models/ps1/templates196/`; substitua a arte e remova as guias antes de salvar como `BACK.png`. A caixa simples de 1/2 CDs continua usando 1000 × 780 e 50/900/50; não use esse recorte na caixa maior.
 
-## Controles
+O recorte anterior de 5/90/5 reservava pouca largura para a espessura da caixa maior e esticava a arte da lombada. Na 2.0.1, o papel foi ajustado sob a parede transparente: traseira de 140,18 × 127 mm e lombadas de 16,54 mm de profundidade. O recorte 99/802/99 das imagens existentes foi mantido; o encaixe interno exige uma pequena compressão horizontal das lombadas. O gabarito é destinado ao Orbit, não à impressão física.
 
-| Controle | Função |
-| --- | --- |
-| Esquerda/direita ou analógico esquerdo | Trocar de jogo |
-| Cima/baixo no layout Lista | Navegar na lista |
-| Analógico direito | Girar/inclinar a caixa |
-| Quadrado | Alternar Clássico → Spine → Lista |
-| L1 / R1 | Alternar Todos / Favoritos / USB / HD |
-| L3 | Abrir/fechar a caixa e retirar/recolocar o disco |
-| X | Montar o jogo pelo webMAN MOD |
-| Triângulo | Opções do jogo |
-| START | Opções do homebrew |
-| L2 / R2 | Zoom |
-| R3 | Restaurar a visualização |
-| Cima em Clássico/Spine | Rotação automática |
-| SELECT | Ajuda dos controles |
-| Círculo | Fechar menu/caixa, cancelar operação ou sair |
+`DISC.png` continua quadrada, por exemplo 1000 × 1000 px, em todas as caixas. Cada subpasta de CD usa sua própria arte.
 
-## Caches e pré-carga
+ As duas lombadas acompanham a base em todas as fases. O fallback de COVER completo usa sua faixa central nas lombadas e o painel traseiro no verso. A organização simples continua aceitando as quatro capas independentes.
 
-| Layout | Jogos anteriores | Atual | Jogos seguintes | Limite de cada cache |
-| --- | ---: | ---: | ---: | ---: |
-| Clássico | 7 | 1 | 7 | 15 capas, 15 interiores, 15 discos |
-| Lista | 7 | 1 | 7 | 15 capas, 15 interiores, 15 discos |
-| Spine | 7 | 1 | 7 | 15 capas, 15 interiores, 15 discos |
+A forma base permanece em `assets/models/ps1/stl201/`, com os manifestos `NATIVE_IMPORT_201.json` e `NATIVE_COVER_203.json`. O segundo registra as áreas locais de 92% deste teste, aplicadas à geometria nativa por `src/ps1_cover202.inc`. Os modelos atuais exportados diretamente do código estão em `assets/models/ps1/native203/`; as imagens atuais estão em `assets/previews/2.0.4/`. As artes dessas prévias são demonstrativas.
 
-Essa é a janela de preparação, independente da quantidade de caixas desenhadas em cada layout. Ela segue o filtro ativo e circula nas extremidades da lista. O jogo selecionado e as caixas que estão terminando uma transição têm prioridade; vizinhos que não cabem junto às caixas visíveis aguardam a liberação de espaço. Cada tipo de textura conserva o teto de 64 MiB e o limite de 1024×1024 pixels por imagem.
+## Carregamento da biblioteca de PS1 e PS3
 
-Durante a preparação inicial, o fundo da biblioteca aguarda e a imagem de carregamento permanece visível. A preparação termina quando as artes existentes dessa janela estão prontas ou tiveram falha de leitura. A fila mantém no máximo duas imagens prontas na RAM e uma em transferência, e não carrega a biblioteca inteira. Ao navegar, ela muda de prioridade sem esperar o término da leitura atual. Resultados de um catálogo antigo ou de uma recarga de artes são descartados. Uma imagem ainda pendente usa a textura neutra; não é marcada como inválida apenas por estar na fila.
+As duas plataformas usam a mesma preparação de biblioteca e imagens. Na abertura, a tela de carregamento permanece até as imagens necessárias à primeira exibição estarem prontas. Ao trocar de plataforma ou origem, essa tela reaparece se houver imagens pendentes; se elas já estiverem em cache, a troca é imediata. **Atualizar biblioteca** apresenta a mesma tela durante a varredura e a preparação das imagens.
 
-Os três layouts preservam as mesmas texturas. O gerenciador pausa novos pedidos e conserva o cache ao voltar à biblioteca. Os logs registram o tempo da pré-carga, leitura, decodificação, envio à GPU e interface. A gravação de configurações e as operações explícitas de importar, copiar ou atualizar arquivos continuam tendo seu próprio custo de armazenamento. A validação da redução das pausas depende do teste físico no PS3.
+A conclusão depende da prontidão do carregador, sem espera artificial por tempo. A preparação inclui as capas internas e as artes dos CDs necessárias ao jogo selecionado. Uma imagem ausente ou inválida é resolvida com o material padrão, sem prender a biblioteca no carregamento. Círculo encerra durante a preparação, como na abertura. A montagem do disco pelo X permanece no fluxo existente.
 
-## Configurações e compatibilidade
+## Copiar capas do USB
 
-Preferências unificadas: `/dev_hdd0/game/PGORBT301/USRDIR/PS3_GAME_ORBIT_SETTINGS.dat`. Arquivos de nomes, favoritos/seleção, layout, fundo e ordenação usam o mesmo diretório. A ordem fica em `PS3_GAME_ORBIT_ORDER.dat`, com checksum e backup `.bak`. Os dados antigos de `/dev_hdd0/tmp` continuam sendo lidos para migração. Cada gravação usa um temporário sincronizado e uma cópia `.bak` da versão anterior; o PS3 não precisa sobrescrever um arquivo via rename. Se o arquivo principal estiver ausente, a leitura usa o backup. Para restaurar padrões manualmente, remova o arquivo de configuração e sua cópia `.bak`. Arquivos de favoritos/seleção, nomes, layout e fundo das versões anteriores continuam compatíveis. As preferências antigas são migradas para USRDIR quando ainda não existe uma configuração atual válida.
+A importação pelo menu ainda usa o padrão antigo de capa, interior e disco único. FRONT/BACK/INSIDE1/INSIDE2 e artes por CD podem ser lidas diretamente das pastas do jogo no HD ou USB FAT32; a importação completa dessas artes pelo menu não foi adicionada nesta revisão.
 
-“Salvar último jogo visto” vem ligado para preservar o comportamento anterior. Desligado, o app começa no primeiro jogo do filtro salvo. Se o último jogo não estiver disponível, começa no primeiro disponível. Alterações são gravadas após um breve intervalo e ao sair normalmente.
+## Listagem do USB
 
-Diagnóstico: `/dev_hdd0/tmp/PS3_GAME_ORBIT_FIX47.log`; alternativa em `USRDIR`. Consulte [o roteiro de teste](docs/DISCO_PS3_1.5.7.md) ao reportar um problema.
+A varredura procura volumes nativos de `/dev_usb000` a `/dev_usb127`. O catálogo persistente do HDD continua ativo; um USB nativo é sempre relido para incorporar mudanças e não ficar preso a um resultado vazio. A identidade do volume continua independente da porta. Os leitores próprios de NTFS/exFAT para PS3 mantêm o caminho anterior de cache e leitura.
 
-## Fontes, compilação e publicação
+Se o USB ainda não aparecer após **Atualizar biblioteca**, envie `/dev_hdd0/tmp/PS3_GAME_ORBIT_1_9_9.log`. As linhas `SCAN192` separam os totais de PS3/PS1 e HDD/USB; as contagens mostradas nas prévias são apenas exemplos.
 
-- [Compilar e executar os testes](docs/BUILD.md)
-- [Notas prontas para o release](docs/GITHUB_1.5.7.md)
-- [Teste no PS3](docs/DISCO_PS3_1.5.7.md)
-- [Registro de validação](docs/VALIDACAO_1.5.7.md)
-- [Histórico](CHANGELOG.md) e [créditos/licenças](CREDITS.md)
+## Formatos e limites desta versão
 
-O PKG já está compilado. O ZIP público contém código, shaders arquivados, ativos próprios e relatórios. A malha JFX licenciada e sua representação editável não são redistribuídas. Para compilar, obtenha sua cópia na fonte indicada em `assets/jfx_bluray/README.md` e execute `scripts/prepare-jfx.py`. O código procedural do interior e das articulações acompanha o projeto. Prévias de versões anteriores mantidas em `assets/previews` são imagens de referência geradas no computador, não capturas desta versão no console.
+- PS1 no HD interno e USB FAT32: CUE/BIN BINARY com setores de 2352 bytes, faixas de dados/áudio e INDEX 01; ISO de dados com setores de 2048 bytes; BIN/IMG raw. Prefira CUE quando houver faixas de áudio.
+- Um CUE com vários BINs continua sendo **um CD**. Na primeira montagem, o Orbit reúne suas faixas em uma imagem separada no HD e mostra a porcentagem. A fonte não é alterada; a imagem pronta é reutilizada nas montagens seguintes.
+- O cache fica em `/dev_hdd0/game/PGORBT301/USRDIR/ps1_cache`. Reserve no HD o tamanho do CD escolhido. Para liberar espaço, apague os arquivos desse cache somente após desmontar o jogo. Não apague o cache do CD que está montado.
+- CUEs com WAVE, gaps sintéticos não nulos, modos mistos de setor, imagens incompletas, CHD/PBP/CCD/MDF e mais de quatro CDs são recusados com mensagem. SBI/LSD não são copiados ao cache de vários BINs; para títulos protegidos que precisem desses dados, use BIN único com o arquivo auxiliar compatível com o payload.
+- PS1 em NTFS/exFAT não integra esta versão. Se uma ISO de PS3 montada pelo leitor NTFS/exFAT do Orbit ainda estiver ativa, o Orbit pede reinicialização antes de montar PS1, para preservar o serviço validado.
+- Antes da montagem de PS1, o controle de ventoinha do Orbit volta ao padrão do sistema. Sua preferência salva é mantida para a próxima abertura do Orbit.
+
+## PKGs e validação
+
+A fila de PKGs e a opção **Voltar ao Orbit ao terminar** mantêm exatamente o auxiliar da 1.8.9, cujo retorno foi confirmado por você no HEN. As preferências existentes são preservadas. A geometria de PS3 e o residente nativo permanecem iguais à base validada.
+
+As versões anteriores registram a compilação PPC64, os testes de catálogo/seletor/montagem e a simulação de 14.400 quadros de desenho nativo. A 2.0.3 executou a compilação atual, a verificação dos limites de transparência, os dados PPC, a prévia, os GLBs e a integridade do pacote em `docs/validation203/`; a lógica de execução dessas bases foi preservada. A animação C++ foi comparada com a prévia aprovada em 2.613 matrizes. A geometria PS3, o residente e o auxiliar de PKGs permanecem iguais às bases validadas. A revisão 1.9.6 verificou os quatro CDs idênticos ao CD simples, fechamento dos três suportes, recorte 99/802/99 da BACK, transmissão nas janelas e lombadas com o mesmo alfa, desenho de produção e regressão PS3. O carregamento foi verificado com a rotina de produção e o worker real alternando PS1/PS3 sem desenhar a biblioteca antes da prontidão. As evidências estão em `docs/validation196/`.
+
+A 1.9.7 acrescenta o teste com escritores de comandos do SDK, confirmações intermediárias e a reprodução do limite do corpo de desenho antigo; os logs ficam em `docs/validation197/`. A validação anterior fica em `docs/validation199/`: restauração exata da simples à base 1.9.4, exterior original da múltipla e quatro vazados na articulação, INSIDE1/INSIDE2 dos jogos vizinhos prontos antes da seleção, alternância PS1/PS3 com imagens grandes e limite conjunto de memória.
+
+O teste visual e de desempenho em HEN/CFW ainda depende do console. Instale o PKG e confira jogos de dois, três e quatro CDs com **L3**. O seletor de montagem continua independente da inspeção.
+
+Log do aplicativo: `/dev_hdd0/tmp/PS3_GAME_ORBIT_1_9_9.log`. O log do instalador continua em `/dev_hdd0/tmp/PS3_GAME_ORBIT_PKG_1_8_9.log`.
+
+O ZIP completo inclui o PKG, fontes, documentação, ativos e prévias. SDK, dados de assinatura e o ativo JFX privado não são redistribuídos. GitHub não atualizado.
+
+[Compilação](docs/BUILD.md) · [Validação](docs/VALIDACAO_2.0.4.md) · [Prévia do Spine PS1](assets/previews/2.0.4/PS3_GAME_ORBIT_v2.0.4_SPINE_PS1.png)

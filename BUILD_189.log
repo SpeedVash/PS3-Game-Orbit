@@ -1,0 +1,173 @@
+include/fan_policy_fix48.h: OK
+include/orbit_service_protocol_fix48.h: OK
+include/raw_reader_fix48.h: OK
+include/raw_storage15.h: OK
+include/service_probe16_paths.h: OK
+include/service_probe16_protocol.h: OK
+pkgfiles/USRDIR/orbit_service16.sprx: OK
+plugin/fan_policy.c: OK
+plugin/file_ipc.h: OK
+plugin/monotonic_clock.h: OK
+plugin/raw_reader.c: OK
+plugin/service16/fan_control.h: OK
+plugin/service16/fan_native.h: OK
+plugin/service16/module.S: OK
+plugin/service16/mount_native.h: OK
+plugin/service16/native.h: OK
+plugin/service16/raw_mount.h: OK
+plugin/service16/raw_worker_boot.S: OK
+plugin/service16/service.c: OK
+plugin/service16/service.ld: OK
+plugin/service16/worker_boot.S: OK
+plugin/thread_bootstrap.h: OK
+plugin/thread_trace12.h: OK
+plugin/service16/module_stop177.h: OK
+{
+  "module_info": "0x31b0",
+  "load_segments": 2,
+  "relocations": 185,
+  "fixed_relocations": {
+    "63": 12,
+    "10": 112
+  },
+  "narrowed_addr64": 124,
+  "relocation_types": [
+    1
+  ],
+  "elf_flags": "0x01000000",
+  "imports": 2,
+  "import_libraries": [
+    "sysPrxForUser"
+  ],
+  "size": 18760,
+  "memory": 154640
+}
+scetool 0.2.9 <public build> (C) 2011-2013 by naehrwert
+NP local license handling (C) 2012 by flatz
+
+[*] SELF built.
+[*] Data compressed.
+[*] Data encrypted.
+[*] pkgfiles/USRDIR/orbit_pkg189.sprx written.
+scetool 0.2.9 <public build> (C) 2011-2013 by naehrwert
+NP local license handling (C) 2012 by flatz
+
+[*] ELF written to build/pkg189/decoded.prx.
+PASS: independent OpenSSL CBC/CTR decryption, HMAC-SHA1 of all 3 signed segments, exact PRX headers/payload and correct SCE file length
+ff.c
+ffunicode.c
+app_controller.cpp
+artwork_loader_fix45.cpp
+artwork_resize_fix37.cpp
+artwork_stream_fix45.cpp
+artwork_upload_fix45.cpp
+background_renderer_fix36.cpp
+background_settings_fix36.cpp
+boot_visual.cpp
+cache_policy_fix37.cpp
+cache_policy_fix44.cpp
+case_animation_fix32.cpp
+case_model_fix37.cpp
+case_render_fix25.cpp
+case_style_fix41.cpp
+catalog_store17.cpp
+controller.cpp
+cover_cache.cpp
+cover_image.cpp
+cover_limits_fix31.cpp
+cover_orientation_fix28.cpp
+cover_resolver.cpp
+coverflow_state.cpp
+disc_artwork_fix38.cpp
+disc_copy17.cpp
+disc_iso17.cpp
+disc_texture_fix32.cpp
+exfat_reader15.cpp
+file_store_fix38.cpp
+file_task17.cpp
+folder_boot17.cpp
+folder_permissions14.cpp
+frame_validation_fix32.cpp
+full_cover_case_fix26.cpp
+game_order_fix40.cpp
+game_tools_fix35.cpp
+gpu_cover_cache_fix32.cpp
+image_decode.cpp
+image_picker17.cpp
+inspect_case_fix25.cpp
+inspection_art_cache_fix34.cpp
+inspection_art_fix33.cpp
+iso_metadata_fix48.cpp
+jfx_case_fix29.cpp
+layout_settings_fix31.cpp
+library_browser_fix28.cpp
+library_hud_fix28.cpp
+library_pair_fix28.cpp
+library_progress173.cpp
+library_scanner.cpp
+main.cpp
+math3d.cpp
+metadata_utils.cpp
+mount_operation_fix29.cpp
+ntfs_reader_fix48.cpp
+orbit_background_fix36.cpp
+orbit_flow_fix31.cpp
+orbit_fs17.cpp
+orbit_service_client_fix48.cpp
+orbit_settings_fix37.cpp
+orbit_ui_fix30.cpp
+package_xmb172.cpp
+performance_fix35.cpp
+physical_disc_fix47.cpp
+physical_disc_monitor_fix47.cpp
+pkg_handoff189.cpp
+preferences_fix29.cpp
+prefetch_policy_fix36.cpp
+prepared_artwork_fix45.cpp
+ps3_lifecycle.cpp
+raw_reader_fix48.cpp
+raw_usb_catalog15.cpp
+rename_keyboard_fix35.cpp
+render_plan.cpp
+rsx_command_stream_fix25.cpp
+rsx_present_fix20.cpp
+rsx_renderer_v10.cpp
+rsx_stage1.cpp
+runtime_diag.cpp
+safe_boot.cpp
+service_probe16.cpp
+text_encoding17.cpp
+texture_pool_fix36.cpp
+usb_artwork_fix36.cpp
+v14_case_mesh.cpp
+wallpaper17.cpp
+wallpaper_renderer17.cpp
+webman_mount_fix29.cpp
+v14_case.vpo
+v14_case.fpo
+V14 historical geometry check (JFX is the active model)
+[OK]   v14_case_mesh.cpp 4d36d20082196439b90aae771dfa146af36154e7e06abebbac6b92935d721c39
+[OK]   v14_case_mesh.h   2159274c550f7240d854f64da0a94fc9b81b29a98cb7e9b9363e44f883a1cfa6
+shaders/v14_case.vpo: OK
+shaders/v14_case.fpo: OK
+linking ... ps3_game_orbit_fix48.elf
+ppu-g++ vendor/fatfs/ff.o vendor/fatfs/ffunicode.o src/app_controller.o src/artwork_loader_fix45.o src/artwork_resize_fix37.o src/artwork_stream_fix45.o src/artwork_upload_fix45.o src/background_renderer_fix36.o src/background_settings_fix36.o src/boot_visual.o src/cache_policy_fix37.o src/cache_policy_fix44.o src/case_animation_fix32.o src/case_model_fix37.o src/case_render_fix25.o src/case_style_fix41.o src/catalog_store17.o src/controller.o src/cover_cache.o src/cover_image.o src/cover_limits_fix31.o src/cover_orientation_fix28.o src/cover_resolver.o src/coverflow_state.o src/disc_artwork_fix38.o src/disc_copy17.o src/disc_iso17.o src/disc_texture_fix32.o src/exfat_reader15.o src/file_store_fix38.o src/file_task17.o src/folder_boot17.o src/folder_permissions14.o src/frame_validation_fix32.o src/full_cover_case_fix26.o src/game_order_fix40.o src/game_tools_fix35.o src/gpu_cover_cache_fix32.o src/image_decode.o src/image_picker17.o src/inspect_case_fix25.o src/inspection_art_cache_fix34.o src/inspection_art_fix33.o src/iso_metadata_fix48.o src/jfx_case_fix29.o src/layout_settings_fix31.o src/library_browser_fix28.o src/library_hud_fix28.o src/library_pair_fix28.o src/library_progress173.o src/library_scanner.o src/main.o src/math3d.o src/metadata_utils.o src/mount_operation_fix29.o src/ntfs_reader_fix48.o src/orbit_background_fix36.o src/orbit_flow_fix31.o src/orbit_fs17.o src/orbit_service_client_fix48.o src/orbit_settings_fix37.o src/orbit_ui_fix30.o src/package_xmb172.o src/performance_fix35.o src/physical_disc_fix47.o src/physical_disc_monitor_fix47.o src/pkg_handoff189.o src/preferences_fix29.o src/prefetch_policy_fix36.o src/prepared_artwork_fix45.o src/ps3_lifecycle.o src/raw_reader_fix48.o src/raw_usb_catalog15.o src/rename_keyboard_fix35.o src/render_plan.o src/rsx_command_stream_fix25.o src/rsx_present_fix20.o src/rsx_renderer_v10.o src/rsx_stage1.o src/runtime_diag.o src/safe_boot.o src/service_probe16.o src/text_encoding17.o src/texture_pool_fix36.o src/usb_artwork_fix36.o src/v14_case_mesh.o src/wallpaper17.o src/wallpaper_renderer17.o src/webman_mount_fix29.o shaders/v14_case.vpo.o shaders/v14_case.fpo.o -mhard-float -fmodulo-sched -ffunction-sections -fdata-sections -Wl,-Map,ps3_game_orbit_fix48.map -L/workspace/scratch/704be994b362/toolchain187/ps3dev/ppu/lib -lrsx -lgcm_sys -lrt -lnet -lio -lsysutil -lsysmodule -lm -ljpgdec -lpngdec -lsysfs -llv2 -o ps3_game_orbit_fix48.elf
+CEX self ... ps3_game_orbit_fix48.self
+ELF header size @ 40
+8 program headers @ 40
+25 section headers @ 515fe8
+deflated... OK processing segment 0 with rlen 24c114 len ef505 offset 0...encrypted...
+deflated... OK processing segment 1 with rlen 2e098 len c2d6 offset 250000...encrypted...
+deflated... OK processing segment 2 with rlen 233eb0 len a6d81 offset 280000...encrypted...
+deflated... OK processing segment 3 with rlen 55ed0 len a18c offset 4c0000...encrypted...
+processing segment 4 with rlen 0 len 0 offset 24c114...encrypted...
+processing segment 5 with rlen 0 len 0 offset 27e098...encrypted...
+processing segment 6 with rlen 0 len 0 offset 0...encrypted...
+deflated... OK processing segment 7 with rlen 28 len 22 offset 24c0ec...encrypted...
+segments enumerated
+built crypt data
+file built
+self written in memory
+building pkg ... ps3_game_orbit_fix48.pkg
+PASS PPC64 geometry: all 6460 vertices and 16791 indices match the functional 1.7.1 binary
+c916e8c43772c1f9b7752a8958bd81eb649a86cf333f55407e130ed284d21667  PS3_GAME_ORBIT_v1.8.9.pkg

@@ -1,0 +1,32 @@
+{
+  "module_info": "0x31b0",
+  "load_segments": 2,
+  "relocations": 185,
+  "fixed_relocations": {
+    "63": 12,
+    "10": 112
+  },
+  "narrowed_addr64": 124,
+  "relocation_types": [
+    1
+  ],
+  "elf_flags": "0x01000000",
+  "imports": 2,
+  "import_libraries": [
+    "sysPrxForUser"
+  ],
+  "size": 18760,
+  "memory": 154640
+}
+scetool 0.2.9 <public build> (C) 2011-2013 by naehrwert
+NP local license handling (C) 2012 by flatz
+
+[*] SELF built.
+[*] Data compressed.
+[*] Data encrypted.
+[*] pkgfiles/USRDIR/orbit_pkg189.sprx written.
+scetool 0.2.9 <public build> (C) 2011-2013 by naehrwert
+NP local license handling (C) 2012 by flatz
+
+[*] ELF written to build/pkg189/decoded.prx.
+PASS: independent OpenSSL CBC/CTR decryption, HMAC-SHA1 of all 3 signed segments, exact PRX headers/payload and correct SCE file length

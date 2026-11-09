@@ -1,0 +1,6 @@
+scetool 0.2.9 <public build> (C) 2011-2013 by naehrwert
+NP local license handling (C) 2012 by flatz
+
+[*] ELF written to build/delivered188.prx.
+PASS regression189: delivered 1.8.8 PRX byte match; observed close_all_list result 1 reproduces local abort 0x18813 before focus/exec; new 1.8.9 fixture covers this result at each step and on one/two PKGs
+Delivered 1.8.8 PRX SHA256 12f7d6704155206f96107a9ac9030e176698e9f3b385b180db2338a3ee4be578

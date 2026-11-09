@@ -1,0 +1,5 @@
+scetool 0.2.9 <public build> (C) 2011-2013 by naehrwert
+NP local license handling (C) 2012 by flatz
+
+[*] ELF written to build/delivered189.elf.
+PASS delivered EBOOT: every compiled PT_LOAD byte matches: 5259052

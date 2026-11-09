@@ -1,3 +1,165 @@
+# v2.1.3
+
+- PLUS: reaproveita o fundo de 720 linhas entre a abertura e o seletor de PKGs, sem refazer os gradientes a cada movimento.
+- PLUS: mantém o bitmap do seletor e atualiza somente as linhas, totais e controles alterados; trata navegação entre unidades e revisão da fila.
+- Mantém no cache apenas sete identificações de linhas visíveis, sem copiar diretórios inteiros ou mudar o instalador.
+- Inclui as correções anteriores de inicialização, menus e navegação horizontal dos CDs de PS1.
+
+# v2.1.2
+
+- PLUS: troca de seleção atualiza somente linhas/cartões alterados e o contador, com restauração exata do fundo translúcido.
+- PLUS: otimiza o cálculo de cobertura das bordas arredondadas, sem alterar sua aparência.
+- PLUS: Esquerda/Direita no seletor de discos PS1 e nas origens; indicações horizontais e cancelamento por Círculo no seletor.
+- Padrão: controles e desenho preservados. Mantém a correção do primeiro HUD de 720 linhas da v2.1.1.
+
+# v2.1.1
+
+- Corrige a saída ao XMB depois do logotipo: o HUD 1280x720 era recusado pelo limite antigo de 512 linhas do carregador gráfico.
+- Mantém o limite de largura de 2048 e permite até 720 linhas; acrescenta uma verificação na compilação entre tamanho do HUD e capacidade do carregador.
+- Adiciona testes de envio da primeira textura, ARGB, limites, troca de visual e retorno do seletor de PKGs usando o renderer real.
+- Mantém a mesma instalação PGORBT301, configurações e recursos; versão de instalação 02.11.
+
+# v2.1.0
+
+- Integra a interface PS3 ORBIT PLUS ao aplicativo existente.
+- Adiciona START → Interface → Padrão / PS3 ORBIT PLUS, com escolha salva e aplicação imediata.
+- Mantém as covers na memória durante a troca de interface.
+- Conserva a identificação da instalação e todos os recursos, caixas e materiais da v2.0.4.
+
+# 1.9.3
+
+- Restaura os materiais e a transparência da caixa simples PS1 da 1.9.1 (alpha 0,12/0,19), mantendo a mesma montagem fechada e aberta.
+- Origem dos jogos passa à primeira opção do START e abre um seletor explícito: Todos, HD, USB e Favoritos.
+- Confirmação com X, cancelamento com Círculo, preferência salva e acesso mesmo sem jogos no filtro atual.
+- L1/R1 continua alternando PS3/PS1; filtros nunca misturam plataformas. Ajuda e cabeçalho atualizados.
+- Caixa múltipla da 1.9.2 permanece provisória, aguardando um modelo escolhido pelo autor.
+- Compilação PS3, filtros nas duas plataformas, persistência, recuperação de filtro vazio, geometria, extração reta do CD, USB e 9.000 quadros nativos simulados verificados. Teste físico pendente.
+- Geometria PS3, residente16 e auxiliar PKG189 preservados. GitHub não atualizado.
+
+# 1.9.2
+
+- Caixa PS1 usa as mesmas peças fechada e aberta; removida a substituição pelo modelo simplificado ao fechar.
+- Plástico transparente menos opaco, para evitar o acúmulo de camadas claras sobre as capas; caixa PS3 preservada.
+- Caixa múltipla reconstruída com suporte central, dois lados articulados e discos em faces opostas, usando referências de caixa quádrupla de 22 mm. Modelos GLB com animações incluídos.
+- USB nativo sempre relido durante a varredura, sem reutilizar catálogo vazio antigo; procura de /dev_usb000 até /dev_usb127.
+- Primeira migração para a 1.9.2 volta a origem a Todos, preservando a plataforma. Novas escolhas de filtro continuam salvas.
+- Cabeçalho informa origem e contagens HDD/USB; log SCAN192 separa os totais por plataforma e armazenamento.
+- Compilação PS3, continuidade das peças, saída reta do CD, catálogo USB simulado, 9.000 quadros nativos simulados, regressão PS3 e integridade do PKG verificados. Teste físico no console pendente.
+- Residente16 e auxiliar PKG189 idênticos aos anteriores. GitHub não atualizado.
+
+# 1.9.1
+
+- Caixa simples PS1: bandeja, ranhuras e encaixe do CD transparentes.
+- FRONT/BACK/INSIDE1/INSIDE2 independentes; BACK e INSIDE1 com o mesmo recorte 5%/90%/5% nas duas lombadas e no painel traseiro.
+- CD sai reto, sem yaw/pitch extra nem queda vertical, nos modelos simples e múltiplo.
+- Abas PS3 e PS1 separadas, com filtros de armazenamento e favoritos limitados à plataforma; preferência salva compatível com os estados anteriores.
+- L1/R1 troca plataforma; START → Filtrar biblioteca altera o filtro; navegação vertical da Lista preservada.
+- Carregamento das capas em segundo plano; novos caches traseiros limitados a dois jogos/8 MiB por arte.
+- Geometria PS3, residente e auxiliar PKG189 preservados; teste físico desta versão pendente.
+
+# 1.9.0 — PS1 e múltiplos CDs
+
+- Jogos de PS1 em PSXISO no HD/USB FAT32, agrupados por pasta e CDs por subpastas.
+- Caixa simples aprovada e caixa múltipla automática de dois a quatro CDs; tampa, livreto, bandejas e CD escolhido articulados.
+- Seletor de CD antes da montagem e nas Opções do Jogo; arte por CD, cancelamento e erros explícitos.
+- CUE/BIN multifaixa tratado como um CD; reunião das faixas no HD com progresso e cache.
+- Montagem nativa de PS1 com verificação do caminho/estado/tipo de disco antes de voltar ao XMB.
+- Geometria PS3, residente16 e auxiliar PKG189 preservados. Nenhuma atualização no GitHub.
+- Compilação e testes locais verificados; PS1 ainda aguarda teste físico no console.
+
+# 1.8.7 — 21/10/2026
+
+- Corrige gameExec para usar tipo HDD 2 e o título PGORBT301 no segundo argumento de diretório. A 1.8.6 usava tipo de disco 1 e o primeiro argumento, inadequados ao aplicativo instalado.
+- Exige confirmação do próprio Orbit, com token da sessão, antes de registrar o retorno como confirmado. A confirmação ocorre na entrada do main, antes dos recursos gráficos e do catálogo.
+- Resposta nativa zero sem confirmação do processo em 30 segundos gera erro de retorno 0x18710. Não repete instalação nem tenta abrir o aplicativo em loop.
+- Preserva o controle SELECT, a preferência salva da 1.8.6, a instalação em fila, o residente de montagem/ventoinha, a geometria e as artes.
+- Verifica o caso observado no log com o PRX da 1.8.6 reconstruído e idêntico ao entregue, em VSH simulado. Verificações da 1.8.7: 39 cenários PPC64 simulados, cliente nativo/controle de sessão em host, compilação e pacote final. Retorno físico pendente. GitHub não atualizado.
+
+# 1.8.6 — 21/10/2026
+
+- Adiciona SELECT na revisão de PKGs para ligar/desligar “Voltar ao Orbit ao terminar”; preferência persistente, desligada por padrão.
+- Registra a opção na fila com verificação de integridade do cabeçalho. O auxiliar consulta a opção somente ao terminar toda a fila, depois do fechamento das janelas nativas e de um período de XMB estável.
+- Solicita ao game_plugin a execução do título instalado PGORBT301, sem depender da posição do ícone, usar exec_push ou alterar o mapeamento de jogos. A chamada usa callback com pilha própria e TLS nativa, como na base 1.8.5.
+- Retorno único por sessão, sem repetição automática da fila. Falhas no envio interrompem o retorno; falhas apenas de reabertura preservam o resultado da fila e deixam diagnóstico separado.
+- Aguarda até dois segundos na recuperação inicial caso o callback de abertura ainda esteja retornando. Não descarrega um auxiliar com callback pendente.
+- Mantém residente de montagem/ventoinha, geometria, artes e tela de carregamento. 1.8.5 confirmada no HEN pelo autor; retorno da 1.8.6 pendente de teste físico. Sem atualização do GitHub.
+
+# 1.7.2 TESTE 1 — 18/10/2026
+
+## 1.7.3 — 18/10/2026
+
+- Reconecta ao serviço residente por IPC com sequência nova antes de consultar slots, limpar arquivos ou carregar outro módulo. Tolera variações do caminho do plugin na identificação de uma instância existente.
+- Cancela consultas de status ao encerrar o aplicativo; controles têm espera de 3 segundos, mantendo 20 segundos e confirmação de limpeza para montagens.
+- Restaura a pasta dos PKGs durante o carregamento, antes do catálogo e dos leitores em segundo plano.
+- A tela de carregamento mostra armazenamento, catálogo, pastas, metadados e o caminho real da capa em leitura/preparação, com contagem de imagens. Atualiza apenas a faixa de status da imagem inicial pela CPU, sem novos flips ou comandos RSX.
+- Versão visível 1.7.3, SFO 01.73 e ID PGORBT301. Mantém o serviço, a geometria, o ícone e as artes da base. Sem atualização do GitHub.
+
+- Adiciona “Disponibilizar PKGs no XMB” nas Opções do Jogo (Triângulo).
+- Seletor de pastas de HD interno/USB FAT32, prévia dos PKGs e confirmação com retorno ao XMB, sem cópia dos pacotes ao HD.
+- Redireciona temporariamente `/dev_hdd0/packages`. Registra a intenção antes do mapeamento e confere o acesso antes de fechar a aplicação.
+- Restaura apenas o redirecionamento ainda identificado como próprio; mantém o registro para tentar novamente se a unidade for retirada. A recuperação ocorre depois de duas apresentações confirmadas da biblioteca.
+- Preserva a cópia de disco restrita ao Blu-ray físico, o serviço de montagem/ventoinha e as artes. A geometria compilada é comparada byte a byte com a base 1.7.1.
+- Testes host, adaptador nativo e integridade do PKG verificados; instalação real pelo XMB pendente de teste no HEN/CFW.
+- ZIP completo e PKG de teste; sem atualização do GitHub.
+
+# 1.7.1 — 18/10/2026
+
+- Restringe a cópia para ISO ao Blu-ray físico selecionado e confirmado no leitor; oculta o comando em HDD/USB, imagens montadas e consulta inconclusiva.
+- Sincroniza o menu após navegação, seleção, ordenação e troca do catálogo. A retirada do disco é aplicada com o menu do jogo aberto e fecha esse menu antes da próxima apresentação.
+- Preserva a base R4 de cópia confirmada pelo autor, ABI HEN/Cobra de 1.064 bytes, gerador de ISO por arquivos autenticados e serviço funcional 1.6.1.
+- Consolida catálogo persistente, fundo personalizado e caracteres da série 1.7. Remove Gerenciador de Arquivos e preparação de PKGs.
+- Versão 1.7.1; ID PGORBT301, SFO 01.71. Entrega em ZIP completo, sem atualização do GitHub, conforme a instrução atual do autor.
+
+# 1.7 TESTE R1 — 2026-10-17
+
+- Restaura o ícone exato da 1.6.1 por solicitação do autor.
+- Corrige o tamanho declarado do auxiliar VSH e usa os parâmetros de assinatura do módulo aprovado. Verifica o cabeçalho instalado antes de carregar, evitando repetir P17-M/0x80010002 por contêiner truncado/inconsistente.
+- Adiciona upload próprio de fundo 1280x720; o limite de 512 pixels dos menus permanece separado.
+- No HEN, não chama GET_MAP_PATH na detecção de disco/inicialização. Mantém a checagem de tipo físico e emulação.
+- Leitura de disco aceita retorno zero ou contagem completa de bytes, permite mídia sem árvore ISO9660 e mostra códigos D17 em falhas. Sem alternativa por setores cifrados.
+- Leitura limitada de catálogo/fundo com descritores nativos, callbacks e fechamento garantido; restaura fundo/histórico depois de duas apresentações da biblioteca. Construtor do instalador não abre dispositivos externos.
+- Testes locais de upload, leitura nativa, detecção HEN e cópia ISO adicionados. Compilação e testes físicos são registrados separadamente em VALIDACAO_1.7_R1.md.
+- Serviço de montagem/ventoinha, modelos e shaders da 1.6.1 preservados. Sem publicação no GitHub.
+
+# 1.7 TESTE — 2026-10-17
+
+- Catálogo persistente por volume, identidade independente da porta USB e atualização manual da biblioteca.
+- Gerenciador adaptado: seleção múltipla, clipboard, operações com progresso/cancelamento, busca e leitura de NTFS/exFAT; sem players.
+- Até 64 PKGs pelos dois menus, preparação no HD, instalador nativo no XMB, resultados e histórico específico após conferir arquivos.
+- Recuperação de filas interrompidas sem falso sucesso e sem bloquear novas tentativas.
+- Fundo PNG/JPEG salvo no HD, ondas opcionais, restauração e novo ícone.
+- Disco físico PS3 para ISO no HD com confirmação/progresso/cancelamento e preservação da ISO anterior.
+- Serviço residente, modelos e shaders da 1.6.1 preservados. Teste físico de CFW/HEN pendente. Sem publicação no GitHub.
+
+# 1.6.1 — 2026-10-17
+
+- Oficializa a revisão funcional Teste16 R1 como 1.6.1, por definição do autor, mantendo PGORBT301 e atualizando APP_VER/VERSION para 01.61.
+- Confirmação do usuário no HEN 3.6.0: revisão funcionou após a correção do retorno ao SYSCON.
+- Confirmação do usuário na CFW 4.91 Evilnat CEX/Cobra 8.5 com webMAN: temperaturas aparecem e o Orbit suspende o controle, conforme esperado.
+- Preserva byte a byte o serviço residente validado, a montagem, os leitores NTFS/exFAT, permissões, interface, modelos e shaders. O aplicativo só recebe identificação de versão e nomes de log atualizados.
+- O controle próprio da ventoinha na CFW sem outro controlador não foi confirmado neste teste. As confirmações físicas são da base R1; o pacote 1.6.1 recompilado passa pela verificação local de identidade e conteúdo.
+- Distribuição pelos arquivos entregues ao autor. Publicação no GitHub adiada por instrução expressa do usuário.
+
+## Histórico de desenvolvimento
+
+# Teste 16 R1 — Temperaturas e retorno ao SYSCON
+
+- Lê CPU/RSX antes de suspender o controle por presença de webMAN ou por conflito de política.
+- Mantém as temperaturas atualizadas também durante a pausa de inicialização do HEN; nenhuma chamada de leitura/escrita da política da ventoinha ocorre durante a suspensão.
+- Acrescenta regressão que reproduz a falha original, verifica atualização, falha e recuperação dos sensores e executa o PRX PPC64 real com webMAN simulado na fronteira de syscalls.
+- Retorno ao SYSCON: até oito tentativas, com intervalos de 100 ms, para tratar recusa temporária e confirmação atrasada. Mantém a propriedade até confirmar a entrega, impede reaplicar o modo anterior após falha e interrompe a repetição em conflito ou pausa HEN.
+- O usuário confirmou temperaturas no HEN e retorno ao Padrão somente após várias tentativas no Teste 16 original; as correções ainda aguardam teste físico.
+- Mantém aplicativo, interface, leitores, montagem, política térmica e adaptador nativo do Teste 16. O log e o módulo continuam com os nomes do Teste 16; reiniciar é necessário para substituir o módulo residente.
+- Validação física das correções e confirmação das velocidades reais da ventoinha pendentes.
+
+# Teste 16 — Controle da ventoinha e menu
+
+- Substitui a opção de teste pelo controle funcional: Padrão do PS3, Automático e Manual, com telemetria e persistência após confirmação.
+- Mantém a inicialização do serviço após dois quadros apresentados e usa o worker de IPC já validado.
+- Inclui pausa HEN na inicialização do jogo, verificação de política aplicada, tratamento de sensores e conflito com outros controladores.
+- Corrige a aceitação de ajustes quando o cliente não iniciou ou o bootstrap falhou.
+- Teste 15 confirmado pelo usuário no HEN; sistema do USB/jogo não especificados. Montagem, leitores e recursos visuais preservados. Teste físico da nova ventoinha pendente.
+
 # Histórico de mudanças
 
 ## 1.6 — 2026-10-13 (FIX48)
@@ -234,3 +396,11 @@ Primeira release pública do **PS3 Game Orbit**, baseada no FIX30 aprovado pelo 
 - Compilação nativa e verificações de geometria, controles, persistência, montagem e fluxo de comandos concluídas no computador.
 
 O PKG é byte a byte o mesmo instalador FIX30 aprovado, com versão SFO `01.00` e TITLE_ID `PGORBT301`. Os identificadores FIX presentes nos fontes registram a evolução interna do projeto.
+# Teste 15 — NTFS e exFAT
+
+- Catálogo e montagem própria de ISOs em USB NTFS/exFAT, incluindo subpastas e partes consecutivas.
+- FatFs R0.16 somente para leitura, verificação de boot exFAT, nomes UTF-8 e arquivos maiores que 4 GiB.
+- Serviço residente 15 com tarefa raw isolada, ETIMEDOUT conferido no SDK e desmontagem antes de encerrar a leitura.
+- Preparação de permissões do Teste 14 e recursos visuais aprovados preservados; ventoinha permanece desabilitada.
+- Verificações locais concluídas; teste físico do novo leitor ainda pendente. Instruções em TESTE_15.md.
+
