@@ -11,7 +11,7 @@ APPID := PGORBT301
 CONTENTID := UP0001-$(APPID)_00-0000000000000000
 ICON0 := pkgfiles/ICON0.PNG
 PKGFILES := pkgfiles
-SFOXML := assets/PARAM_2_1_3.xml
+SFOXML := assets/PARAM_2_1_4.xml
 
 include $(PSL1GHT)/ppu_rules
 

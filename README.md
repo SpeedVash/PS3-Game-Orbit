@@ -1,10 +1,8 @@
-# PS3 Game Orbit 2.1.3
+# PS3 Game Orbit 2.1.4
 
-A **v2.1.3** otimiza o navegador de **instalação de PKGs no PLUS**. O fundo decorativo é preparado uma vez e compartilhado com a abertura do PLUS. Durante a navegação, a tela atualiza apenas as linhas e informações alteradas, incluindo unidades, marcações e revisão da fila.
+A **v2.1.4** mantém o disco do leitor visível quando uma ISO ou pasta está montada. Na aba **PS3**, origem **Todos**, aparece **Disco físico no leitor** enquanto o jogo virtual ocupa o leitor. Atualizar a biblioteca preserva a montagem. Selecione essa entrada e pressione **X — Restaurar** para desmontar o jogo virtual e ler o título do disco físico sem sair do Orbit.
 
-Instale `PS3_GAME_ORBIT_v2.1.3.pkg` sobre a versão atual. A seleção, a ordem da fila e o envio ao instalador do XMB usam o mesmo processo anterior. A correção dos menus e das setas de PS1 da v2.1.2 está incluída. Veja `docs/NOTAS_2.1.3.md`.
-
-Os testes no PC e a compilação nativa passaram; a resposta percebida no seu PS3 precisa de reteste.
+Instale `PS3_GAME_ORBIT_v2.1.4.pkg` sobre a versão atual e reinicie o PS3 para carregar o serviço atualizado. A correção funciona nas duas interfaces e inclui as melhorias de navegação de PKGs da v2.1.3. Veja `docs/NOTAS_2.1.4.md`.
 
 Desde a **v2.1.0**, o aplicativo reúne o **PS3 Game Orbit padrão** e o **PS3 ORBIT PLUS** no mesmo aplicativo. O PLUS traz a interface aprovada, com navegação por plataforma e origem, painéis em azul, tipografia maior e opções redesenhadas.
 
@@ -16,11 +14,11 @@ Desde a **v2.1.0**, o aplicativo reúne o **PS3 Game Orbit padrão** e o **PS3 O
 
 A troca é imediata e a escolha fica salva para a próxima abertura. Na primeira instalação sem uma escolha salva, o visual inicial é o **Padrão**. Os dois visuais compartilham os mesmos jogos, favoritos, configurações, catálogo e covers. Alternar a interface não faz uma nova leitura da biblioteca nem descarta as imagens já carregadas.
 
-Instale `PS3_GAME_ORBIT_v2.1.3.pkg` sobre a versão atual. A identificação continua **PGORBT301**, com versão de instalação **02.13**. O log desta versão é `/dev_hdd0/tmp/PS3_GAME_ORBIT_2_1_3.log`.
+O identificador continua **PGORBT301**, com versão de instalação **02.14**. O log desta versão é `/dev_hdd0/tmp/PS3_GAME_ORBIT_2_1_4.log`.
 
 O visual padrão conserva o desenho da v2.0.4. As caixas PS3 e PS1, materiais, transparência aprovada de **96%** nas áreas FRONT/BACK de PS1, animações, carregamento e montagem dos jogos permanecem iguais à base. Os dois visuais oferecem Clássico, Spine e Lista; PS3/PS1 separados; Todos/HD/USB/Favoritos; seleção de CD de PS1; importação de covers por USB; fundo personalizado; ventoinha; cópia de disco e instalação de PKGs.
 
-A compilação nativa e os testes no PC passaram. A confirmação em **PS3 físico/HEN/CFW está pendente**. As imagens em `assets/previews/2.1.0/` são prévias no PC com o código da interface e a geometria original, usando artes ilustrativas. Veja `docs/NOTAS_2.1.3.md`.
+A compilação nativa e os testes no PC passaram. A confirmação em **PS3 físico/HEN/CFW está pendente**. As imagens em `assets/previews/2.1.0/` são prévias no PC com o código da interface e a geometria original, usando artes ilustrativas. Veja `docs/NOTAS_2.1.4.md`.
 
 Os recursos abaixo são herdados da v2.0.4.
 
@@ -44,7 +42,7 @@ As imagens das caixas visíveis ainda são preparadas para a memória gráfica a
 
 ## Instalar
 
-1. Instale `PS3_GAME_ORBIT_v2.1.3.pkg` pelo XMB, sobre a versão atual.
+1. Instale `PS3_GAME_ORBIT_v2.1.4.pkg` pelo XMB, sobre a versão atual, e reinicie o PS3.
 2. Reinicie o console após a atualização e habilite o HEN novamente, quando aplicável.
 3. Organize os jogos em `PSXISO` no HD interno ou em um USB FAT32. Use uma pasta por jogo e uma subpasta por CD.
 4. Conecte o USB antes de abrir o Orbit. Selecione a plataforma com **L1/R1** e confira **Origem: Todos**. Use **Atualizar biblioteca** se necessário.

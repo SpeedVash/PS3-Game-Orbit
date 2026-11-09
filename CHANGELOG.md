@@ -1,3 +1,9 @@
+# v2.1.4
+
+- Mantém a presença do disco físico de PS3 no catálogo enquanto um jogo virtual está montado, inclusive ao reabrir ou atualizar a biblioteca.
+- X em **Disco físico no leitor** restaura o leitor sem sair do Orbit. A identificação e a opção de copiar aparecem após a leitura do Blu-ray real.
+- O serviço serializa a restauração com as outras montagens e encerra o leitor de ISOs NTFS/exFAT depois de desmontar a imagem.
+
 # v2.1.3
 
 - PLUS: reaproveita o fundo de 720 linhas entre a abertura e o seletor de PKGs, sem refazer os gradientes a cada movimento.
