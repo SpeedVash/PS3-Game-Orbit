@@ -1,8 +1,18 @@
-# PS3 Game Orbit 2.1.4
+# PS3 Game Orbit 2.1.9
+
+A **v2.1.9** permite escolher qual USB liberar no Padrão e no PLUS. O Orbit pausa apenas a unidade selecionada e identifica qual USB pode ser retirado. Veja [NOTAS_2.1.9.md](docs/NOTAS_2.1.9.md).
+
+A **v2.1.8** passou a solicitar a desmontagem ao PS3 e a exibir **“Não retire o USB”** quando a liberação não pôde ser confirmada.
+
+A **v2.1.7** passou a mostrar a versão ao lado do logotipo do PLUS na abertura e na biblioteca.
+
+A **v2.1.6** salva texturas de PS3 e PS1 no HD interno. Na primeira abertura, o Orbit prepara as capas da tela e, enquanto a biblioteca fica parada, prepara as capas restantes em segundo plano. Nas próximas aberturas, reutiliza as imagens já preparadas. No Spine, as caixas ao lado podem mostrar uma versão pequena da capa enquanto a imagem completa entra na memória gráfica. Funciona tanto no Padrão quanto no PLUS.
+
+A **v2.1.5** inclui a capa padrão aprovada do Orbit. Frente, lombada e verso aparecem nas caixas de PS3 que estão sem capa, incluindo **Disco físico no leitor**. A capa própria do jogo tem prioridade. Se houver apenas uma imagem frontal, a arte padrão preenche o verso e a lombada.
 
 A **v2.1.4** mantém o disco do leitor visível quando uma ISO ou pasta está montada. Na aba **PS3**, origem **Todos**, aparece **Disco físico no leitor** enquanto o jogo virtual ocupa o leitor. Atualizar a biblioteca preserva a montagem. Selecione essa entrada e pressione **X — Restaurar** para desmontar o jogo virtual e ler o título do disco físico sem sair do Orbit.
 
-Instale `PS3_GAME_ORBIT_v2.1.4.pkg` sobre a versão atual e reinicie o PS3 para carregar o serviço atualizado. A correção funciona nas duas interfaces e inclui as melhorias de navegação de PKGs da v2.1.3. Veja `docs/NOTAS_2.1.4.md`.
+O fluxo de restauração funciona nas duas interfaces e inclui as melhorias de navegação de PKGs da v2.1.3. Veja `docs/NOTAS_2.1.4.md`.
 
 Desde a **v2.1.0**, o aplicativo reúne o **PS3 Game Orbit padrão** e o **PS3 ORBIT PLUS** no mesmo aplicativo. O PLUS traz a interface aprovada, com navegação por plataforma e origem, painéis em azul, tipografia maior e opções redesenhadas.
 
@@ -14,11 +24,11 @@ Desde a **v2.1.0**, o aplicativo reúne o **PS3 Game Orbit padrão** e o **PS3 O
 
 A troca é imediata e a escolha fica salva para a próxima abertura. Na primeira instalação sem uma escolha salva, o visual inicial é o **Padrão**. Os dois visuais compartilham os mesmos jogos, favoritos, configurações, catálogo e covers. Alternar a interface não faz uma nova leitura da biblioteca nem descarta as imagens já carregadas.
 
-O identificador continua **PGORBT301**, com versão de instalação **02.14**. O log desta versão é `/dev_hdd0/tmp/PS3_GAME_ORBIT_2_1_4.log`.
+O identificador continua **PGORBT301**, com versão de instalação **02.19**. O log desta versão é `/dev_hdd0/tmp/PS3_GAME_ORBIT_2_1_9.log`.
 
-O visual padrão conserva o desenho da v2.0.4. As caixas PS3 e PS1, materiais, transparência aprovada de **96%** nas áreas FRONT/BACK de PS1, animações, carregamento e montagem dos jogos permanecem iguais à base. Os dois visuais oferecem Clássico, Spine e Lista; PS3/PS1 separados; Todos/HD/USB/Favoritos; seleção de CD de PS1; importação de covers por USB; fundo personalizado; ventoinha; cópia de disco e instalação de PKGs.
+O visual padrão conserva o desenho da v2.0.4. As caixas PS3 e PS1, materiais, transparência aprovada de **96%** nas áreas FRONT/BACK de PS1 e animações permanecem iguais à base. Os dois visuais oferecem Clássico, Spine e Lista; PS3/PS1 separados; Todos/HD/USB/Favoritos; seleção de CD de PS1; importação de covers por USB; fundo personalizado; ventoinha; cópia de disco e instalação de PKGs.
 
-A compilação nativa e os testes no PC passaram. A confirmação em **PS3 físico/HEN/CFW está pendente**. As imagens em `assets/previews/2.1.0/` são prévias no PC com o código da interface e a geometria original, usando artes ilustrativas. Veja `docs/NOTAS_2.1.4.md`.
+A compilação nativa e os testes no PC passaram. O tempo de carregamento no console depende do HD e precisa ser medido em hardware. As imagens em `assets/previews/2.1.0/` são prévias no PC com o código da interface e a geometria original, usando artes ilustrativas.
 
 Os recursos abaixo são herdados da v2.0.4.
 
@@ -26,7 +36,7 @@ Os recursos abaixo são herdados da v2.0.4.
 
 O modo mostra o jogo selecionado e **três jogos de cada lado**, quando a biblioteca tem pelo menos sete jogos. O limite antigo de pacotes gráficos descartava algumas caixas PS1; agora as sete montagens completas permanecem no desenho. O controlador RSX continua dividindo os comandos em segmentos confirmados e faz uma apresentação final por quadro.
 
-As BACK, que fornecem as lombadas PS1, têm prioridade na mesma janela de quinze jogos usada pelo carregamento PS3. Ao entrar no Spine de PS1, a tela de preparação aguarda o conjunto necessário, usando a rotina de carregamento já existente. Uma BACK visível ausente também progride em pequenas fatias durante a navegação, sem depender de selecionar esse jogo. O cache mantém os limites anteriores e prepara as capas internas dos jogos próximos.
+As BACK fornecem as lombadas PS1. Ao entrar no Spine, o Orbit prepara a caixa selecionada em tamanho completo e a fila visível de até sete jogos. As capas dos vizinhos podem aparecer como prévias até que as texturas completas fiquem prontas. As caixas próximas e as capas internas continuam a ser preparadas em segundo plano.
 
 ## Catálogo salvo para HD e USB
 
@@ -36,14 +46,14 @@ Mudanças nas pastas principais podem renovar o índice automaticamente. **Depoi
 
 Quando a identificação nativa de um USB não está disponível, o Orbit cria nele o pequeno arquivo `PS3_GAME_ORBIT_VOLUME.ID` para reconhecer esse volume nas próximas aberturas e em outra porta. O catálogo com os dados dos jogos permanece no HD interno. A leitura do disco físico continua atualizada.
 
-As imagens das caixas visíveis ainda são preparadas para a memória gráfica a cada execução. O índice evita repetir a descoberta de jogos, leitura de metadados e procura de caminhos das artes em toda a biblioteca.
+O índice guarda os caminhos. O cache de imagens em `/dev_hdd0/game/PGORBT301/USRDIR/artwork216/` guarda as texturas prontas, inclusive de jogos USB. O Orbit confere se a imagem original mudou antes de reaproveitar a textura. Para forçar a leitura de uma arte de um jogo, use **Opções do Jogo → Recarregar capas**.
 
 
 
 ## Instalar
 
-1. Instale `PS3_GAME_ORBIT_v2.1.4.pkg` pelo XMB, sobre a versão atual, e reinicie o PS3.
-2. Reinicie o console após a atualização e habilite o HEN novamente, quando aplicável.
+1. Instale `PS3_GAME_ORBIT_v2.1.9.pkg` pelo XMB, sobre a versão atual.
+2. Reinicie o PS3 para carregar o serviço desta versão. Ative o HEN, quando aplicável, e abra o Orbit.
 3. Organize os jogos em `PSXISO` no HD interno ou em um USB FAT32. Use uma pasta por jogo e uma subpasta por CD.
 4. Conecte o USB antes de abrir o Orbit. Selecione a plataforma com **L1/R1** e confira **Origem: Todos**. Use **Atualizar biblioteca** se necessário.
 5. Pressione **X** no jogo. Jogos com mais de um CD abrem **Selecionar disco de PS1**. Escolha com o direcional e confirme com **X**; **Círculo** cancela. A mesma escolha está disponível nas **Opções do Jogo**.
@@ -127,7 +137,15 @@ A importação pelo menu ainda usa o padrão antigo de capa, interior e disco ú
 
 A varredura procura volumes nativos de `/dev_usb000` a `/dev_usb127`. O catálogo persistente do HDD continua ativo; um USB nativo é sempre relido para incorporar mudanças e não ficar preso a um resultado vazio. A identidade do volume continua independente da porta. Os leitores próprios de NTFS/exFAT para PS3 mantêm o caminho anterior de cache e leitura.
 
-Se o USB ainda não aparecer após **Atualizar biblioteca**, envie `/dev_hdd0/tmp/PS3_GAME_ORBIT_1_9_9.log`. As linhas `SCAN192` separam os totais de PS3/PS1 e HDD/USB; as contagens mostradas nas prévias são apenas exemplos.
+Se o USB ainda não aparecer após **Atualizar biblioteca**, envie `/dev_hdd0/tmp/PS3_GAME_ORBIT_2_1_9.log`. As linhas `SCAN192` separam os totais de PS3/PS1 e HDD/USB; as contagens mostradas nas prévias são apenas exemplos.
+
+## Liberar o USB
+
+1. Em **START → Liberar USB para retirada**, escolha a unidade pela identificação e capacidade. Com uma única unidade reconhecida e nenhuma pausada, o Orbit vai direto à verificação.
+2. Aguarde **USB 000 liberado pelo Orbit para retirada** (o número mostrado depende da unidade). Remova somente o USB indicado. Se aparecer **Não retire o USB**, mantenha a unidade conectada e siga a indicação na tela. **Círculo** cancela a espera.
+3. Para voltar a usar a unidade, reconecte-a e selecione **Reativar** na linha correspondente em **START → Gerenciar unidades USB**.
+
+O Orbit deixa os jogos, capas e PKGs das outras unidades disponíveis. A unidade liberada fica fora da biblioteca e dos seletores até ser reativada ou até o Orbit ser reaberto. Atualizar a biblioteca também respeita a pausa.
 
 ## Formatos e limites desta versão
 
@@ -140,7 +158,7 @@ Se o USB ainda não aparecer após **Atualizar biblioteca**, envie `/dev_hdd0/tm
 
 ## PKGs e validação
 
-A fila de PKGs e a opção **Voltar ao Orbit ao terminar** mantêm exatamente o auxiliar da 1.8.9, cujo retorno foi confirmado por você no HEN. As preferências existentes são preservadas. A geometria de PS3 e o residente nativo permanecem iguais à base validada.
+A fila de PKGs e a opção **Voltar ao Orbit ao terminar** mantêm exatamente o auxiliar da 1.8.9, cujo retorno foi confirmado no HEN. As preferências existentes e a geometria de PS3 são preservadas. O residente foi atualizado para fechar o leitor de ISOs NTFS/exFAT ao liberar o USB.
 
 As versões anteriores registram a compilação PPC64, os testes de catálogo/seletor/montagem e a simulação de 14.400 quadros de desenho nativo. A 2.0.3 executou a compilação atual, a verificação dos limites de transparência, os dados PPC, a prévia, os GLBs e a integridade do pacote em `docs/validation203/`; a lógica de execução dessas bases foi preservada. A animação C++ foi comparada com a prévia aprovada em 2.613 matrizes. A geometria PS3, o residente e o auxiliar de PKGs permanecem iguais às bases validadas. A revisão 1.9.6 verificou os quatro CDs idênticos ao CD simples, fechamento dos três suportes, recorte 99/802/99 da BACK, transmissão nas janelas e lombadas com o mesmo alfa, desenho de produção e regressão PS3. O carregamento foi verificado com a rotina de produção e o worker real alternando PS1/PS3 sem desenhar a biblioteca antes da prontidão. As evidências estão em `docs/validation196/`.
 
